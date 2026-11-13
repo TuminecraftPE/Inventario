@@ -81,6 +81,19 @@ nav button[aria-current="page"]{color:var(--accent);font-weight:600}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
 .ventas-list{max-height:320px;overflow-y:auto}
+.pimg{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:var(--accent-soft)}
+.pimg.ph,.thumb.ph,.foto-prev.ph{display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--accent);background:var(--accent-soft)}
+.pimg.ph{font-size:26px}
+.thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;font-size:15px}
+.with-thumb{display:flex;gap:10px;align-items:flex-start}
+.foto-box{display:flex;gap:12px;align-items:center}
+.foto-box .actions{flex:1}
+.foto-prev{width:84px;height:84px;border-radius:12px;object-fit:cover;flex:none;font-size:28px}
+.btn.big{width:100%;padding:13px;font-size:16px}
+.btn.outline{border-color:var(--accent);color:var(--accent);font-weight:600}
+.actions.sep{border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
 .sync{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap}
 .sync::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px;vertical-align:0}
 .sync.ok::before{background:var(--ok)}.sync.busy::before{background:var(--accent)}.sync.off::before{background:var(--warn)}.sync.err::before{background:var(--bad)}
@@ -347,7 +360,7 @@ function seed(){
 
 var store=null;
 function load(){try{var r=window.localStorage.getItem(SKEY);if(r)return JSON.parse(r);}catch(e){}return null;}
-function save(){try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){}}
+var avisoMemoria=false;function save(){try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){if(!avisoMemoria&&typeof toast==="function"){avisoMemoria=true;toast("El celular se quedó sin espacio para guardar aquí. Conecta Google Sheets o usa menos fotos.");}}}
 var S = load();
 if(!S){S=seed();try{var old=window.localStorage.getItem(OLDKEY);if(old){var o=JSON.parse(old);if(o&&o.negocio)S.negocio=o.negocio;}}catch(e){}save();}
 
@@ -519,7 +532,7 @@ function renderVender(){
   var q=$("buscar-venta").value.trim().toLowerCase();
   $("venta-productos").innerHTML=S.productos.filter(function(p){return !q||p.nombre.toLowerCase().indexOf(q)>=0;}).map(function(p){
     var enC=carrito[p.id]||0,disp=p.stock-enC;
-    return '<button class="pbtn" type="button" data-add="'+p.id+'"'+(disp<=0?' disabled':'')+'><span class="name">'+esc(p.nombre)+'</span><span class="price num">'+bs(p.precio)+'</span><span class="meta num">'+(p.stock<=0?'Agotado':'Stock: '+disp+' '+esc(p.unidad))+'</span></button>';}).join("") || '<div class="empty">No se encontró ese producto.</div>';
+    return '<button class="pbtn" type="button" data-add="'+p.id+'"'+(disp<=0?' disabled':'')+'>'+fotoHTML(p,"pimg")+'<span class="name">'+esc(p.nombre)+'</span><span class="price num">'+bs(p.precio)+'</span><span class="meta num">'+(p.stock<=0?'Agotado':'Stock: '+disp+' '+esc(p.unidad))+'</span></button>';}).join("") || '<div class="empty">No se encontró ese producto.</div>';
   var ids=Object.keys(carrito),total=0;
   $("carrito").innerHTML = ids.length ? ids.map(function(id){var p=prod(id),c=carrito[id];total+=c*p.precio;
     return '<div class="row"><div><div class="name">'+esc(p.nombre)+'</div><div class="meta num">'+bs(p.precio)+' c/u · '+bs(c*p.precio)+'</div></div><div class="qty"><button type="button" data-dec="'+id+'" aria-label="Quitar uno">−</button><span class="num">'+c+'</span><button type="button" data-inc="'+id+'" aria-label="Agregar uno"'+(c>=p.stock?' disabled':'')+'>+</button></div></div>';}).join("")
@@ -533,7 +546,7 @@ function renderProductos(){
   var valor=S.productos.reduce(function(a,p){return a+p.stock*p.costo;},0);
   $("inv-resumen").textContent=S.productos.length+" productos · valor a costo "+bs(valor);
   $("prod-list").innerHTML=S.productos.filter(function(p){return !q||p.nombre.toLowerCase().indexOf(q)>=0;}).map(function(p){var e=estado(p);
-    return '<div class="row stripe '+e+'"><div><div class="name">'+esc(p.nombre)+'</div><div class="meta num">'+p.stock+' '+esc(p.unidad)+' · mín. '+p.min+' · costo '+bs(p.costo)+' · venta '+bs(p.precio)+(p.receta?' · costo por receta':'')+'</div><div style="margin-top:4px">'+pillHTML(p)+'</div></div><div class="actions" style="flex-direction:column"><button class="btn small" type="button" data-compra="'+p.id+'">+ Compra</button><button class="btn small" type="button" data-edit="'+p.id+'">Editar</button></div></div>';}).join("") || '<div class="empty">No se encontró ese producto.</div>';
+    return '<div class="row stripe '+e+'"><div class="with-thumb">'+fotoHTML(p,"thumb")+'<div><div class="name">'+esc(p.nombre)+'</div><div class="meta num">'+p.stock+' '+esc(p.unidad)+' · mín. '+p.min+' · costo '+bs(p.costo)+' · venta '+bs(p.precio)+(p.receta?' · costo por receta':'')+'</div><div style="margin-top:4px">'+pillHTML(p)+'</div></div></div><div class="actions" style="flex-direction:column"><button class="btn small" type="button" data-compra="'+p.id+'">+ Compra</button><button class="btn small" type="button" data-edit="'+p.id+'">Editar</button></div></div>';}).join("") || '<div class="empty">No se encontró ese producto.</div>';
 }
 
 function renderReporte(){var t=textoReporte();$("report-text").textContent=t;$("wa-reporte").href=waLink(t);}
@@ -569,128 +582,205 @@ $("modal-back").addEventListener("click",function(e){if(e.target.id==="modal-bac
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
+function fotoOk(f){return typeof f==="string"&&f.indexOf("data:image/")===0;}
+function iniciales(n){return esc(String(n||"?").trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0).toUpperCase();}).join(""));}
+function fotoHTML(p,cls){return fotoOk(p.foto)?'<img class="'+cls+'" src="'+esc(p.foto)+'" alt="">':'<div class="'+cls+' ph" aria-hidden="true">'+iniciales(p.nombre)+'</div>';}
+function achicarFoto(file,cb){
+  var fr=new FileReader();
+  fr.onload=function(){var img=new Image();img.onload=function(){
+    function hacer(max,q){var r=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);
+      var ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);return c.toDataURL("image/jpeg",q);}
+    var d=hacer(320,0.72);if(d.length>45000)d=hacer(240,0.6);if(d.length>45000)d=hacer(180,0.5);cb(d);};
+    img.onerror=function(){toast("No se pudo leer esa imagen. Prueba con otra foto.");};img.src=fr.result;};
+  fr.readAsDataURL(file);
+}
 function modalProducto(p,draft){
   var n=!p,base=p||{nombre:"",unidad:"unid.",stock:0,min:5,costo:0,precio:0};
-  var v=draft||{nombre:base.nombre,unidad:base.unidad,stock:base.stock,min:base.min,costo:base.costo,precio:base.precio,receta:base.receta?clone(base.receta):null};
+  var v=draft||{nombre:base.nombre,unidad:base.unidad,stock:base.stock,min:base.min,costo:base.costo,precio:base.precio,receta:base.receta?clone(base.receta):null,foto:base.foto||""};
   var recNota=v.receta?'<div class="notice full">Costo calculado con tu receta: '+esc(v.receta.rinde)+' '+esc(v.unidad)+' por tanda, '+v.receta.ingredientes.length+' ingredientes.</div>':'';
   openModal('<h2 id="modal-title">'+(n?'Agregar producto':'Editar producto')+'</h2><form id="f-prod" class="form-grid">'+
+    '<div class="full foto-box">'+fotoHTML(v,"foto-prev")+'<div class="actions"><label class="btn small" for="fp-foto-in">'+(fotoOk(v.foto)?'Cambiar foto':'📷 Agregar foto')+'</label><input type="file" id="fp-foto-in" accept="image/*" hidden>'+(fotoOk(v.foto)?'<button class="btn small" type="button" id="fp-foto-del">Quitar foto</button>':'')+'<span class="muted" style="flex-basis:100%">La foto aparece en Vender para encontrar el producto más rápido.</span></div></div>'+
     '<label class="full" for="fp-nombre">Nombre<input type="text" id="fp-nombre" required value="'+esc(v.nombre)+'"></label>'+
     '<label for="fp-unidad">Unidad<input type="text" id="fp-unidad" value="'+esc(v.unidad)+'"></label>'+
     '<label for="fp-stock">Stock actual<input type="number" id="fp-stock" min="0" step="1" value="'+v.stock+'"></label>'+
     '<label for="fp-min">Stock mínimo (alerta)<input type="number" id="fp-min" min="0" step="1" value="'+v.min+'"></label>'+
     '<label for="fp-costo">Costo por unidad (Bs)<input type="number" id="fp-costo" min="0" step="0.01" value="'+v.costo+'"></label>'+
-    '<div class="full cost-help"><span class="muted">¿No sabes cuánto te cuesta? Si lo preparas tú (comida, postres, jabones…), calcúlalo con tu receta.</span><button class="btn small" type="button" id="fp-receta">'+(v.receta?'Editar receta':'Calcular con receta')+'</button></div>'+
+    '<div class="full cost-help"><span class="muted">¿No sabes cuánto te cuesta? Si lo preparas tú (pan, comida, postres…), calcúlalo con tu receta.</span><button class="btn small" type="button" id="fp-receta">'+(v.receta?'Editar receta':'Calcular con receta')+'</button></div>'+
     recNota+
     '<label class="full" for="fp-precio">Precio de venta (Bs)<input type="number" id="fp-precio" min="0" step="0.01" value="'+v.precio+'"></label>'+
     '<div class="actions full"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" id="fp-cancel">Cancelar</button>'+(n?'':'<button class="btn" type="button" id="fp-del" style="margin-left:auto;color:var(--bad)">Eliminar</button>')+'</div></form>');
-  function leer(){return {nombre:$("fp-nombre").value.trim(),unidad:$("fp-unidad").value.trim()||"unid.",stock:Math.max(0,Math.floor(+$("fp-stock").value||0)),min:Math.max(0,Math.floor(+$("fp-min").value||0)),costo:+$("fp-costo").value||0,precio:+$("fp-precio").value||0,receta:v.receta};}
+  function leer(){return {nombre:$("fp-nombre").value.trim(),unidad:$("fp-unidad").value.trim()||"unid.",stock:Math.max(0,Math.floor(+$("fp-stock").value||0)),min:Math.max(0,Math.floor(+$("fp-min").value||0)),costo:+$("fp-costo").value||0,precio:+$("fp-precio").value||0,receta:v.receta,foto:v.foto||""};}
   $("fp-cancel").onclick=closeModal;
+  $("fp-foto-in").onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f)return;var d=leer();toast("Preparando la foto…");achicarFoto(f,function(data){d.foto=data;modalProducto(p,d);});};
+  if($("fp-foto-del"))$("fp-foto-del").onclick=function(){var d=leer();d.foto="";modalProducto(p,d);};
   $("fp-receta").onclick=function(){var d=leer();wizardReceta(d,function(res){if(res){d.costo=res.costo;if(res.precio)d.precio=res.precio;d.receta=res.receta;}modalProducto(p,d);});};
   if(!n)$("fp-del").onclick=function(){$("fp-del").outerHTML='<button class="btn" type="button" id="fp-del2" style="margin-left:auto;background:var(--bad);color:#fff;border-color:var(--bad)">Confirmar eliminación</button>';
     $("fp-del2").onclick=function(){S.productos=S.productos.filter(function(x){return x.id!==p.id;});save();encolar({op:"borrarProducto",id:p.id});closeModal();renderAll();toast("Producto eliminado");};};
   $("f-prod").onsubmit=function(e){e.preventDefault();
-    var d=leer();if(!d.receta)delete d.receta;
+    var d=leer();if(!d.receta)delete d.receta;if(!d.foto)delete d.foto;
     if(!d.nombre){toast("Escribe el nombre del producto");return;}
-    if(n){d.id="p"+uid();S.productos.push(d);}else{Object.assign(p,d);if(!d.receta)delete p.receta;}encolar({op:"producto",p:clone(n?d:p)});
+    if(n){d.id="p"+uid();S.productos.push(d);}else{Object.assign(p,d);if(!d.receta)delete p.receta;if(!d.foto)delete p.foto;}
+    encolar({op:"producto",p:clone(n?d:p)});
     save();closeModal();renderAll();toast(n?"Producto agregado":"Cambios guardados");};
 }
 
 // ---------- calculadora de costo por receta ----------
+// Medidas de Bolivia: quintal 46 kg = 4 arrobas de 11,5 kg = 100 libras de 460 g
 var UN={
-  g:{d:"peso",f:1,l:"gramos (g)"},kg:{d:"peso",f:1000,l:"kilos (kg)"},lb:{d:"peso",f:453.6,l:"libras"},
-  arroba:{d:"peso",f:11340,l:"arrobas (25 lb)"},qq:{d:"peso",f:45360,l:"quintales (100 lb)"},
-  ml:{d:"vol",f:1,l:"mililitros (ml)"},L:{d:"vol",f:1000,l:"litros (L)"},
-  u:{d:"cant",f:1,l:"unidades"},doc:{d:"cant",f:12,l:"docenas"},maple:{d:"cant",f:30,l:"maples (30)"}
+  taza:{d:"vol",f:240,l:"tazas",c:"taza"},cda:{d:"vol",f:15,l:"cucharadas",c:"cda."},cdta:{d:"vol",f:5,l:"cucharaditas",c:"cdta."},
+  g:{d:"peso",f:1,l:"gramos (g)",c:"g"},kg:{d:"peso",f:1000,l:"kilos (kg)",c:"kg"},lb:{d:"peso",f:460,l:"libras (460 g)",c:"lb"},
+  arroba:{d:"peso",f:11500,l:"arrobas (11,5 kg)",c:"arroba"},qq:{d:"peso",f:46000,l:"quintales (46 kg)",c:"quintal"},saco50:{d:"peso",f:50000,l:"bolsas o sacos de 50 kg",c:"saco 50 kg"},
+  ml:{d:"vol",f:1,l:"mililitros (ml)",c:"ml"},L:{d:"vol",f:1000,l:"litros (L)",c:"L"},
+  u:{d:"cant",f:1,l:"unidades",c:"unid."},doc:{d:"cant",f:12,l:"docenas",c:"docena"},maple:{d:"cant",f:30,l:"maples (30 huevos)",c:"maple"}
 };
-var UN_ORDEN=["g","kg","lb","arroba","qq","ml","L","u","doc","maple"];
-function unSelect(id,val){return '<select id="'+id+'">'+UN_ORDEN.map(function(k){return '<option value="'+k+'"'+(k===val?' selected':'')+'>'+UN[k].l+'</option>';}).join("")+'</select>';}
-function unCorta(k){return {g:"g",kg:"kg",lb:"lb",arroba:"arroba",qq:"quintal",ml:"ml",L:"L",u:"unid.",doc:"docena",maple:"maple"}[k]||k;}
+var UN_USO=["taza","cda","cdta","g","kg","lb","ml","L","u","doc"];
+var UN_COMPRA=["kg","qq","saco50","arroba","lb","g","L","ml","u","doc","maple"];
+var CUCHARAS={taza:1,cda:1,cdta:1};
+function unSelect(id,val,lista){if(lista.indexOf(val)<0)lista=lista.concat([val]);return '<select id="'+id+'">'+lista.map(function(k){return '<option value="'+k+'"'+(k===val?' selected':'')+'>'+UN[k].l+'</option>';}).join("")+'</select>';}
+function unCorta(k,n){var c=(UN[k]&&UN[k].c)||k;if(n>1&&(k==="taza"))c="tazas";return c;}
 function bsd(n,dec){return "Bs "+(Number(n)||0).toLocaleString("es-BO",{minimumFractionDigits:dec,maximumFractionDigits:dec});}
-function costoIng(i){
-  var a=UN[i.usaU],b=UN[i.compraU];if(!a||!b)return {err:"Elige las unidades"};
-  if(a.d!==b.d)return {err:"Usas "+i.nombre+" en "+UN[i.usaU].l+" pero lo compras en "+UN[i.compraU].l+". Elige unidades del mismo tipo (peso con peso, líquido con líquido, unidades con unidades)."};
-  var usa=+i.usa,comp=+i.compra,pre=+i.precio;
-  if(!(comp>0))return {err:"Escribe cuánto "+i.nombre+" compraste"};
-  if(!(pre>=0)||i.precio==="")return {err:"Escribe cuánto pagaste por "+i.nombre};
-  return {c:(usa*a.f)/(comp*b.f)*pre};
+function parseCant(s){
+  if(typeof s==="number")return s;
+  s=String(s||"").trim().replace(/¼/g," 1/4").replace(/½/g," 1/2").replace(/¾/g," 3/4").replace(/⅓/g," 1/3").replace(/⅔/g," 2/3").replace(",",".").trim();
+  if(!s)return NaN;
+  var m=/^(\d+(?:\.\d+)?)?\s*(?:(\d+)\s*\/\s*(\d+))?$/.exec(s);
+  if(!m||(!m[1]&&!m[2]))return NaN;
+  var v=m[1]?parseFloat(m[1]):0;if(m[2]){if(+m[3]===0)return NaN;v+=m[2]/m[3];}return v;
 }
-function ejemploEmpanadas(){return {rinde:40,otros:10,ingredientes:[
-  {nombre:"Harina",usa:1,usaU:"kg",compra:1,compraU:"arroba",precio:110},
-  {nombre:"Manteca",usa:250,usaU:"g",compra:1,compraU:"kg",precio:30},
-  {nombre:"Queso",usa:1,usaU:"kg",compra:1,compraU:"kg",precio:45},
-  {nombre:"Huevos",usa:2,usaU:"u",compra:1,compraU:"maple",precio:30},
-  {nombre:"Azúcar",usa:100,usaU:"g",compra:1,compraU:"kg",precio:8},
-  {nombre:"Aceite para freír",usa:1,usaU:"L",compra:1,compraU:"L",precio:18}]};}
+function fmtCant(n){
+  n=Number(n);if(!(n>0))return "";
+  var w=Math.floor(n+1e-9),r=n-w,fr={"1/4":0.25,"1/3":1/3,"1/2":0.5,"2/3":2/3,"3/4":0.75},t="";
+  Object.keys(fr).forEach(function(k){if(Math.abs(r-fr[k])<0.01)t=k;});
+  if(r<0.01)return String(w);if(t)return (w?w+" ":"")+t;
+  return String(Math.round(n*1000)/1000).replace(".",",");
+}
+// Peso aproximado de 1 taza (g). liq: se suele comprar por litro.
+var PESO_TAZA=[["harina integral",120],["harina",125],["azucar impalpable",120],["azucar glas",120],["azucar morena",220],["azucar rubia",220],["azucar",200],["maicena",120],["almidon",120],["chuno",120],["cacao",90],["chocolate",170],["avena",90],["arroz",190],["sal",270],["levadura",135],["polvo de hornear",190],["bicarbonato",220],["mantequilla",225],["manteca",225],["margarina",225],["queso rallado",100],["queso",110],["leche en polvo",120],["coco",80],["pasas",150],["nuez",120],["mani",145],["sesamo",145],["miel",340,1],["leche",245,1],["agua",240,1],["aceite",220,1],["crema",240,1],["yogur",245,1],["vinagre",240,1],["jugo",240,1]];
+function sinAcento(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");}
+function infoTaza(nombre){var n=sinAcento(nombre);for(var i=0;i<PESO_TAZA.length;i++)if(n.indexOf(PESO_TAZA[i][0])>=0)return {g:PESO_TAZA[i][1],liq:!!PESO_TAZA[i][2]};return null;}
+function necesitaPeso(i){var a=UN[i.usaU],b=UN[i.compraU];return a&&b&&a.d!==b.d&&((a.d==="vol"&&b.d==="peso")||(a.d==="peso"&&b.d==="vol"));}
+function costoIng(i){
+  var a=UN[i.usaU],b=UN[i.compraU];if(!a||!b)return {err:"Elige las unidades de "+i.nombre+"."};
+  var usa=parseCant(i.usa),comp=parseCant(i.compra),pre=parseCant(i.precio);
+  if(!(comp>0))return {err:"Escribe cuánto "+i.nombre+" compraste."};
+  if(!(pre>=0))return {err:"Escribe cuánto pagaste por "+i.nombre+"."};
+  if(a.d===b.d)return {c:(usa*a.f)/(comp*b.f)*pre};
+  if(necesitaPeso(i)){
+    var g=parseCant(i.gTaza);if(!(g>0))return {err:"Escribe cuánto pesa una taza de "+i.nombre+"."};
+    var dens=g/240,usoG=a.d==="vol"?usa*a.f*dens:usa*a.f,compG=b.d==="peso"?comp*b.f:comp*b.f*dens;
+    return {c:usoG/compG*pre};
+  }
+  return {err:"Usas "+i.nombre+" en "+UN[i.usaU].l+" pero lo compras en "+UN[i.compraU].l+". No se puede convertir uno en otro: elige la misma clase de medida (por ejemplo, unidades con unidades)."};
+}
+function ingVacio(){return {nombre:"",usa:"",usaU:"taza",compra:1,compraU:"kg",precio:""};}
+function ejemploPan(){return {rinde:35,otros:8,ingredientes:[
+  {nombre:"Harina",usa:4,usaU:"taza",compra:1,compraU:"qq",precio:390,gTaza:125},
+  {nombre:"Azúcar",usa:0.5,usaU:"taza",compra:1,compraU:"qq",precio:230,gTaza:200},
+  {nombre:"Manteca",usa:0.25,usaU:"taza",compra:1,compraU:"kg",precio:30,gTaza:225},
+  {nombre:"Leche",usa:1,usaU:"taza",compra:1,compraU:"L",precio:9},
+  {nombre:"Levadura",usa:1,usaU:"cda",compra:500,compraU:"g",precio:25,gTaza:135},
+  {nombre:"Sal",usa:1,usaU:"cdta",compra:1,compraU:"kg",precio:4,gTaza:270},
+  {nombre:"Huevos",usa:2,usaU:"u",compra:1,compraU:"maple",precio:30}]};}
 
 function wizardReceta(prodDraft,done){
-  var R=prodDraft.receta?clone(prodDraft.receta):{rinde:"",otros:"",ingredientes:[{nombre:"",usa:"",usaU:"g",compra:1,compraU:"kg",precio:""}]};
-  var step=1,uProd=prodDraft.unidad||"unid.",nProd=prodDraft.nombre||"tu producto",margen=50,err="";
-  function stepper(){var s=["Rinde","Ingredientes","Compras","Resultado"];
+  var R=prodDraft.receta?clone(prodDraft.receta):{rinde:"",otros:"",ingredientes:[ingVacio()]};
+  R.ingredientes.forEach(function(i){if(typeof i.usa==="number")i.usa=fmtCant(i.usa);});
+  var step=1,uProd=prodDraft.unidad||"unid.",nProd=prodDraft.nombre||"tu producto",margen=50,err="",confirmar=false,enfocar=null;
+  function stepper(){var s=["Cuánto sale","Ingredientes","Lo que compras","Resultado"];
     return '<ol class="stepper">'+s.map(function(t,i){return '<li class="'+(i+1===step?'cur':(i+1<step?'done':''))+'"><span>'+(i+1)+'</span>'+t+'</li>';}).join("")+'</ol>';}
   function errBox(){return err?'<div class="alertbox bad" role="alert">'+esc(err)+'</div>':'';}
-  function nav(nextTxt){return '<div class="actions">'+(step>1?'<button class="btn" type="button" id="w-back">Atrás</button>':'<button class="btn" type="button" id="w-cancel">Cancelar</button>')+'<button class="btn primary" type="button" id="w-next" style="margin-left:auto">'+nextTxt+'</button></div>';}
-  function calc(){var tot=0,filas=R.ingredientes.map(function(i){var r=costoIng(i);tot+=r.c||0;return {i:i,c:r.c||0};});var otros=+R.otros||0;tot+=otros;return {filas:filas,otros:otros,total:tot,unit:tot/(+R.rinde||1)};}
+  function validos(){return R.ingredientes.filter(function(i){return i.nombre&&parseCant(i.usa)>0;});}
+  function calc(){var tot=0,filas=R.ingredientes.map(function(i){var r=costoIng(i);tot+=r.c||0;return {i:i,c:r.c||0};});var otros=parseCant(R.otros)||0;tot+=otros;var rinde=parseCant(R.rinde)||1;return {filas:filas,otros:otros,total:tot,unit:tot/rinde,rinde:rinde};}
+  function chips(k,i){if(!CUCHARAS[i.usaU])return "";
+    return '<div class="chips">'+["1/4","1/3","1/2","3/4","1","1 1/2","2"].map(function(f){return '<button type="button" class="chip'+(String(i.usa)===f?' on':'')+'" data-frac="'+k+'|'+f+'">'+f.replace("1/4","¼").replace("1/3","⅓").replace("1/2","½").replace("3/4","¾")+'</button>';}).join("")+'</div>';}
   function render(){
     var h='<h2 id="modal-title">Calcular costo de '+esc(nProd)+'</h2>'+stepper();
     if(step===1){
-      h+='<p style="margin:0">Piensa en una tanda normal de producción. <b>¿Cuántas '+esc(uProd)+' te salen con esa receta?</b></p>'+
-        '<label for="w-rinde">Cantidad que sale por tanda<input type="number" id="w-rinde" min="1" step="1" placeholder="Ej.: 40" value="'+esc(R.rinde)+'"></label>'+
-        errBox()+'<button class="btn small" type="button" id="w-ej" style="align-self:flex-start">Ver un ejemplo con empanadas</button>'+nav("Siguiente");
+      h+='<p style="margin:0">Piensa en una tanda normal. <b>¿Cuántas '+esc(uProd)+' te salen con esa receta?</b></p>'+
+        '<label for="w-rinde">Cantidad que sale por tanda<input type="text" inputmode="decimal" enterkeyhint="next" id="w-rinde" placeholder="Ej.: 35" value="'+esc(R.rinde)+'"></label>'+
+        errBox()+'<button class="btn small" type="button" id="w-ej" style="align-self:flex-start">Ver un ejemplo con pan</button>'+
+        '<div class="actions"><button class="btn" type="button" id="w-cancel">Cancelar</button><button class="btn primary" type="button" id="w-next" style="margin-left:auto">Siguiente: ingredientes →</button></div>';
     }else if(step===2){
-      h+='<p style="margin:0"><b>¿Qué ingredientes usas en esa tanda y cuánto de cada uno?</b></p>'+
-        R.ingredientes.map(function(i,k){return '<div class="ing"><input type="text" id="w-n'+k+'" placeholder="Ingrediente (ej.: harina)" value="'+esc(i.nombre)+'" aria-label="Ingrediente '+(k+1)+'">'+
-          '<div class="ing-q"><input type="number" id="w-u'+k+'" min="0" step="any" placeholder="Cantidad" value="'+esc(i.usa)+'" aria-label="Cantidad usada">'+unSelect("w-uu"+k,i.usaU)+
-          '<button class="btn small" type="button" data-quitar="'+k+'" aria-label="Quitar ingrediente">✕</button></div></div>';}).join("")+
-        '<button class="btn small" type="button" id="w-add" style="align-self:flex-start">+ Agregar ingrediente</button>'+errBox()+nav("Siguiente");
+      h+='<p style="margin:0"><b>Escribe cada ingrediente que usas en esa tanda y cuánto usas.</b><br><span class="muted">Uno por uno. Cuando termines un ingrediente, toca "Agregar otro ingrediente".</span></p>'+
+        R.ingredientes.map(function(i,k){return '<div class="ing"><div class="ing-t">Ingrediente '+(k+1)+'</div><input type="text" id="w-n'+k+'" enterkeyhint="next" placeholder="Ej.: harina" value="'+esc(i.nombre)+'" aria-label="Nombre del ingrediente '+(k+1)+'">'+
+          '<div class="ing-q"><input type="text" inputmode="decimal" enterkeyhint="next" id="w-u'+k+'" placeholder="Cantidad (ej.: 1/2)" value="'+esc(i.usa)+'" aria-label="Cantidad usada">'+unSelect("w-uu"+k,i.usaU,UN_USO)+
+          '<button class="btn small" type="button" data-quitar="'+k+'" aria-label="Quitar ingrediente '+(k+1)+'">✕</button></div>'+chips(k,i)+'</div>';}).join("")+
+        '<button class="btn primary big" type="button" id="w-add">＋ Agregar otro ingrediente</button>'+errBox()+
+        (confirmar?'<div class="alertbox"><b>Pusiste '+validos().length+' ingrediente'+(validos().length>1?'s':'')+':</b> '+esc(validos().map(function(i){return i.nombre;}).join(", "))+'.<br>¿Ya están todos los de tu receta?<div class="actions"><button class="btn small" type="button" id="w-falta">No, me falta uno</button><button class="btn primary small" type="button" id="w-seguir">Sí, están todos</button></div></div>':'')+
+        '<div class="actions sep"><button class="btn" type="button" id="w-back">Atrás</button><button class="btn outline" type="button" id="w-next" style="margin-left:auto">Terminé la receta → Precios de compra</button></div>';
     }else if(step===3){
-      h+='<p style="margin:0"><b>Ahora cuéntame cómo compras cada ingrediente.</b> Pon lo que compras normalmente en el mercado y lo que pagas.</p>'+
-        R.ingredientes.map(function(i,k){return '<div class="ing"><div class="ing-t">'+esc(i.nombre)+' <span class="muted">· usas '+esc(i.usa)+' '+unCorta(i.usaU)+'</span></div>'+
-          '<div class="ing-q"><span class="muted">Compré</span><input type="number" id="w-c'+k+'" min="0" step="any" value="'+esc(i.compra)+'" aria-label="Cantidad comprada de '+esc(i.nombre)+'">'+unSelect("w-cu"+k,i.compraU)+'</div>'+
-          '<div class="ing-q"><span class="muted">y pagué Bs</span><input type="number" id="w-p'+k+'" min="0" step="any" placeholder="0" value="'+esc(i.precio)+'" aria-label="Precio pagado por '+esc(i.nombre)+'"></div></div>';}).join("")+
-        '<label for="w-otros">Otros gastos por tanda (gas, bolsitas, servilletas…), en Bs. Opcional.<input type="number" id="w-otros" min="0" step="any" placeholder="0" value="'+esc(R.otros)+'"></label>'+
-        errBox()+nav("Calcular");
+      h+='<p style="margin:0"><b>Ahora, ¿cómo compras cada ingrediente y cuánto pagas?</b><br><span class="muted">Pon lo que compras normalmente: por ejemplo, 1 quintal de harina a Bs 390.</span></p>'+
+        R.ingredientes.map(function(i,k){var pt=necesitaPeso(i);
+          return '<div class="ing"><div class="ing-t">'+esc(i.nombre)+' <span class="muted">· en la receta usas '+esc(i.usa)+' '+unCorta(i.usaU,parseCant(i.usa))+'</span></div>'+
+          '<div class="ing-q"><span class="muted">Compro</span><input type="text" inputmode="decimal" id="w-c'+k+'" value="'+esc(i.compra)+'" aria-label="Cantidad comprada de '+esc(i.nombre)+'">'+unSelect("w-cu"+k,i.compraU,UN_COMPRA)+'</div>'+
+          '<div class="ing-q"><span class="muted">y pago Bs</span><input type="text" inputmode="decimal" id="w-p'+k+'" placeholder="0" value="'+esc(i.precio)+'" aria-label="Precio pagado por '+esc(i.nombre)+'"></div>'+
+          (pt?'<div class="ing-q"><span class="muted">1 '+(UN[i.usaU].d==="vol"?unCorta(i.usaU,1):"taza")+(i.usaU==="cda"||i.usaU==="cdta"?' (para convertir: 1 taza)':'')+' de '+esc(i.nombre)+' pesa</span><input type="text" inputmode="decimal" id="w-g'+k+'" value="'+esc(i.gTaza||"")+'" aria-label="Gramos por taza de '+esc(i.nombre)+'"><span class="muted">g</span></div><div class="muted" style="font-size:12px">Pusimos un peso típico de una taza. Cámbialo si sabes el tuyo.</div>':'')+
+          '</div>';}).join("")+
+        '<label for="w-otros">Otros gastos por tanda (gas, luz, bolsitas…), en Bs. Opcional.<input type="text" inputmode="decimal" id="w-otros" placeholder="0" value="'+esc(R.otros)+'"></label>'+
+        errBox()+'<div class="actions"><button class="btn" type="button" id="w-back">Atrás</button><button class="btn primary" type="button" id="w-next" style="margin-left:auto">Calcular mi costo →</button></div>';
     }else{
-      var c=calc(),sug=Math.ceil(c.unit*(1+margen/100)*2)/2,pa=+prodDraft.precio||0;
-      h+='<div class="result"><div class="muted">Cada '+esc(uProd.replace(/s$/,""))+' te cuesta</div><div class="big num">'+bsd(c.unit,2)+'</div><div class="muted num">La tanda completa ('+esc(R.rinde)+' '+esc(uProd)+') te cuesta '+bsd(c.total,2)+'</div></div>'+
-        '<div><h3>De dónde sale el costo</h3>'+c.filas.map(function(f){return '<div class="row"><div><div class="name">'+esc(f.i.nombre)+'</div><div class="meta num">'+esc(f.i.usa)+' '+unCorta(f.i.usaU)+' por tanda</div></div><div class="num" style="text-align:right">'+bsd(f.c,2)+'<div class="meta">'+bsd(f.c/(+R.rinde),3)+' c/u</div></div></div>';}).join("")+
-        (c.otros?'<div class="row"><div class="name">Otros gastos</div><div class="num" style="text-align:right">'+bsd(c.otros,2)+'<div class="meta">'+bsd(c.otros/(+R.rinde),3)+' c/u</div></div></div>':'')+'</div>'+
+      var c=calc(),sug=Math.ceil(c.unit*(1+margen/100)*2)/2,pa=+prodDraft.precio||0,un1=uProd.replace(/s$/,"");
+      h+='<div class="result"><div class="muted">Cada '+esc(un1)+' te cuesta</div><div class="big num">'+bsd(c.unit,2)+'</div><div class="muted num">La tanda completa ('+esc(R.rinde)+' '+esc(uProd)+') te cuesta '+bsd(c.total,2)+'</div></div>'+
+        '<div><h3>De dónde sale el costo</h3>'+c.filas.map(function(f){return '<div class="row"><div><div class="name">'+esc(f.i.nombre)+'</div><div class="meta num">'+esc(f.i.usa)+' '+unCorta(f.i.usaU,parseCant(f.i.usa))+' por tanda</div></div><div class="num" style="text-align:right">'+bsd(f.c,2)+'<div class="meta">'+bsd(f.c/c.rinde,3)+' c/u</div></div></div>';}).join("")+
+        (c.otros?'<div class="row"><div class="name">Otros gastos</div><div class="num" style="text-align:right">'+bsd(c.otros,2)+'<div class="meta">'+bsd(c.otros/c.rinde,3)+' c/u</div></div></div>':'')+'</div>'+
         '<div><h3>¿A cuánto venderlo?</h3><p class="muted" style="margin:0 0 6px">Elige cuánto quieres ganar sobre tu costo:</p><div class="seg" id="w-marg">'+[30,50,100].map(function(m){return '<button type="button" data-m="'+m+'" aria-pressed="'+(m===margen)+'">+'+m+'%</button>';}).join("")+'</div>'+
-        '<p style="margin:8px 0 0">Precio sugerido: <b class="num">'+bsd(sug,2)+'</b> · ganas <b class="num">'+bsd(sug-c.unit,2)+'</b> por cada una.</p>'+
+        '<p style="margin:8px 0 0">Precio sugerido: <b class="num">'+bsd(sug,2)+'</b> · ganas <b class="num">'+bsd(sug-c.unit,2)+'</b> por cada '+esc(un1)+'.</p>'+
         (pa>0?'<p class="muted" style="margin:4px 0 0">Con tu precio actual de '+bsd(pa,2)+(pa>c.unit?' ganas '+bsd(pa-c.unit,2)+' por unidad ('+Math.round((pa-c.unit)/pa*100)+'% de lo que cobras).':' <b style="color:var(--bad)">pierdes '+bsd(c.unit-pa,2)+' por unidad.</b>')+'</p>':'')+'</div>'+
         '<div class="actions"><button class="btn" type="button" id="w-back">Atrás</button><button class="btn" type="button" id="w-usar" style="margin-left:auto">Usar solo el costo</button><button class="btn primary" type="button" id="w-usar2">Usar costo y precio sugerido</button></div>';
     }
     openModal(h);bind();
+    if(enfocar&&$(enfocar)){$(enfocar).focus();try{$(enfocar).scrollIntoView({block:"center"});}catch(e){}}enfocar=null;
   }
   function leer(){
-    if(step===1)R.rinde=$("w-rinde").value;
-    if(step===2)R.ingredientes.forEach(function(i,k){i.nombre=$("w-n"+k).value.trim();i.usa=$("w-u"+k).value;i.usaU=$("w-uu"+k).value;
-      if(!i._compraTocada&&UN[i.compraU].d!==UN[i.usaU].d){i.compraU=UN[i.usaU].d==="peso"?"kg":(UN[i.usaU].d==="vol"?"L":"u");}});
-    if(step===3){R.ingredientes.forEach(function(i,k){i.compra=$("w-c"+k).value;i.compraU=$("w-cu"+k).value;i.precio=$("w-p"+k).value;i._compraTocada=true;});R.otros=$("w-otros").value;}
+    if(step===1)R.rinde=$("w-rinde").value.trim();
+    if(step===2)R.ingredientes.forEach(function(i,k){i.nombre=$("w-n"+k).value.trim();i.usa=$("w-u"+k).value.trim();var nu=$("w-uu"+k).value;
+      if(nu!==i.usaU){i.usaU=nu;}
+      if(!i._compraTocada){var a=UN[i.usaU].d,inf=infoTaza(i.nombre);
+        if(a==="vol")i.compraU=(inf&&!inf.liq)?"kg":"L";else if(a==="peso")i.compraU=UN[i.compraU].d==="peso"?i.compraU:"kg";else i.compraU=UN[i.compraU].d==="cant"?i.compraU:"u";}
+      if(!i.gTaza){var it=infoTaza(i.nombre);if(it)i.gTaza=it.g;}});
+    if(step===3){R.ingredientes.forEach(function(i,k){i.compra=$("w-c"+k).value.trim();var cu=$("w-cu"+k).value;if(cu!==i.compraU){i.compraU=cu;}i.precio=$("w-p"+k).value.trim();i._compraTocada=true;
+      if($("w-g"+k))i.gTaza=$("w-g"+k).value.trim();});R.otros=$("w-otros").value.trim();}
   }
   function validar(){
-    if(step===1&&!(+R.rinde>0))return "Escribe cuántas "+uProd+" te salen por tanda (un número mayor a 0).";
+    if(step===1&&!(parseCant(R.rinde)>0))return "Escribe cuántas "+uProd+" te salen por tanda (un número mayor a 0).";
     if(step===2){R.ingredientes=R.ingredientes.filter(function(i){return i.nombre||i.usa;});
-      if(!R.ingredientes.length){R.ingredientes=[{nombre:"",usa:"",usaU:"g",compra:1,compraU:"kg",precio:""}];return "Agrega al menos un ingrediente.";}
-      for(var k=0;k<R.ingredientes.length;k++){var i=R.ingredientes[k];if(!i.nombre)return "Falta el nombre del ingrediente "+(k+1)+".";if(!(+i.usa>0))return "Escribe cuánto "+i.nombre+" usas.";}}
+      if(!R.ingredientes.length){R.ingredientes=[ingVacio()];return "Agrega al menos un ingrediente.";}
+      for(var k=0;k<R.ingredientes.length;k++){var i=R.ingredientes[k];if(!i.nombre)return "Falta el nombre del ingrediente "+(k+1)+".";if(!(parseCant(i.usa)>0))return "Escribe cuánto "+i.nombre+" usas (por ejemplo 1, 1/2 o 250).";}}
     if(step===3){for(var j=0;j<R.ingredientes.length;j++){var r=costoIng(R.ingredientes[j]);if(r.err)return r.err;}}
     return "";
   }
+  function agregar(){leer();confirmar=false;err="";R.ingredientes.push(ingVacio());enfocar="w-n"+(R.ingredientes.length-1);render();}
   function bind(){
     var x;
     if((x=$("w-cancel")))x.onclick=function(){done(null);};
-    if((x=$("w-back")))x.onclick=function(){if(step<4)leer();err="";step--;render();};
-    if((x=$("w-next")))x.onclick=function(){leer();err=validar();if(!err)step++;render();};
-    if((x=$("w-ej")))x.onclick=function(){R=ejemploEmpanadas();err="";render();toast("Ejemplo cargado. Los precios son de muestra: pon los tuyos.");};
-    if((x=$("w-add")))x.onclick=function(){leer();R.ingredientes.push({nombre:"",usa:"",usaU:"g",compra:1,compraU:"kg",precio:""});render();var k=R.ingredientes.length-1;$("w-n"+k).focus();};
-    $("modal").querySelectorAll("[data-quitar]").forEach(function(b){b.onclick=function(){leer();R.ingredientes.splice(+b.dataset.quitar,1);if(!R.ingredientes.length)R.ingredientes.push({nombre:"",usa:"",usaU:"g",compra:1,compraU:"kg",precio:""});render();};});
+    if((x=$("w-back")))x.onclick=function(){if(step<4)leer();err="";confirmar=false;step--;render();};
+    if((x=$("w-ej")))x.onclick=function(){R=ejemploPan();R.ingredientes.forEach(function(i){i.usa=fmtCant(i.usa);i._compraTocada=true;});err="";render();toast("Ejemplo cargado. Los precios son de muestra: pon los tuyos.");};
+    if((x=$("w-add")))x.onclick=agregar;
+    if((x=$("w-falta")))x.onclick=agregar;
+    if((x=$("w-seguir")))x.onclick=function(){leer();err=validar();confirmar=false;if(!err)step=3;render();};
+    if((x=$("w-next")))x.onclick=function(){leer();err=validar();
+      if(!err&&step===2&&!confirmar){confirmar=true;render();return;}
+      if(!err){step++;confirmar=false;}render();};
+    $("modal").querySelectorAll("[data-quitar]").forEach(function(b){b.onclick=function(){leer();R.ingredientes.splice(+b.dataset.quitar,1);if(!R.ingredientes.length)R.ingredientes.push(ingVacio());confirmar=false;render();};});
+    $("modal").querySelectorAll("[data-frac]").forEach(function(b){b.onclick=function(){leer();var p=b.dataset.frac.split("|");R.ingredientes[+p[0]].usa=p[1];render();};});
+    $("modal").querySelectorAll("select[id^='w-uu'],select[id^='w-cu']").forEach(function(s){s.onchange=function(){leer();render();};});
+    // Enter del teclado: pasa al siguiente campo, nunca salta de paso
+    $("modal").querySelectorAll("input").forEach(function(inp){inp.addEventListener("keydown",function(e){
+      if(e.key!=="Enter")return;e.preventDefault();var id=inp.id;
+      if(id==="w-rinde"){$("w-next").click();return;}
+      var m=/^w-([nu])(\d+)$/.exec(id);
+      if(m){var k=+m[2];if(m[1]==="n"){$("w-u"+k).focus();return;}if(k===R.ingredientes.length-1){agregar();}else{$("w-n"+(k+1)).focus();}return;}
+      var ins=[].slice.call($("modal").querySelectorAll("input"));var ix=ins.indexOf(inp);if(ins[ix+1])ins[ix+1].focus();else inp.blur();});});
     if((x=$("w-marg")))x.onclick=function(e){var b=e.target.closest("[data-m]");if(b){margen=+b.dataset.m;render();}};
-    function fin(conPrecio){var c=calc();var rec=clone(R);rec.ingredientes.forEach(function(i){delete i._compraTocada;});
+    function fin(conPrecio){var c=calc();var rec=clone(R);rec.rinde=parseCant(rec.rinde);rec.otros=parseCant(rec.otros)||0;
+      rec.ingredientes.forEach(function(i){delete i._compraTocada;i.usa=parseCant(i.usa);i.compra=parseCant(i.compra);i.precio=parseCant(i.precio);i.gTaza=parseCant(i.gTaza)||0;});
       done({costo:Math.round(c.unit*100)/100,precio:conPrecio?Math.ceil(c.unit*(1+margen/100)*2)/2:0,receta:rec});}
     if((x=$("w-usar")))x.onclick=function(){fin(false);};
     if((x=$("w-usar2")))x.onclick=function(){fin(true);};
   }
   render();
 }
+
 function modalCompra(p){
   openModal('<h2 id="modal-title">Registrar compra</h2><p class="muted" style="margin:0">'+esc(p.nombre)+' · stock actual '+p.stock+' '+esc(p.unidad)+'</p><form id="f-compra" class="form-grid">'+
     '<label for="fc-cant">Cantidad que llegó<input type="number" id="fc-cant" min="1" step="1" value="'+sugerido(p)+'"></label>'+
