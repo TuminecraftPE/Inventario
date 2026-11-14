@@ -81,6 +81,11 @@ nav button[aria-current="page"]{color:var(--accent);font-weight:600}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
 .ventas-list{max-height:320px;overflow-y:auto}
+#avisos{display:flex}
+.card.demo .btn{white-space:nowrap;flex:none}
+.card.demo{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;border-color:var(--accent);background:var(--accent-soft)}
+details summary{cursor:pointer;padding:4px 0}
+
 .pimg{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:var(--accent-soft)}
 .pimg.ph,.thumb.ph,.foto-prev.ph{display:grid;place-items:center;font-family:var(--font-display);font-weight:700;color:var(--accent);background:var(--accent-soft)}
 .pimg.ph{font-size:26px}
@@ -140,7 +145,7 @@ nav button[aria-current="page"]{color:var(--accent);font-weight:600}
 .qty{display:flex;align-items:center;gap:6px}
 .qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
 .total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:20px;font-weight:700}
-input[type=text],input[type=number],input[type=tel],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+input[type=text],input[type=number],input[type=tel],input[type=password],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-grid .full{grid-column:1/-1}
@@ -175,6 +180,7 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
 </header>
 
 <main>
+  <div id="avisos" style="display:none;flex-direction:column;gap:10px"></div>
   <!-- INICIO -->
   <section class="view active" id="v-inicio" aria-label="Inicio">
     <div class="tiles">
@@ -314,7 +320,13 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
 <script>
 (function(){
 "use strict";
+// ======== CONFIGURACIÓN DEL PROVEEDOR ========
+// Pega entre las comillas la URL /exec de tu "Directorio de clientes".
+// Si la dejas vacía, la app pide la dirección y la clave de la hoja (modo avanzado).
+var DIRECTORIO_URL = "https://script.google.com/macros/s/AKfycbwZ4velhSdnLlbXRnsGlL2DqDsRBKbvCpSGkNW9FoAvyJ8fsYFTKRUJiSWCk0Oj0EY/exec";
+// =============================================
 var SKEY = "inventario-ia-demo-v2", OLDKEY = "inventario-ia-demo-v1";
+var almacenOK=(function(){try{window.localStorage.setItem("__prueba","1");window.localStorage.removeItem("__prueba");return true;}catch(e){return false;}})();
 
 // ---------- utilidades ----------
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
@@ -362,7 +374,8 @@ var store=null;
 function load(){try{var r=window.localStorage.getItem(SKEY);if(r)return JSON.parse(r);}catch(e){}return null;}
 var avisoMemoria=false;function save(){try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){if(!avisoMemoria&&typeof toast==="function"){avisoMemoria=true;toast("El celular se quedó sin espacio para guardar aquí. Conecta Google Sheets o usa menos fotos.");}}}
 var S = load();
-if(!S){S=seed();try{var old=window.localStorage.getItem(OLDKEY);if(old){var o=JSON.parse(old);if(o&&o.negocio)S.negocio=o.negocio;}}catch(e){}save();}
+if(!S){var cfg0=null;try{cfg0=JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null");}catch(e){}
+if(cfg0&&cfg0.url){S={negocio:{nombre:"Cargando…",whatsapp:""},productos:[],ventas:[]};}else{S=seed();try{var old=window.localStorage.getItem(OLDKEY);if(old){var o=JSON.parse(old);if(o&&o.negocio)S.negocio=o.negocio;}}catch(e){}}save();}
 
 // ---------- cálculos ----------
 function prod(id){return S.productos.find(function(p){return p.id===id;});}
@@ -550,7 +563,7 @@ function renderProductos(){
 }
 
 function renderReporte(){var t=textoReporte();$("report-text").textContent=t;$("wa-reporte").href=waLink(t);}
-function renderAll(){renderHeader();renderInicio();renderVender();renderProductos();renderReporte();}
+function renderAll(){if(typeof renderAvisos==="function")renderAvisos();renderHeader();renderInicio();renderVender();renderProductos();renderReporte();}
 
 // ---------- acciones de negocio ----------
 function registrarVenta(lista){ // lista: [{pid,cant}]
@@ -798,7 +811,7 @@ function conectado(){return !!(CFG.url&&CFG.clave);}
 function encolar(op){if(!conectado())return;op.opId=uid()+Date.now().toString(36);cola.push(op);escribirLS(COLAKEY,cola);pintarSync();clearTimeout(syncTimer);syncTimer=setTimeout(sincronizar,400);}
 function pintarSync(estado){
   var el=$("sync-pill");if(!el)return;
-  if(!conectado()){el.className="sync";el.textContent="Solo en este celular";return;}
+  if(!conectado()){el.className="sync";el.textContent=DIRECTORIO_URL?"Iniciar sesión":"Solo en este celular";if(typeof renderAvisos==="function")renderAvisos();return;}
   if(estado==="busy"){el.className="sync busy";el.textContent="Guardando…";return;}
   if(estado==="err"){el.className="sync err";el.textContent=ultimoError==="clave"?"Clave incorrecta":(cola.length?"Sin conexión · "+cola.length+" pendiente"+(cola.length>1?"s":""):"Sin conexión");return;}
   if(cola.length){el.className="sync off";el.textContent=cola.length+" pendiente"+(cola.length>1?"s":"");return;}
@@ -844,53 +857,91 @@ function iniciarSync(){
   setInterval(function(){if(document.visibilityState==="visible")sincronizar();},60000);
 }
 
-function modalAjustes(){
+function conectarCon(url,clave,msg,alTerminar){
+  var antes=CFG;CFG={url:url,clave:clave};
+  msg.innerHTML='<p class="muted">Conectando con tu hoja…</p>';
+  return llamar("GET").then(function(r){
+    var e=r.estado,vacia=!e.productos.length&&!e.ventas.length;
+    if(vacia){
+      msg.innerHTML='<div class="alertbox">Tu hoja está vacía. ¿Qué quieres hacer?<div class="actions"><button class="btn primary small" type="button" id="fa-subir">Subir lo que tengo en este dispositivo</button><button class="btn small" type="button" id="fa-cero">Empezar desde cero</button></div></div>';
+      $("fa-subir").onclick=function(){escribirLS(CFGKEY,CFG);encolar({op:"importar",estado:clone(S)});closeModal();pintarSync();toast("Subiendo tus datos a la hoja…");iniciarSync();if(alTerminar)alTerminar();};
+      $("fa-cero").onclick=function(){escribirLS(CFGKEY,CFG);aplicarEstado({negocio:{nombre:S.negocio.nombre,whatsapp:S.negocio.whatsapp},productos:[],ventas:[]});encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();toast("Listo. Empieza agregando tus productos.");iniciarSync();if(alTerminar)alTerminar();};
+    }else{
+      escribirLS(CFGKEY,CFG);aplicarEstado(e);closeModal();toast("Listo, se cargó tu inventario.");iniciarSync();if(alTerminar)alTerminar();
+    }
+  }).catch(function(err){
+    CFG=antes;
+    msg.innerHTML='<div class="alertbox bad">'+(err.clave?'La clave de la hoja no coincide.':'No se pudo conectar con la hoja. Revisa tu internet e intenta de nuevo.')+'</div>';
+    throw err;
+  });
+}
+function modalLogin(){
+  if(!DIRECTORIO_URL){modalAjustes();return;}
+  openModal('<h2 id="modal-title">Iniciar sesión</h2><p class="muted" style="margin:0">Entra con el usuario y el PIN que te dio tu proveedor del sistema.</p>'+
+    '<form id="f-login" class="form-grid">'+
+    '<label class="full" for="li-user">Usuario<input type="text" id="li-user" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Ej.: panaderia.rosa"></label>'+
+    '<label class="full" for="li-pin">PIN<input type="password" id="li-pin" inputmode="numeric" autocomplete="current-password" placeholder="••••"></label>'+
+    '<div class="full" id="li-msg"></div>'+
+    '<div class="actions full"><button class="btn primary big" type="submit" id="li-go">Entrar</button></div>'+
+    '<div class="actions full"><button class="btn small" type="button" id="li-cancel">Cancelar</button><button class="btn small" type="button" id="li-av" style="margin-left:auto">Conectar con dirección y clave</button></div></form>');
+  $("li-cancel").onclick=closeModal;
+  $("li-av").onclick=function(){modalAjustes(true);};
+  $("f-login").onsubmit=function(e){e.preventDefault();
+    var u=$("li-user").value.trim(),p=$("li-pin").value.trim(),msg=$("li-msg");
+    if(!u||!p){msg.innerHTML='<div class="alertbox bad">Escribe tu usuario y tu PIN.</div>';return;}
+    $("li-go").disabled=true;msg.innerHTML='<p class="muted">Buscando tu cuenta…</p>';
+    fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify({usuario:u,pin:p}),redirect:"follow"})
+      .then(function(r){if(!r.ok)throw new Error("http");return r.json();})
+      .then(function(j){
+        if(!j||!j.ok){$("li-go").disabled=false;msg.innerHTML='<div class="alertbox bad">'+esc((j&&j.error)||"No se pudo iniciar sesión.")+'</div>';return;}
+        return conectarCon(j.url,j.clave,msg).catch(function(){$("li-go").disabled=false;});
+      })
+      .catch(function(){$("li-go").disabled=false;msg.innerHTML='<div class="alertbox bad">No se pudo conectar. Revisa tu internet e intenta de nuevo.</div>';});
+  };
+}
+function modalAjustes(avanzado){
   var con=conectado();
   openModal('<h2 id="modal-title">Ajustes</h2><form id="f-aj" class="form-grid">'+
     '<label class="full" for="fa-nombre">Nombre del negocio<input type="text" id="fa-nombre" value="'+esc(S.negocio.nombre)+'"></label>'+
     '<label class="full" for="fa-wa">WhatsApp del dueño (con 591)<input type="tel" id="fa-wa" placeholder="59170000000" value="'+esc(S.negocio.whatsapp||"")+'"></label>'+
     '<p class="muted full" style="margin:0">Si lo dejas vacío, WhatsApp te pedirá elegir el contacto al enviar.</p>'+
     '<div class="actions full"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" id="fa-cancel">Cerrar</button></div></form>'+
-    '<div class="card"><h3>Guardar en Google Sheets</h3>'+
+    '<div class="card"><h3>Tu cuenta</h3>'+
     (con
-      ? '<p class="muted" style="margin:0">Conectado. Todo lo que registras se guarda en tu hoja de Google y aparece en tus otros dispositivos.</p><div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button><button class="btn" type="button" id="fa-desc" style="margin-left:auto">Desconectar este dispositivo</button></div>'
-      : '<p class="muted" style="margin:0">Así tus datos quedan guardados en tu cuenta de Google y los ves igual en cualquier celular o computadora.</p>'+
-        '<label for="fa-url">Dirección de tu hoja (termina en /exec)<input type="text" id="fa-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>'+
-        '<label for="fa-clave">Clave<input type="text" id="fa-clave" placeholder="Ej.: 3f9a1c2b" autocomplete="off"></label>'+
-        '<div id="fa-msg"></div><div class="actions"><button class="btn primary" type="button" id="fa-con">Conectar</button><button class="btn" type="button" id="fa-guia">¿Cómo la creo?</button></div>')+
+      ? '<p class="muted" style="margin:0">Sesión iniciada. Todo lo que registras se guarda en tu hoja de Google y aparece en tus otros dispositivos.</p><div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button><button class="btn" type="button" id="fa-desc" style="margin-left:auto">Cerrar sesión</button></div>'
+      : (DIRECTORIO_URL?'<p class="muted" style="margin:0">Inicia sesión para ver el inventario de tu negocio en cualquier celular o computadora.</p><button class="btn primary big" type="button" id="fa-login">Iniciar sesión con usuario y PIN</button>':'')+
+        '<details'+(avanzado||!DIRECTORIO_URL?' open':'')+'><summary class="muted">Conectar con dirección y clave (avanzado)</summary><div class="form-grid" style="margin-top:8px">'+
+        '<label class="full" for="fa-url">Dirección de tu hoja (termina en /exec)<input type="text" id="fa-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>'+
+        '<label class="full" for="fa-clave">Clave<input type="text" id="fa-clave" placeholder="Ej.: 3f9a1c2b" autocomplete="off"></label>'+
+        '<div class="full" id="fa-msg"></div><div class="actions full"><button class="btn primary" type="button" id="fa-con">Conectar</button><button class="btn" type="button" id="fa-guia">¿Cómo la creo?</button></div></div></details>')+
     '</div>'+
     (con?'':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
   $("fa-cancel").onclick=closeModal;
   $("f-aj").onsubmit=function(e){e.preventDefault();S.negocio.nombre=$("fa-nombre").value.trim()||"Mi negocio";S.negocio.whatsapp=$("fa-wa").value.replace(/\D/g,"");save();encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();renderAll();toast("Ajustes guardados");};
   if(con){
     $("fa-sync").onclick=function(){closeModal();sincronizar(true);};
-    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<button class="btn danger" type="button" id="fa-desc2" style="margin-left:auto">Sí, desconectar</button>';
-      $("fa-desc2").onclick=function(){CFG={url:"",clave:""};escribirLS(CFGKEY,CFG);cola=[];escribirLS(COLAKEY,cola);pintarSync();closeModal();toast("Desconectado. Tus datos siguen en tu hoja de Google.");};};
+    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<button class="btn danger" type="button" id="fa-desc2" style="margin-left:auto">Sí, cerrar sesión</button>';
+      $("fa-desc2").onclick=function(){CFG={url:"",clave:""};escribirLS(CFGKEY,CFG);cola=[];escribirLS(COLAKEY,cola);S=seed();save();carrito={};pintarSync();closeModal();renderAll();toast("Sesión cerrada. Tus datos siguen guardados en tu hoja de Google.");};};
   }else{
+    if($("fa-login"))$("fa-login").onclick=modalLogin;
     $("fa-guia").onclick=modalGuia;
     $("fa-reset").onclick=function(){$("fa-reset").outerHTML='<button class="btn danger" type="button" id="fa-reset2">Sí, borrar y restablecer</button>';
       $("fa-reset2").onclick=function(){S=seed();carrito={};save();closeModal();renderAll();toast("Datos de ejemplo restablecidos");};};
-    $("fa-con").onclick=async function(){
+    $("fa-con").onclick=function(){
       var url=$("fa-url").value.trim(),clave=$("fa-clave").value.trim(),msg=$("fa-msg");
       if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(url)){msg.innerHTML='<div class="alertbox bad">La dirección debe empezar con https://script.google.com/ y terminar en /exec.</div>';return;}
       if(!clave){msg.innerHTML='<div class="alertbox bad">Escribe la clave que te mostró la hoja.</div>';return;}
-      msg.innerHTML='<p class="muted">Conectando…</p>';$("fa-con").disabled=true;
-      var antes=CFG;CFG={url:url,clave:clave};
-      try{
-        var r=await llamar("GET"),e=r.estado,vacia=!e.productos.length&&!e.ventas.length;
-        if(vacia){
-          msg.innerHTML='<div class="alertbox">Tu hoja está vacía. ¿Qué quieres hacer?<div class="actions"><button class="btn primary small" type="button" id="fa-subir">Subir lo que tengo en este dispositivo</button><button class="btn small" type="button" id="fa-cero">Empezar desde cero</button></div></div>';
-          $("fa-subir").onclick=function(){escribirLS(CFGKEY,CFG);encolar({op:"importar",estado:clone(S)});closeModal();pintarSync();toast("Subiendo tus datos a la hoja…");iniciarSync();};
-          $("fa-cero").onclick=function(){escribirLS(CFGKEY,CFG);aplicarEstado({negocio:{nombre:S.negocio.nombre,whatsapp:S.negocio.whatsapp},productos:[],ventas:[]});encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();toast("Conectado. Empieza agregando tus productos.");iniciarSync();};
-        }else{
-          escribirLS(CFGKEY,CFG);aplicarEstado(e);closeModal();toast("Conectado. Se cargaron los datos de tu hoja.");iniciarSync();
-        }
-      }catch(err){
-        CFG=antes;$("fa-con").disabled=false;
-        msg.innerHTML='<div class="alertbox bad">'+(err.clave?'La clave no coincide. En tu hoja usa el menú Inventario IA → Ver mi clave.':'No se pudo conectar. Revisa la dirección y tu internet. Si en la implementación no elegiste "Cualquier usuario", la app no puede entrar. (Dentro de Claude esta conexión no funciona; usa la app publicada en tu sitio.)')+'</div>';
-      }
+      $("fa-con").disabled=true;
+      conectarCon(url,clave,msg).catch(function(){$("fa-con").disabled=false;});
     };
   }
+}
+function renderAvisos(){
+  var h="";
+  if(!almacenOK)h+='<div class="alertbox bad"><b>Este navegador no está guardando los datos de la app.</b> Por eso, cada vez que recargas, se cierra la sesión.<br>Para arreglarlo: 1) no uses una pestaña de incógnito; 2) en Chrome toca ⋮ → Configuración → Configuración de sitios → Datos del dispositivo (o Cookies) y elige Permitir; 3) si la abriste desde WhatsApp, ábrela en Chrome.</div>';
+  if(!conectado())h+='<div class="card demo"><div><b>Estás viendo datos de ejemplo.</b><div class="muted">Inicia sesión para ver el inventario de tu negocio.</div></div><button class="btn primary" type="button" id="av-login">Iniciar sesión</button></div>';
+  var el=$("avisos");el.innerHTML=h;el.style.display=h?"":"none";
+  if($("av-login"))$("av-login").onclick=DIRECTORIO_URL?modalLogin:function(){modalAjustes(true);};
 }
 function modalGuia(){
   openModal('<h2 id="modal-title">Cómo crear tu hoja de Google</h2><ol class="steps">'+
@@ -911,7 +962,7 @@ document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("
   document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active");});$("v-"+b.dataset.view).classList.add("active");
   document.querySelector("main").scrollTop=0;renderAll();});});
 $("btn-settings").onclick=modalAjustes;
-$("sync-pill").onclick=function(){if(conectado())sincronizar(true);else modalAjustes();};
+$("sync-pill").onclick=function(){if(conectado())sincronizar(true);else if(DIRECTORIO_URL)modalLogin();else modalAjustes(true);};
 $("detalle-ventas").addEventListener("click",clickVentas);
 $("ventas-hoy").addEventListener("click",clickVentas);
 $("periodos").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;periodo=b.dataset.p;renderChart();});
