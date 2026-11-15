@@ -100,12 +100,22 @@ nav button[aria-current="page"]{color:var(--accent);font-weight:600}
 .comp-prev{max-width:100%;max-height:220px;border-radius:10px;object-fit:contain;align-self:flex-start}
 .alertbox.ok-box{background:var(--ok-soft);border-color:var(--ok)}
 .modal>*{flex-shrink:0}
-.piezas{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%}
-.pieza{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px}
-.pz-n{font-family:var(--font-display);font-size:24px;font-weight:700;min-width:28px;text-align:center}
-.pz-x{color:var(--muted)}
-.pieza .den{margin-left:auto;font-size:15px;min-width:76px;padding:5px 8px}
-.piezas.chico .pieza{padding:4px 10px;font-size:14px}.piezas.chico .pz-n{font-size:17px}.piezas.chico .den{font-size:13px;min-width:60px;padding:2px 6px}
+.pz-wrap{display:flex;flex-direction:column;gap:8px;width:100%}
+.pz-res{font-size:13px;color:var(--muted);text-align:center}
+.pz-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;text-align:left;align-items:start}
+.pz-grid.uno{grid-template-columns:minmax(0,1fr)}
+.pz-box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+.pz-lab{font-size:13px;color:var(--muted);margin-bottom:10px}
+.pz-items{display:flex;flex-wrap:wrap;gap:12px 14px}
+.pz-item{display:flex;align-items:center;gap:8px}
+.pz-pila{position:relative;flex-shrink:0}
+.pz-bill,.pz-coin{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:600;line-height:1}
+.pz-bill{width:78px;height:42px;border-radius:6px;background:#EAF3DE;border:2px solid #639922;color:#27500A;font-size:14px}
+.pz-coin{width:48px;height:48px;border-radius:50%;background:#FAEEDA;border:3px solid #BA7517;color:#633806;font-size:14px}
+.pz-coin.peq{font-size:12px}
+.pz-cnt{font-family:var(--font-display);font-size:22px;font-weight:700;white-space:nowrap}
+.pz-fila{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.pz-fila .pz-bill{width:64px;height:34px;font-size:12px}.pz-fila .pz-coin{width:38px;height:38px;font-size:12px;border-width:2px}.pz-fila .pz-coin.peq{font-size:10px}.pz-fila .pz-cnt{font-size:17px}
 #cb-met button{font-size:14px}
 .tienda-sel{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px}
 .tienda-sel select{flex:1}
@@ -1363,7 +1373,7 @@ function sugerirCambio(monto,disp){
 function exacto(monto){var d={},r=monto;DEN.forEach(function(c){var k=Math.floor(r/c);if(k){d[c]=k;r-=k*c;}});return d;}
 function contadorHTML(id,d,disp){
   return '<div class="cont" id="'+id+'">'+DEN.filter(function(c){return !disp||(Number(disp[c])||0)>0||(Number(d[c])||0)>0;}).map(function(c){return '<div class="cont-row"><span class="den '+(c>=1000?'bill':'coin')+'">'+denTxt(c)+'</span>'+(disp?'<span class="muted num hay">hay '+(Number(disp[c])||0)+'</span>':'')+'<div class="qty"><button type="button" data-c="'+c+'" data-s="-1" aria-label="Quitar '+denTxt(c)+'">−</button><span class="num">'+(Number(d[c])||0)+'</span><button type="button" data-c="'+c+'" data-s="1" aria-label="Agregar '+denTxt(c)+'">+</button></div></div>';}).join("")+
-    '<div class="total"><span>Total</span><span class="num">'+bsd(totD(d)/100,2)+'</span></div></div>';
+    '<div class="total"><span>Total</span><span class="num">'+bsd(totD(d)/100,2)+'</span></div>'+(totD(d)?'<div style="padding:6px 0 4px">'+piezasHTML(d,"chico")+'</div>':'')+'</div>';
 }
 function bindContador(id,d,cambio){var el=$(id);if(!el)return;el.addEventListener("click",function(e){var b=e.target.closest("[data-c]");if(!b)return;var c=b.dataset.c;d[c]=Math.max(0,(Number(d[c])||0)+Number(b.dataset.s));if(!d[c])delete d[c];cambio();});}
 function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("open")?m.scrollTop:0;m.innerHTML=h;$("modal-back").classList.add("open");m.scrollTop=st;}
@@ -1371,11 +1381,23 @@ function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("o
 // ---------- cobro ----------
 var metodoRapido="efectivo";
 function piezaTxt(c,n){return (c>=1000?(n>1?"billetes":"billete"):(n>1?"monedas":"moneda"));}
+function pilaHTML(c,n,chico){
+  var bill=c>=1000,k=Math.min(n,4),paso=bill?(chico?7:10):(chico?5:6);
+  var w=(bill?(chico?64:78):(chico?38:48))+(k-1)*(bill?paso:Math.round(paso*1.6)),hgt=(bill?(chico?34:42):(chico?38:48))+(k-1)*paso;
+  var lbl=bill?(c/100):(c>=100?String(c/100):(c/100).toFixed(2).replace(".",",")),h="";
+  for(var i=0;i<k;i++){var top=(k-1-i)*paso,left=bill?i*paso:i*Math.round(paso*1.6);
+    h+='<div class="'+(bill?'pz-bill':'pz-coin'+(c<100?' peq':''))+'" style="left:'+left+'px;top:'+top+'px">'+(i===k-1?(bill?'Bs '+lbl:lbl):'')+'</div>';}
+  return '<div class="pz-item"><div class="pz-pila" style="width:'+w+'px;height:'+hgt+'px" aria-hidden="true">'+h+'</div><span class="pz-cnt num" aria-label="'+n+' '+piezaTxt(c,n)+' de '+denTxt(c)+'">× '+n+'</span></div>';
+}
 function piezasHTML(d,cls){
   var L=DEN.filter(function(c){return Number((d||{})[c])>0;});
   if(!L.length)return "";
-  return '<div class="piezas '+(cls||"")+'">'+L.map(function(c){var n=Number(d[c]);
-    return '<div class="pieza"><span class="pz-n num">'+n+'</span><span class="pz-x">'+piezaTxt(c,n)+' de</span><span class="den '+(c>=1000?'bill':'coin')+'">'+denTxt(c)+'</span></div>';}).join("")+'</div>';
+  if(cls==="chico")return '<div class="pz-fila">'+L.map(function(c){return pilaHTML(c,Number(d[c]),true);}).join("")+'</div>';
+  var B=L.filter(function(c){return c>=1000;}),M=L.filter(function(c){return c<1000;}),nb=0,nm=0;
+  B.forEach(function(c){nb+=Number(d[c]);});M.forEach(function(c){nm+=Number(d[c]);});
+  var res=[];if(nb)res.push(nb+(nb>1?" billetes":" billete"));if(nm)res.push(nm+(nm>1?" monedas":" moneda"));
+  var box=function(tit,arr,n){return '<div class="pz-box"><div class="pz-lab">'+tit+' · '+n+'</div><div class="pz-items">'+arr.map(function(c){return pilaHTML(c,Number(d[c]),false);}).join("")+'</div></div>';};
+  return '<div class="pz-wrap"><div class="pz-res">'+res.join(" · ")+'</div><div class="pz-grid'+(B.length&&M.length?'':' uno')+'">'+(B.length?box("Billetes",B,nb):'')+(M.length?box("Monedas",M,nm):'')+'</div></div>';
 }
 function modalCobro(lista,total){
   var t=tiendaTrabajo(),j=esVend()?jornadaAbiertaDe(t):puedeVender().j,duena=!esVend();
@@ -1393,7 +1415,7 @@ function modalCobro(lista,total){
     if(st.metodo==="mixto")h+='<label for="cb-qr">¿Cuánto paga por QR? (Bs)<input type="text" inputmode="decimal" id="cb-qr" value="'+esc(st.qr)+'" placeholder="Ej.: 20"></label><p class="muted" style="margin:0">El resto, <b class="num">'+bsd(c.efC/100,2)+'</b>, lo paga en efectivo.</p>';
     if(c.efC>0){
       h+='<div><h3>Toca los billetes y monedas que te dio</h3><div class="den-grid" id="cb-den">'+DEN.map(function(d){return '<button type="button" class="den-btn '+(d>=1000?'bill':'coin')+'" data-d="'+d+'">'+denTxt(d)+'</button>';}).join("")+'</div>'+
-        '<div class="rec-line"><span>Te dio: <b class="num">'+bsd(c.recT/100,2)+'</b></span><span class="actions"><button class="btn small" type="button" id="cb-exacto">Pagó justo</button>'+(c.recT?'<button class="btn small" type="button" id="cb-borrar">Borrar</button>':'')+'</span></div>'+(c.recT?piezasHTML(st.rec,"chico"):'')+'</div>';
+        '<div class="rec-line"><span>Te dio: <b class="num">'+bsd(c.recT/100,2)+'</b></span><span class="actions"><button class="btn small" type="button" id="cb-exacto">Pagó justo</button>'+(c.recT?'<button class="btn small" type="button" id="cb-borrar">Borrar</button>':'')+'</span></div>'+(c.recT?'<div style="margin-top:8px">'+piezasHTML(st.rec,"chico")+'</div>':'')+'</div>';
       if(c.recT>0&&c.recT<c.efC)h+='<div class="alertbox bad">Falta '+bsd((c.efC-c.recT)/100,2)+'.</div>';
       if(c.cambio>0){
         if(duena&&j)h+='<div><h3>¿De dónde sacas el cambio?</h3><div class="seg seg-full" id="cb-origen"><button type="button" data-o="mio" aria-pressed="'+(st.origen==="mio")+'">De mi dinero</button><button type="button" data-o="caja" aria-pressed="'+(st.origen==="caja")+'">De la caja de la tienda</button></div>'+
