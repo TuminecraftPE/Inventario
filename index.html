@@ -100,6 +100,13 @@ nav button[aria-current="page"]{color:var(--accent);font-weight:600}
 .comp-prev{max-width:100%;max-height:220px;border-radius:10px;object-fit:contain;align-self:flex-start}
 .alertbox.ok-box{background:var(--ok-soft);border-color:var(--ok)}
 .modal>*{flex-shrink:0}
+.piezas{display:flex;flex-direction:column;gap:6px;align-items:stretch;width:100%}
+.pieza{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px}
+.pz-n{font-family:var(--font-display);font-size:24px;font-weight:700;min-width:28px;text-align:center}
+.pz-x{color:var(--muted)}
+.pieza .den{margin-left:auto;font-size:15px;min-width:76px;padding:5px 8px}
+.piezas.chico .pieza{padding:4px 10px;font-size:14px}.piezas.chico .pz-n{font-size:17px}.piezas.chico .den{font-size:13px;min-width:60px;padding:2px 6px}
+#cb-met button{font-size:14px}
 .tienda-sel{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px}
 .tienda-sel select{flex:1}
 #tienda-bar{display:flex}
@@ -239,26 +246,26 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
           <button type="button" data-p="total">Total</button>
         </div>
       </div>
+      <div id="dia-nav" style="display:flex;justify-content:space-between;align-items:center;gap:8px" hidden>
+        <button class="btn small" type="button" id="dia-prev" aria-label="Día anterior">‹ Anterior</button>
+        <b id="dia-lbl"></b>
+        <button class="btn small" type="button" id="dia-next" aria-label="Día siguiente">Siguiente ›</button>
+      </div>
       <div class="sumrow" id="chart-sum"></div>
       <div class="chart" id="chart"></div>
       <div class="days" id="chart-days"></div>
-      <div class="legend"><span><i class="sw v"></i>Ventas</span><span><i class="sw g"></i>Ganancia</span><span class="muted" id="chart-hint">Toca una barra para ver ese día</span></div>
-    </div>
-
-    <div class="card" id="detalle-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <button class="btn small" type="button" id="dia-prev" aria-label="Día anterior">‹</button>
-        <h2 id="detalle-titulo" style="text-align:center">Hoy</h2>
-        <button class="btn small" type="button" id="dia-next" aria-label="Día siguiente">›</button>
-      </div>
-      <div class="tiles" id="detalle-tiles"></div>
-      <div id="detalle-top"></div>
-      <h3>Ventas registradas</h3>
-      <div id="detalle-ventas" class="ventas-list"></div>
+      <div class="legend"><span><i class="sw v"></i>Ventas</span><span><i class="sw g"></i>Ganancia</span><span class="muted" id="chart-hint">Toca una barra para ver las ventas de ese día</span></div>
     </div>
 
     <div class="card">
-      <h2>Lo más vendido hoy</h2>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><h2 id="ventas-tit">Ventas registradas</h2><span class="muted" id="ventas-sub"></span></div>
+      <p class="muted" style="margin:0">La más reciente aparece primero.</p>
+      <div id="ventas-periodo"></div>
+      <button class="btn small" type="button" id="ventas-mas" hidden style="align-self:center">Ver más ventas</button>
+    </div>
+
+    <div class="card">
+      <h2 id="top-tit">Lo más vendido</h2>
       <div id="top-list"></div>
     </div>
   </section>
@@ -502,8 +509,6 @@ function renderInicio(){
   $("wa-alertas").href=waLink(textoAlertaLista());
   renderChart();
   renderDetalle();
-  $("top-list").innerHTML = r.top.length ? r.top.slice(0,5).map(function(x){return '<div class="row"><div><div class="name">'+esc(x.nombre)+'</div><div class="meta num">'+x.cant+' vendidos</div></div><div class="num">'+bs(x.monto)+'</div></div>';}).join("")
-    : '<div class="empty">Todavía no hay ventas hoy.</div>';
 }
 
 // ---------- gráfico por periodo ----------
@@ -553,26 +558,40 @@ function renderChart(){
   $("chart-hint").style.display=clic?"":"none";
   document.querySelectorAll("#periodos button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.p===periodo?"true":"false");});
 }
+var verN=40;
+function ventasPeriodo(){
+  var L=ventasOK(),hoy=new Date();
+  if(periodo==="dia")L=L.filter(function(v){return dayKey(v.fecha)===diaSel;});
+  else if(periodo!=="total"){var desde=dayKey(addDays(hoy,periodo==="semana"?-6:-29));L=L.filter(function(v){return dayKey(v.fecha)>=desde;});}
+  return L.slice().sort(function(a,b){return a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0);});
+}
+function nombreDia(k){var hoyK=dayKey(new Date()),ay=dayKey(addDays(new Date(),-1));if(k===hoyK)return "Hoy";if(k===ay)return "Ayer";var t=keyToDate(k).toLocaleDateString("es-BO",{weekday:"long",day:"numeric",month:"long"});return t.charAt(0).toUpperCase()+t.slice(1);}
 function renderDetalle(){
-  var hoyK=dayKey(new Date()),r=resumen(diaSel),d=keyToDate(diaSel);
-  var t=diaSel===hoyK?"Hoy":d.toLocaleDateString("es-BO",{weekday:"long",day:"numeric",month:"long"});
-  $("detalle-titulo").textContent=t.charAt(0).toUpperCase()+t.slice(1);
-  $("dia-next").disabled=diaSel>=hoyK;
-  $("detalle-tiles").innerHTML=
-    '<div class="tile"><div class="lbl">Vendiste</div><div class="val num">'+bs(r.total)+'</div></div>'+
-    '<div class="tile"><div class="lbl">Ganaste</div><div class="val num">'+bs(r.gan)+'</div></div>'+
-    '<div class="tile"><div class="lbl">Ventas</div><div class="val num">'+r.n+'</div></div>'+
-    '<div class="tile"><div class="lbl">Margen</div><div class="val num">'+(r.total>0?Math.round(r.gan/r.total*100)+"%":"–")+'</div></div>';
-  $("detalle-ventas").innerHTML=ventasListHTML(diaSel);
-  $("detalle-top").innerHTML=r.top.length?'<h3>Lo más vendido ese día</h3>'+r.top.slice(0,3).map(function(x){return '<div class="row"><div><div class="name">'+esc(x.nombre)+'</div><div class="meta num">'+x.cant+' vendidos</div></div><div class="num">'+bs(x.monto)+'</div></div>';}).join(""):'<div class="empty">No hay ventas registradas ese día.</div>';
+  var hoyK=dayKey(new Date());
+  $("dia-nav").hidden=periodo!=="dia";$("dia-lbl").textContent=nombreDia(diaSel);$("dia-next").disabled=diaSel>=hoyK;
+  var etq={dia:nombreDia(diaSel).toLowerCase(),semana:"últimos 7 días",mes:"últimos 30 días",total:"desde el inicio"}[periodo];
+  var vs=ventasPeriodo(),tot=0;vs.forEach(function(v){tot+=totalVenta(v);});
+  $("ventas-tit").textContent="Ventas registradas · "+etq;
+  $("ventas-sub").textContent=vs.length?vs.length+" venta"+(vs.length>1?"s":"")+" · "+bs(tot):"";
+  $("ventas-periodo").innerHTML=vs.length?filasVentasHTML(vs.slice(0,verN),periodo!=="dia"):'<div class="empty">No hay ventas registradas en este periodo.</div>';
+  $("ventas-mas").hidden=vs.length<=verN;
+  var porProd={};vs.forEach(function(v){v.items.forEach(function(it){var o=porProd[it.pid]||(porProd[it.pid]={nombre:it.nombre,cant:0,monto:0});o.cant+=it.cant;o.monto+=it.cant*it.precio;});});
+  var top=Object.keys(porProd).map(function(k){return porProd[k];}).sort(function(a,b){return b.monto-a.monto;});
+  $("top-tit").textContent="Lo más vendido · "+etq;
+  $("top-list").innerHTML=top.length?top.slice(0,5).map(function(x){return '<div class="row"><div><div class="name">'+esc(x.nombre)+'</div><div class="meta num">'+x.cant+' vendidos</div></div><div class="num">'+bs(x.monto)+'</div></div>';}).join(""):'<div class="empty">Todavía no hay ventas en este periodo.</div>';
 }
 
 // ---------- lista y borrado de ventas ----------
 var confirmarBorrar=null;
 function ventasListHTML(key,jid){
-  var vs=(jid?S.ventas.filter(function(v){return v.jornada===jid&&ventaValida(v);}):ventasDia(key)).slice().sort(function(a,b){return b.fecha<a.fecha?-1:1;});
+  var vs=(jid?S.ventas.filter(function(v){return v.jornada===jid&&ventaValida(v);}):ventasDia(key)).slice().sort(function(a,b){return a.fecha<b.fecha?1:(a.fecha>b.fecha?-1:0);});
   if(!vs.length)return '<div class="empty">'+(jid?'Todavía no hay ventas en esta jornada.':'No hay ventas registradas ese día.')+'</div>';
+  return filasVentasHTML(vs,false);
+}
+function filasVentasHTML(vs,conDia){
+  var ult="";
   return vs.map(function(v){
+    var cab="";if(conDia){var k=dayKey(v.fecha);if(k!==ult){ult=k;cab='<div class="sub-h">'+esc(nombreDia(k))+'</div>';}}
     var hora=new Date(v.fecha).toLocaleTimeString("es-BO",{hour:"2-digit",minute:"2-digit"});
     var det=v.items.map(function(it){return it.cant+" × "+esc(it.nombre);}).join(", ");
     var p=v.pago||{},extra=[];
@@ -584,7 +603,7 @@ function ventasListHTML(key,jid){
     else if(esVend())acc='<button class="btn small" type="button" data-pedir="'+v.id+'">Pedir anulación</button>';
     else if(confirmarBorrar===v.id)acc='<div class="actions"><button class="btn small danger" type="button" data-borrar-ok="'+v.id+'">Sí, '+(p.metodo?'anular':'borrar')+'</button><button class="btn small" type="button" data-borrar-no="1">No</button></div>';
     else acc='<button class="btn small" type="button" data-borrar="'+v.id+'">'+(p.metodo?'Anular':'Borrar')+'</button>';
-    return '<div class="row'+(p.estado==="pedida"?' stripe bajo':'')+'"><div><div class="name num">'+hora+' · '+bs(totalVenta(v))+'</div><div class="meta">'+det+(extra.length?' · '+extra.join(" · "):'')+'</div>'+(p.estado==="pedida"&&!esVend()?'<div class="meta"><b>Piden anularla:</b> '+esc(p.motivo||"")+'</div>':'')+(comp?'<div style="margin-top:4px">'+comp+'</div>':'')+'</div>'+acc+'</div>';}).join("");
+    return cab+'<div class="row'+(p.estado==="pedida"?' stripe bajo':'')+'"><div><div class="name num">'+hora+' · '+bs(totalVenta(v))+'</div><div class="meta">'+det+(extra.length?' · '+extra.join(" · "):'')+'</div>'+(p.estado==="pedida"&&!esVend()?'<div class="meta"><b>Piden anularla:</b> '+esc(p.motivo||"")+'</div>':'')+(comp?'<div style="margin-top:4px">'+comp+'</div>':'')+'</div>'+acc+'</div>';}).join("");
 }
 function borrarVenta(id){
   var v=S.ventas.find(function(x){return x.id===id;});if(!v)return;
@@ -602,6 +621,7 @@ function pedirFotoComprobante(vid){
 function clickVentas(e){
   var b=e.target.closest("button");if(!b)return;
   if(b.dataset.comp){pedirFotoComprobante(b.dataset.comp);return;}
+  if(b.dataset.vercomp){verComprobante(b.dataset.vercomp);return;}
   if(b.dataset.pedir){modalPedirAnulacion(b.dataset.pedir);return;}
   if(b.dataset.borrar){confirmarBorrar=b.dataset.borrar;renderAll();return;}
   if(b.dataset.borrarNo){confirmarBorrar=null;renderAll();return;}
@@ -611,6 +631,7 @@ function clickVentas(e){
 var carrito={};
 function puedeVender(){
   if(!usaCaja())return {ok:true};
+  if(!esVend()){var jd=jornadaAbiertaDe(tiendaTrabajo());return {ok:true,j:jd&&!jornadaVieja(jd)?jd:null};}
   var t=tiendaTrabajo(),j=jornadaAbiertaDe(t);
   if(!j)return {ok:false,msg:'Para vender, primero inicia la jornada'+(multi()?' en '+esc(nombreTienda(t)):'')+' y cuenta el cambio de la caja.'};
   if(jornadaVieja(j))return {ok:false,msg:'Hay una jornada de otro día sin cerrar'+(multi()?' en '+esc(nombreTienda(t)):'')+'. Ciérrala antes de vender hoy.'};
@@ -625,7 +646,7 @@ function renderVender(){
   $("vender-aviso").innerHTML=av;
   if($("vender-tienda"))$("vender-tienda").onchange=function(){tiendaSel=this.value;cajaTiendaSel=this.value;carrito={};renderAll();};
   if($("ir-caja"))$("ir-caja").onclick=function(){irA("caja");};
-  if(usaCaja()&&pv.j){$("ventas-hoy-tit").textContent="Ventas de esta jornada";$("ventas-hoy").innerHTML=ventasListHTML(null,pv.j.id);}
+  if(esVend()&&pv.j){$("ventas-hoy-tit").textContent="Ventas de esta jornada";$("ventas-hoy").innerHTML=ventasListHTML(null,pv.j.id);}
   else{$("ventas-hoy-tit").textContent="Ventas de hoy";$("ventas-hoy").innerHTML=ventasListHTML(dayKey(new Date()));}
   $("ventas-hoy-txt").textContent=esVend()?"Si te equivocaste, toca Pedir anulación: la dueña la revisa.":"Si te equivocaste, anula la venta: el stock vuelve al inventario.";
   var q=$("buscar-venta").value.trim().toLowerCase();
@@ -694,6 +715,7 @@ function registrarVenta(lista,extra){ // lista: [{pid,cant}]
   items.forEach(function(it){addStock(prod(it.pid),t,-it.cant);});
   var v={id:uid()+Date.now().toString(36).slice(-3),fecha:new Date().toISOString(),items:items,tienda:t,usuario:yo().nombre};
   if(extra.jornada)v.jornada=extra.jornada;
+  if(extra.sinCaja)v.sinCaja=true;
   if(extra.pago)v.pago=extra.pago;
   S.ventas.push(v);save();
   var env=clone(v);if(env.pago)env.pago.comprobante="";encolar({op:"venta",venta:env});
@@ -1340,7 +1362,7 @@ function sugerirCambio(monto,disp){
 }
 function exacto(monto){var d={},r=monto;DEN.forEach(function(c){var k=Math.floor(r/c);if(k){d[c]=k;r-=k*c;}});return d;}
 function contadorHTML(id,d,disp){
-  return '<div class="cont" id="'+id+'">'+DEN.map(function(c){return '<div class="cont-row"><span class="den '+(c>=1000?'bill':'coin')+'">'+denTxt(c)+'</span>'+(disp?'<span class="muted num hay">hay '+(Number(disp[c])||0)+'</span>':'')+'<div class="qty"><button type="button" data-c="'+c+'" data-s="-1" aria-label="Quitar '+denTxt(c)+'">−</button><span class="num">'+(Number(d[c])||0)+'</span><button type="button" data-c="'+c+'" data-s="1" aria-label="Agregar '+denTxt(c)+'">+</button></div></div>';}).join("")+
+  return '<div class="cont" id="'+id+'">'+DEN.filter(function(c){return !disp||(Number(disp[c])||0)>0||(Number(d[c])||0)>0;}).map(function(c){return '<div class="cont-row"><span class="den '+(c>=1000?'bill':'coin')+'">'+denTxt(c)+'</span>'+(disp?'<span class="muted num hay">hay '+(Number(disp[c])||0)+'</span>':'')+'<div class="qty"><button type="button" data-c="'+c+'" data-s="-1" aria-label="Quitar '+denTxt(c)+'">−</button><span class="num">'+(Number(d[c])||0)+'</span><button type="button" data-c="'+c+'" data-s="1" aria-label="Agregar '+denTxt(c)+'">+</button></div></div>';}).join("")+
     '<div class="total"><span>Total</span><span class="num">'+bsd(totD(d)/100,2)+'</span></div></div>';
 }
 function bindContador(id,d,cambio){var el=$(id);if(!el)return;el.addEventListener("click",function(e){var b=e.target.closest("[data-c]");if(!b)return;var c=b.dataset.c;d[c]=Math.max(0,(Number(d[c])||0)+Number(b.dataset.s));if(!d[c])delete d[c];cambio();});}
@@ -1348,71 +1370,93 @@ function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("o
 
 // ---------- cobro ----------
 var metodoRapido="efectivo";
+function piezaTxt(c,n){return (c>=1000?(n>1?"billetes":"billete"):(n>1?"monedas":"moneda"));}
+function piezasHTML(d,cls){
+  var L=DEN.filter(function(c){return Number((d||{})[c])>0;});
+  if(!L.length)return "";
+  return '<div class="piezas '+(cls||"")+'">'+L.map(function(c){var n=Number(d[c]);
+    return '<div class="pieza"><span class="pz-n num">'+n+'</span><span class="pz-x">'+piezaTxt(c,n)+' de</span><span class="den '+(c>=1000?'bill':'coin')+'">'+denTxt(c)+'</span></div>';}).join("")+'</div>';
+}
 function modalCobro(lista,total){
-  var t=tiendaTrabajo(),j=jornadaAbiertaDe(t);
-  var st={metodo:"efectivo",qr:"",rec:{},cam:{},camManual:false,foto:"",ver:false};
+  var t=tiendaTrabajo(),j=esVend()?jornadaAbiertaDe(t):puedeVender().j,duena=!esVend();
+  var st={metodo:"efectivo",qr:"",rec:{},cam:{},camManual:false,sinSug:false,foto:"",origen:duena?"":"caja"};
+  function conCaja(){return !!j&&st.origen==="caja";}
   function calc(){
     var tc=Math.round(total*100),qrC=st.metodo==="qr"?tc:(st.metodo==="mixto"?Math.max(0,Math.min(tc,Math.round((parseCant(st.qr)||0)*100))):0),efC=tc-qrC;
-    var recT=totD(st.rec),cambio=recT-efC,disp=j?sumD(sumD({},cajaDe(j),1),st.rec,1):null;
-    if(!st.camManual)st.sinSug=false;if(!st.camManual)st.cam=cambio>0?(disp?(sugerirCambio(cambio,disp)||null):exacto(cambio)):{};
+    var recT=totD(st.rec),cambio=recT-efC,disp=conCaja()?sumD(sumD({},cajaDe(j),1),st.rec,1):null;
+    if(!st.camManual){st.sinSug=false;st.cam=cambio>0?(disp?sugerirCambio(cambio,disp):exacto(cambio)):{};if(!st.cam){st.cam={};st.camManual=true;st.sinSug=true;}}
     return {tc:tc,qrC:qrC,efC:efC,recT:recT,cambio:cambio,disp:disp};
   }
   function render(){
     var c=calc(),h='<h2 id="modal-title">Cobrar</h2><div class="result"><div class="muted">Total a cobrar</div><div class="big num">'+bsd(c.tc/100,2)+'</div></div>'+
-      '<div class="seg seg-full" id="cb-met">'+[["efectivo","Efectivo"],["qr","QR"],["mixto","Mixto"]].map(function(m){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(st.metodo===m[0])+'">'+m[1]+'</button>';}).join("")+'</div>';
-    if(st.metodo==="mixto")h+='<label for="cb-qr">¿Cuánto paga por QR? (Bs)<input type="text" inputmode="decimal" id="cb-qr" value="'+esc(st.qr)+'" placeholder="Ej.: 20"></label><p class="muted" style="margin:0">En efectivo: <b class="num">'+bsd(c.efC/100,2)+'</b></p>';
+      '<div><h3>¿Cómo pagó?</h3><div class="seg seg-full" id="cb-met">'+[["efectivo","💵 Efectivo"],["qr","📱 QR"],["mixto","Mixto"]].map(function(m){return '<button type="button" data-m="'+m[0]+'" aria-pressed="'+(st.metodo===m[0])+'">'+m[1]+'</button>';}).join("")+'</div></div>';
+    if(st.metodo==="mixto")h+='<label for="cb-qr">¿Cuánto paga por QR? (Bs)<input type="text" inputmode="decimal" id="cb-qr" value="'+esc(st.qr)+'" placeholder="Ej.: 20"></label><p class="muted" style="margin:0">El resto, <b class="num">'+bsd(c.efC/100,2)+'</b>, lo paga en efectivo.</p>';
     if(c.efC>0){
-      h+='<div><h3>¿Con qué le pagó?</h3><div class="den-grid" id="cb-den">'+DEN.map(function(d){return '<button type="button" class="den-btn '+(d>=1000?'bill':'coin')+'" data-d="'+d+'">'+denTxt(d)+'</button>';}).join("")+'</div>'+
-        '<div class="rec-line"><span>Recibido: <b class="num">'+bsd(c.recT/100,2)+'</b>'+(c.recT?' <span class="muted">('+esc(textoD(st.rec))+')</span>':'')+'</span><span class="actions"><button class="btn small" type="button" id="cb-exacto">Pagó exacto</button>'+(c.recT?'<button class="btn small" type="button" id="cb-borrar">Borrar</button>':'')+'</span></div></div>';
+      h+='<div><h3>Toca los billetes y monedas que te dio</h3><div class="den-grid" id="cb-den">'+DEN.map(function(d){return '<button type="button" class="den-btn '+(d>=1000?'bill':'coin')+'" data-d="'+d+'">'+denTxt(d)+'</button>';}).join("")+'</div>'+
+        '<div class="rec-line"><span>Te dio: <b class="num">'+bsd(c.recT/100,2)+'</b></span><span class="actions"><button class="btn small" type="button" id="cb-exacto">Pagó justo</button>'+(c.recT?'<button class="btn small" type="button" id="cb-borrar">Borrar</button>':'')+'</span></div>'+(c.recT?piezasHTML(st.rec,"chico"):'')+'</div>';
       if(c.recT>0&&c.recT<c.efC)h+='<div class="alertbox bad">Falta '+bsd((c.efC-c.recT)/100,2)+'.</div>';
       if(c.cambio>0){
-        if(!st.cam){st.cam={};st.camManual=true;st.sinSug=true;}
-        h+='<div class="cambio-box"><div class="muted">Entrega de cambio</div><div class="big num">'+bsd(c.cambio/100,2)+'</div>';
-        if(st.cam&&!st.camManual)h+='<div>Dale: <b>'+esc(textoD(st.cam))+'</b></div>';
-        if(st.sinSug)h+='<div class="alertbox bad">En la caja no hay billetes ni monedas para dar este cambio exacto. Marca abajo lo que entregaste.</div>';
-        else h+='<button class="btn small" type="button" id="cb-otro">'+(st.camManual?'Usar la sugerencia':'Entregué otra cosa')+'</button>';
+        if(duena&&j)h+='<div><h3>¿De dónde sacas el cambio?</h3><div class="seg seg-full" id="cb-origen"><button type="button" data-o="mio" aria-pressed="'+(st.origen==="mio")+'">De mi dinero</button><button type="button" data-o="caja" aria-pressed="'+(st.origen==="caja")+'">De la caja de la tienda</button></div>'+
+          '<p class="muted" style="margin:4px 0 0">'+(st.origen==="caja"?'La venta y el cambio se anotan en la caja de '+esc(j.abrio||"la tienda")+'.':(st.origen==="mio"?'La venta no toca la caja de la tienda.':'Elige una opción.'))+'</p></div>';
+        h+='<div class="cambio-box"><div class="muted">Dale de cambio</div><div class="big num">'+bsd(c.cambio/100,2)+'</div>';
+        if(!st.camManual)h+=piezasHTML(st.cam);
+        if(st.sinSug)h+='<div class="alertbox bad">En la caja no hay monedas o billetes para dar exactamente '+bsd(c.cambio/100,2)+'. Marca abajo lo que le diste.</div>';
+        else h+='<button class="btn small" type="button" id="cb-otro">'+(st.camManual?'Volver a la sugerencia':'Le di otros billetes o monedas')+'</button>';
         h+='</div>';
-        if(st.camManual){h+=contadorHTML("cb-cam",st.cam,c.disp)+(totD(st.cam)!==c.cambio?'<div class="alertbox">Lo que marcaste suma '+bsd(totD(st.cam)/100,2)+'; el cambio es '+bsd(c.cambio/100,2)+'.</div>':'');}
+        if(st.camManual){h+='<div class="muted" style="font-size:13px">Marca lo que le diste de cambio:</div>'+contadorHTML("cb-cam",st.cam,c.disp)+(totD(st.cam)!==c.cambio?'<div class="alertbox">Lo que marcaste suma '+bsd(totD(st.cam)/100,2)+'; el cambio es '+bsd(c.cambio/100,2)+'.</div>':'');}
       }
     }
-    if(c.qrC>0)h+='<div class="ing"><div class="ing-t">Comprobante del QR '+(st.foto?'✔':'')+'</div>'+(st.foto?'<img src="'+st.foto+'" alt="Comprobante" class="comp-prev">':'<p class="muted" style="margin:0">Saca una foto al comprobante. También puedes subirlo después desde la lista de ventas.</p>')+
+    if(c.qrC>0)h+='<div class="ing"><div class="ing-t">Comprobante del QR '+(st.foto?'✔':'(opcional)')+'</div>'+(st.foto?'<img src="'+st.foto+'" alt="Comprobante" class="comp-prev">':'<p class="muted" style="margin:0">Saca una foto al comprobante. Si ahora no puedes, súbelo después desde la lista de ventas.</p>')+
       '<div class="actions"><label class="btn small" for="cb-foto">'+(st.foto?'Cambiar foto':'📷 Subir comprobante')+'</label><input type="file" id="cb-foto" accept="image/*" hidden></div></div>';
-    if(j&&c.disp&&pocoCambio(t,c.disp))h+='<div class="alertbox">Te está quedando poco cambio en la caja ('+bsd(cambioChico(c.disp)/100,2)+' en billetes y monedas de Bs 20 para abajo).</div>';
+    if(conCaja()&&c.disp&&pocoCambio(t,c.disp))h+='<div class="alertbox">Te está quedando poco cambio en la caja ('+bsd(cambioChico(c.disp)/100,2)+' en billetes y monedas de Bs 20 para abajo).</div>';
     h+='<div id="cb-msg"></div><div class="actions"><button class="btn" type="button" id="cb-cancel">Cancelar</button><button class="btn primary big" type="button" id="cb-ok" style="flex:1">Registrar venta</button></div>';
     abrirModal(h);bind(c);
   }
   function bind(c){
     $("cb-cancel").onclick=closeModal;
     $("cb-met").onclick=function(e){var b=e.target.closest("[data-m]");if(!b)return;st.metodo=b.dataset.m;st.rec={};st.camManual=false;render();};
+    if($("cb-origen"))$("cb-origen").onclick=function(e){var b=e.target.closest("[data-o]");if(!b)return;st.origen=b.dataset.o;st.camManual=false;render();};
     if($("cb-qr"))$("cb-qr").onchange=function(){st.qr=this.value;st.rec={};st.camManual=false;render();};
     if($("cb-den"))$("cb-den").onclick=function(e){var b=e.target.closest("[data-d]");if(!b)return;st.rec[b.dataset.d]=(st.rec[b.dataset.d]||0)+1;st.camManual=false;render();};
     if($("cb-exacto"))$("cb-exacto").onclick=function(){st.rec=exacto(c.efC);st.camManual=false;render();};
     if($("cb-borrar"))$("cb-borrar").onclick=function(){st.rec={};st.camManual=false;render();};
-    if($("cb-otro"))$("cb-otro").onclick=function(){st.camManual=!st.camManual;if(st.camManual)st.cam=clone(st.cam||{});render();};
+    if($("cb-otro"))$("cb-otro").onclick=function(){if(st.camManual){st.camManual=false;}else{st.camManual=true;st.cam=clone(st.cam||{});}render();};
     bindContador("cb-cam",st.cam||{},render);
     if($("cb-foto"))$("cb-foto").onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f)return;achicarComprobante(f,function(d){st.foto=d;render();});};
     $("cb-ok").onclick=function(){
       var m=$("cb-msg");c=calc();
-      if(c.efC>0&&c.recT<c.efC){m.innerHTML='<div class="alertbox bad">Marca con qué billetes o monedas le pagaron, o toca "Pagó exacto".</div>';return;}
-      if(c.cambio>0&&totD(st.cam||{})!==c.cambio){m.innerHTML='<div class="alertbox bad">El cambio que marcaste no coincide con '+bsd(c.cambio/100,2)+'.</div>';return;}
+      if(c.efC>0&&c.recT<c.efC){m.innerHTML='<div class="alertbox bad">Toca los billetes o monedas que te dio, o toca "Pagó justo".</div>';return;}
+      if(c.cambio>0&&duena&&j&&!st.origen){m.innerHTML='<div class="alertbox bad">Elige de dónde sacas el cambio.</div>';return;}
+      if(c.cambio>0&&totD(st.cam||{})!==c.cambio){m.innerHTML='<div class="alertbox bad">El cambio que marcaste no suma '+bsd(c.cambio/100,2)+'.</div>';return;}
       var pago={metodo:st.metodo==="mixto"&&c.qrC===0?"efectivo":(st.metodo==="mixto"&&c.efC===0?"qr":st.metodo),efectivo:c.efC/100,qr:c.qrC/100,recibido:c.efC>0?clone(st.rec):{},cambio:c.cambio>0?clone(st.cam):{},comprobante:"",estado:"ok"};
-      try{var r=registrarVenta(lista,{pago:pago,tienda:t,jornada:j?j.id:""});}catch(err){m.innerHTML='<div class="alertbox bad">'+esc(err.message)+'</div>';return;}
+      var enCaja=esVend()||conCaja();
+      try{var r=registrarVenta(lista,{pago:pago,tienda:t,jornada:enCaja&&j?j.id:"",sinCaja:!enCaja});}catch(err){m.innerHTML='<div class="alertbox bad">'+esc(err.message)+'</div>';return;}
       if(st.foto)subirComprobante(r.venta.id,st.foto);
       carrito={};closeModal();renderAll();mostrarAlertasVenta(r.alertas);
       toast("Venta registrada: "+bs(r.total)+(c.cambio>0?" · cambio "+bsd(c.cambio/100,2):""));
-      if(j&&pocoCambio(t,cajaDe(j)))setTimeout(function(){toast("Atención: queda poco cambio en la caja.");},2700);
+      if(enCaja&&j&&pocoCambio(t,cajaDe(j)))setTimeout(function(){toast("Atención: queda poco cambio en la caja.");},2700);
     };
   }
   render();
 }
 
 // ---------- comprobantes ----------
+function verComprobante(vid){
+  openModal('<h2 id="modal-title">Comprobante</h2><div id="vc-body"><p class="muted">Cargando la foto…</p></div><div class="actions"><button class="btn" type="button" id="vc-cerrar">Cerrar</button></div>');
+  $("vc-cerrar").onclick=closeModal;
+  var url=CFG.url.trim();
+  fetch(url+(url.indexOf("?")>=0?"&":"?")+"accion=comprobante&id="+encodeURIComponent(vid)+"&clave="+encodeURIComponent(CFG.clave||"")+"&t="+Date.now(),{redirect:"follow"})
+    .then(function(r){return r.json();}).then(function(j){
+      if(!j.ok||!j.data){$("vc-body").innerHTML='<div class="alertbox">No se encontró la foto de este comprobante.</div>';return;}
+      $("vc-body").innerHTML='<img src="'+esc(j.data)+'" alt="Comprobante del pago por QR" style="width:100%;border-radius:10px">';})
+    .catch(function(){$("vc-body").innerHTML='<div class="alertbox bad">No se pudo cargar. Revisa tu internet.</div>';});
+}
 function achicarComprobante(file,cb){
   var fr=new FileReader();
   fr.onload=function(){var img=new Image();img.onload=function(){
     function hacer(max,q){var r=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);
       var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);return c.toDataURL("image/jpeg",q);}
-    var d=hacer(1280,0.62);if(d.length>420000)d=hacer(1000,0.55);if(d.length>420000)d=hacer(800,0.5);cb(d);};
+    var d=hacer(1000,0.55);if(d.length>180000)d=hacer(850,0.5);if(d.length>180000)d=hacer(700,0.45);cb(d);};
     img.onerror=function(){toast("No se pudo leer esa imagen. Prueba con otra foto.");};img.src=fr.result;};
   fr.readAsDataURL(file);
 }
@@ -1428,7 +1472,9 @@ function compHTML(v){
   if(!p.comprobante)return '<span class="pill bajo">Falta comprobante</span> <button class="btn small" type="button" data-comp="'+v.id+'">📷 Subir</button>';
   if(p.comprobante==="subiendo")return '<span class="pill">Subiendo comprobante…</span>';
   if(p.comprobante==="local")return '<span class="pill ok">Comprobante en este celular</span>';
-  return esVend()?'<span class="pill ok">Comprobante ✔</span>':'<a class="pill ok" href="'+esc(p.comprobante)+'" target="_blank" rel="noopener">Ver comprobante</a>';
+  if(esVend())return '<span class="pill ok">Comprobante ✔</span>';
+  if(/^https?:/.test(p.comprobante))return '<a class="pill ok" href="'+esc(p.comprobante)+'" target="_blank" rel="noopener">Ver comprobante</a>';
+  return '<button class="btn small" type="button" data-vercomp="'+v.id+'">🧾 Ver comprobante</button>';
 }
 function metodoTxt(p){if(!p)return "";return p.metodo==="qr"?"QR":(p.metodo==="mixto"?"Mixto":"Efectivo");}
 
@@ -1651,10 +1697,11 @@ document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("
   document.querySelector("main").scrollTop=0;renderAll();});});
 $("btn-settings").onclick=modalAjustes;
 $("sync-pill").onclick=function(){if(conectado())sincronizar(true);else if(DIRECTORIO_URL)modalLogin();else modalAjustes(true);};
-$("detalle-ventas").addEventListener("click",clickVentas);
+$("ventas-periodo").addEventListener("click",clickVentas);
+$("ventas-mas").onclick=function(){verN+=40;renderDetalle();};
 $("ventas-hoy").addEventListener("click",clickVentas);
-$("periodos").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;periodo=b.dataset.p;renderChart();});
-$("chart").addEventListener("click",function(e){var b=e.target.closest("[data-day]");if(!b)return;diaSel=b.dataset.day;renderChart();renderDetalle();});
+$("periodos").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;periodo=b.dataset.p;verN=40;if(periodo!=="dia")diaSel=dayKey(new Date());renderChart();renderDetalle();});
+$("chart").addEventListener("click",function(e){var b=e.target.closest("[data-day]");if(!b)return;diaSel=b.dataset.day;periodo="dia";verN=40;renderChart();renderDetalle();});
 $("dia-prev").onclick=function(){diaSel=dayKey(addDays(keyToDate(diaSel),-1));renderChart();renderDetalle();};
 $("dia-next").onclick=function(){var n=dayKey(addDays(keyToDate(diaSel),1));if(n<=dayKey(new Date())){diaSel=n;renderChart();renderDetalle();}};
 $("buscar-venta").oninput=renderVender;
@@ -1670,7 +1717,7 @@ $("btn-registrar").onclick=function(){
   var lista=Object.keys(carrito).map(function(id){return {pid:id,cant:carrito[id]};});
   if(usaCaja()){if(!puedeVender().ok){toast("Primero inicia la jornada en Caja.");return;}modalCobro(lista,lista.reduce(function(a,x){return a+x.cant*prod(x.pid).precio;},0));return;}
   try{var tot=lista.reduce(function(a,x){return a+x.cant*prod(x.pid).precio;},0);
-    var r=registrarVenta(lista,{pago:{metodo:metodoRapido,efectivo:metodoRapido==="qr"?0:tot,qr:metodoRapido==="qr"?tot:0,recibido:{},cambio:{},comprobante:"",estado:"ok"}});
+    var r=registrarVenta(lista,{sinCaja:true,pago:{metodo:metodoRapido,efectivo:metodoRapido==="qr"?0:tot,qr:metodoRapido==="qr"?tot:0,recibido:{},cambio:{},comprobante:"",estado:"ok"}});
     carrito={};renderAll();mostrarAlertasVenta(r.alertas);toast("Venta registrada: "+bs(r.total));}
   catch(err){toast(err.message);}};
 $("prod-list").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
