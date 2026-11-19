@@ -303,7 +303,7 @@ nav button[aria-current="page"]{color:var(--ink)}
   <div id="avisos" style="display:none;flex-direction:column;gap:10px"></div>
   <div id="tienda-bar" hidden></div>
   <!-- INICIO -->
-  <section class="view active" id="v-inicio" aria-label="Inicio">
+  <section class="view" id="v-inicio" aria-label="Resumen">
     <div id="panel-duena" style="display:contents"></div>
     <div class="tiles">
       <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg></div><div class="lbl">Ventas de hoy</div><div class="val num" id="t-ventas">Bs 0</div><div class="delta num" id="t-delta"></div></div>
@@ -353,7 +353,7 @@ nav button[aria-current="page"]{color:var(--ink)}
   </section>
 
   <!-- VENDER -->
-  <section class="view" id="v-vender" aria-label="Vender">
+  <section class="view active" id="v-vender" aria-label="Vender">
     <div id="vender-aviso" style="display:contents"></div>
     <div class="searchbar"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="buscar-venta" placeholder="Buscar producto o escribir código" aria-label="Buscar producto" autocomplete="off"><button class="scan-btn" id="btn-scan" type="button" aria-label="Escanear código de barras" title="Escanear código de barras"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
     <div class="cats" id="cats-venta" role="toolbar" aria-label="Categorías"></div>
@@ -423,8 +423,8 @@ nav button[aria-current="page"]{color:var(--ink)}
 </main>
 
 <nav aria-label="Secciones">
-  <button type="button" data-view="inicio" id="nav-inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
-  <button type="button" data-view="vender"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>Vender</button>
+  <button type="button" data-view="vender" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>Vender</button>
+  <button type="button" data-view="inicio" id="nav-inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>Resumen</button>
   <button type="button" data-view="productos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg><span id="nav-inv-txt">Inventario</span></button>
   <button type="button" data-view="reporte" id="nav-reporte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7M9 9h3"/></svg>Reporte</button>
   <button type="button" data-view="caja" id="nav-caja"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18M7 15h3M16 4l-4 3-4-3"/></svg>Caja</button>
@@ -789,7 +789,7 @@ function renderNav(){
   var vend=esVend(),vis={inicio:!vend,vender:true,productos:true,caja:usaCaja(),reporte:!vend},n=0,actual=null;
   document.querySelectorAll("nav button").forEach(function(b){b.hidden=!vis[b.dataset.view];if(!b.hidden)n++;if(b.getAttribute("aria-current")==="page")actual=b;});
   document.querySelector("nav").style.gridTemplateColumns="repeat("+n+",1fr)";
-  if(!actual||actual.hidden){var p=document.querySelector('nav button[data-view="'+(vend?"vender":"inicio")+'"]');
+  if(!actual||actual.hidden){var p=document.querySelector('nav button[data-view="vender"]');
     document.querySelectorAll("nav button").forEach(function(x){x.removeAttribute("aria-current");});p.setAttribute("aria-current","page");
     document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active");});$("v-"+p.dataset.view).classList.add("active");}
 }
@@ -885,7 +885,8 @@ function modalProducto(p,draft){
   $("f-prod").onsubmit=function(e){e.preventDefault();
     var d=leer();if(!d.receta)delete d.receta;if(!d.foto)delete d.foto;
     if(!d.nombre){toast("Escribe el nombre del producto");return;}
-    if(d.codigo&&S.productos.some(function(x){return x!==p&&x.codigo&&String(x.codigo)===d.codigo;})){toast("Ese código de barras ya lo tiene otro producto.");return;}
+    if(!n)p=prod(p.id)||p;
+    if(d.codigo&&S.productos.some(function(x){return (n||x.id!==p.id)&&x.codigo&&String(x.codigo)===d.codigo;})){toast("Ese código de barras ya lo tiene otro producto.");return;}
     if(d.costo>0)d.sinCosto=false;
     if(n){d.id="p"+uid();S.productos.push(d);}else{Object.assign(p,d);if(!d.receta)delete p.receta;if(!d.foto)delete p.foto;}
     encolar({op:"producto",p:clone(n?d:p)});
@@ -1346,9 +1347,9 @@ function modalAjustes(avanzado){
   if(esVend()){
     openModal('<h2 id="modal-title">Ajustes</h2><div class="card"><h3>Tu cuenta</h3><p style="margin:0"><b>'+esc(yo().nombre)+'</b>'+(nombreTienda(yo().tienda)?' · '+esc(nombreTienda(yo().tienda)):'')+'</p><p class="muted" style="margin:0">Usuario: '+esc(CFG.usuario||"")+'</p>'+
       '<div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button><button class="btn" type="button" id="fa-desc" style="margin-left:auto">Cerrar sesión</button></div></div>'+
-      (cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Conéctate a internet antes de cerrar sesión.</div>':'')+
+      seccionTemaHTML()+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Conéctate a internet antes de cerrar sesión.</div>':'')+
       '<div class="actions"><button class="btn" type="button" id="fa-cancel">Cerrar</button></div>');
-    $("fa-cancel").onclick=closeModal;$("fa-sync").onclick=function(){closeModal();sincronizar(true);};
+    $("fa-cancel").onclick=closeModal;$("fa-sync").onclick=function(){closeModal();sincronizar(true);};bindTema();
     $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<button class="btn danger" type="button" id="fa-desc2" style="margin-left:auto">Sí, cerrar sesión</button>';$("fa-desc2").onclick=function(){cerrarSesion();toast("Sesión cerrada.");};};
     return;
   }
@@ -1367,11 +1368,11 @@ function modalAjustes(avanzado){
         '<div class="full" id="fa-msg"></div><div class="actions full"><button class="btn primary" type="button" id="fa-con">Conectar</button><button class="btn" type="button" id="fa-guia">¿Cómo la creo?</button></div></div></details>')+
     '</div>'+
     '<div class="card"><h3>Tipo de negocio</h3><div class="row" style="padding:0"><div><div class="name">'+esc((rubroDe(rubro())||{n:"Sin elegir"}).n)+'</div><div class="meta">'+(S.negocio.rubroPedido?'Pediste cambiar a '+esc((rubroDe(S.negocio.rubroPedido)||{}).n||"")+' · esperando aprobación':'Define qué funciones ves en la app.')+'</div></div><button class="btn small" type="button" id="fa-rubro">'+(rubro()?'Cambiar':'Elegir')+'</button></div></div>'+
-    seccionQRHTML()+seccionTiendasHTML()+
+    seccionQRHTML()+seccionTiendasHTML()+seccionTemaHTML()+
     (con?'':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
   $("modal").querySelectorAll("[data-tienda]").forEach(function(b){b.onclick=function(){modalTienda(tienda(b.dataset.tienda));};});
   $("modal").querySelectorAll("[data-qr]").forEach(function(b){b.onclick=function(){modalQRTienda(b.dataset.qr);};});
-  $("fa-rubro").onclick=function(){modalRubro(false);};
+  $("fa-rubro").onclick=function(){modalRubro(false);};bindTema();
   $("modal").querySelectorAll("[data-vend]").forEach(function(b){b.onclick=function(){modalVendedora(S.usuarios.find(function(u){return u.id===b.dataset.vend;}));};});
   $("fa-tienda").onclick=function(){modalTienda(null);};
   if($("fa-vend"))$("fa-vend").onclick=function(){modalVendedora(null);};
@@ -1488,6 +1489,11 @@ function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("o
 
 // ---------- cobro ----------
 var metodoRapido="efectivo",catVenta="",catInv="";
+var TEMAKEY="inventario-ia-tema";
+function aplicarTema(t){if(t==="claro")document.documentElement.setAttribute("data-theme","light");else if(t==="oscuro")document.documentElement.setAttribute("data-theme","dark");else document.documentElement.removeAttribute("data-theme");}
+function temaActual(){var t=leerLS(TEMAKEY,"auto");return t==="claro"||t==="oscuro"?t:"auto";}
+function seccionTemaHTML(){var t=temaActual();return '<div class="card"><h3>Apariencia</h3><div class="seg seg-full" id="fa-tema">'+[["auto","Automático"],["claro","Claro"],["oscuro","Oscuro"]].map(function(x){return '<button type="button" data-tema="'+x[0]+'" aria-pressed="'+(t===x[0])+'">'+x[1]+'</button>';}).join("")+'</div><p class="muted" style="margin:0">Automático sigue el modo del celular.</p></div>';}
+function bindTema(){var el=$("fa-tema");if(!el)return;el.onclick=function(e){var b=e.target.closest("[data-tema]");if(!b)return;escribirLS(TEMAKEY,b.dataset.tema);aplicarTema(b.dataset.tema);el.querySelectorAll("[data-tema]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};}
 function piezaTxt(c,n){return (c>=1000?(n>1?"billetes":"billete"):(n>1?"monedas":"moneda"));}
 function pilaHTML(c,n,chico){
   var bill=c>=1000,k=Math.min(n,4),paso=bill?(chico?7:10):(chico?5:6);
@@ -2069,6 +2075,7 @@ $("btn-copiar").onclick=function(){var t=textoReporte();
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast("Reporte copiado");},function(){toast("No se pudo copiar. Mantén presionado el texto para copiarlo.");});}
   else toast("Mantén presionado el texto para copiarlo.");};
 
+aplicarTema(temaActual());
 renderAll();
 iniciarSync();
 })();
