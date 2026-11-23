@@ -271,6 +271,10 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
  body.modo-dueno .adm-k{grid-template-columns:repeat(4,minmax(0,1fr))}body.modo-dueno .etapas{flex-direction:row;align-items:flex-start;overflow-x:auto}body.modo-dueno .etapa{min-width:230px;flex:1}}
 #adm-q,#cls-q,#ep-q{border:0;outline:0;background:transparent;flex:1;min-width:0;font:inherit;font-size:16px;color:var(--ink);padding:10px 4px}
 a.btn:not(.wa):not(.primary){color:var(--ink);text-decoration:none}
+.login-op{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit}
+.login-op:hover{border-color:var(--accent)}.login-op b{display:block;font-size:17px}.login-op small{color:var(--muted);font-size:13px}
+.lo-i{width:44px;height:44px;border-radius:12px;background:var(--bg,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.btn.salir{width:100%;color:var(--bad);border-color:var(--bad);background:transparent;justify-content:center}.sesion-card{margin-top:8px}.sesion-conf{display:flex;flex-direction:column;gap:6px}
 .tipo-box{border-top:1px solid var(--line);padding-top:12px}
 .tipo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tipo-grid button:last-child:nth-child(odd){grid-column:1/-1}
 .tipo-grid button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 6px;font-size:14px;cursor:pointer}
@@ -1665,23 +1669,33 @@ function entrarVendedora(url,usuario,pin,login,msg){
       S={negocio:{nombre:"",whatsapp:""},productos:[],ventas:[]};carrito={};aplicarEstado(j.estado,j.yo);S.plan=j.plan||null;save();closeModal();irA("vender");toast("¡Hola, "+(j.yo&&j.yo.nombre||"")+"!");iniciarSync();
     },function(err){if(err.message!=="login")msg.innerHTML='<div class="alertbox bad">No se pudo conectar. Revisa tu internet e intenta de nuevo.</div>';throw err;});
 }
-function modalLogin(){
-  if(!DIRECTORIO_URL){modalAjustes();return;}
-  openModal('<h2 id="modal-title">Iniciar sesión</h2><p class="muted" style="margin:0">Si eres dueña o dueño del negocio, entra con tu cuenta de Google. Si eres vendedora, usa tu usuario y PIN.</p>'+
+function modalLogin(paso){
+  if(!DIRECTORIO_URL){modalAjustes(true);return;}
+  if(!paso){
+    openModal('<h2 id="modal-title">Iniciar sesión</h2><p class="muted" style="margin:0">¿Cómo quieres entrar?</p>'+
+      '<button type="button" class="login-op" id="lo-g"><span class="lo-i"><svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg></span><span><b>Continuar con Google</b><small>Dueñas y dueños de negocio</small></span></button>'+
+      '<button type="button" class="login-op" id="lo-u"><span class="lo-i">🔑</span><span><b>Usuario y contraseña</b><small>Vendedoras y encargadas</small></span></button>'+
+      '<p class="muted" style="margin:0;font-size:12px;text-align:center">Al entrar aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Privacidad</a>.</p>'+
+      '<div class="actions"><button class="btn" type="button" id="li-cancel">Cancelar</button></div>');
+    $("lo-g").onclick=function(){modalLogin("google");};$("lo-u").onclick=function(){modalLogin("pin");};$("li-cancel").onclick=closeModal;return;
+  }
+  if(paso==="google"){
+    openModal('<button type="button" class="linkbtn" id="li-back">← Volver</button><h2 id="modal-title">Continuar con Google</h2><p class="muted" style="margin:0">Toca el botón y elige tu cuenta de Google.</p>'+
+      '<div class="g-box" id="li-google" style="min-height:60px;justify-content:center"><p class="muted">Cargando…</p></div><div id="li-msg"></div>'+
+      '<p class="muted" style="margin:0;font-size:12px">¿Primera vez? Al entrar con Google te pedimos el nombre de tu negocio y empiezas tu prueba gratis.</p>');
+    $("li-back").onclick=function(){modalLogin();};pintarGoogle($("li-google"),$("li-msg"),true);return;
+  }
+  openModal('<button type="button" class="linkbtn" id="li-back">← Volver</button><h2 id="modal-title">Usuario y contraseña</h2>'+
     '<form id="f-login" class="form-grid">'+
-    '<div class="full g-box" id="li-google"></div>'+
-    '<div class="full muted" style="font-size:13px;margin-bottom:-6px">Vendedoras (o con usuario y PIN)</div>'+
     '<label class="full" for="li-user">Usuario<input type="text" id="li-user" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Ej.: panaderia.rosa"></label>'+
-    '<label class="full" for="li-pin">PIN<input type="password" id="li-pin" inputmode="numeric" autocomplete="current-password" placeholder="••••"></label>'+
+    '<label class="full" for="li-pin">Contraseña (PIN)<input type="password" id="li-pin" inputmode="numeric" autocomplete="current-password" placeholder="••••"></label>'+
     '<div class="full" id="li-msg"></div>'+
     '<div class="actions full"><button class="btn primary big" type="submit" id="li-go">Entrar</button></div>'+
-    '<div class="actions full"><button class="btn small" type="button" id="li-cancel">Cancelar</button><button class="btn small" type="button" id="li-av" style="margin-left:auto">Conectar con dirección y clave</button></div></form>');
-  $("li-cancel").onclick=closeModal;
-  pintarGoogle($("li-google"),$("li-msg"));
-  $("li-av").onclick=function(){modalAjustes(true);};
+    '<p class="muted full" style="margin:0;font-size:12px">Tu usuario y contraseña te los da la dueña o el dueño del negocio.</p></form>');
+  $("li-back").onclick=function(){modalLogin();};setTimeout(function(){if($("li-user"))$("li-user").focus();},80);
   $("f-login").onsubmit=function(e){e.preventDefault();
     var u=$("li-user").value.trim(),p=$("li-pin").value.trim(),msg=$("li-msg");
-    if(!u||!p){msg.innerHTML='<div class="alertbox bad">Escribe tu usuario y tu PIN.</div>';return;}
+    if(!u||!p){msg.innerHTML='<div class="alertbox bad">Escribe tu usuario y tu contraseña.</div>';return;}
     $("li-go").disabled=true;msg.innerHTML='<p class="muted">Buscando tu cuenta…</p>';
     fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify({usuario:u,pin:p}),redirect:"follow"})
       .then(function(r){if(!r.ok)throw new Error("http");return r.json();})
@@ -1700,11 +1714,11 @@ function modalAjustes(avanzado){
   var con=conectado();
   if(esVend()){
     openModal('<h2 id="modal-title">Ajustes</h2><div class="card"><h3>Tu cuenta</h3><p style="margin:0"><b>'+esc(yo().nombre)+'</b>'+(nombreTienda(yo().tienda)?' · '+esc(nombreTienda(yo().tienda)):'')+'</p><p class="muted" style="margin:0">Usuario: '+esc(CFG.usuario||"")+'</p>'+
-      '<div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button><button class="btn" type="button" id="fa-desc" style="margin-left:auto">Cerrar sesión</button></div></div>'+
-      seccionTemaHTML()+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Conéctate a internet antes de cerrar sesión.</div>':'')+
+      '<div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button></div></div>'+
+      seccionTemaHTML()+'<div class="card sesion-card"><h3>Sesión</h3>'+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Espera el punto verde antes de cerrar sesión.</div>':'')+'<button class="btn salir big" type="button" id="fa-desc">Cerrar sesión</button></div>'+
       '<div class="actions"><button class="btn" type="button" id="fa-cancel">Cerrar</button></div>');
     $("fa-cancel").onclick=closeModal;$("fa-sync").onclick=function(){closeModal();sincronizar(true);};bindTema();
-    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<button class="btn danger" type="button" id="fa-desc2" style="margin-left:auto">Sí, cerrar sesión</button>';$("fa-desc2").onclick=function(){cerrarSesion();toast("Sesión cerrada.");};};
+    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<div class="sesion-conf"><b>¿Cerrar sesión en este celular?</b><div class="actions"><button class="btn salir" type="button" id="fa-desc2">Sí, cerrar sesión</button><button class="btn" type="button" id="fa-desc3">No</button></div></div>';$("fa-desc3").onclick=function(){closeModal();modalAjustes();};$("fa-desc2").onclick=function(){cerrarSesion();closeModal();toast("Sesión cerrada.");};};
     return;
   }
   openModal('<h2 id="modal-title">Ajustes</h2><form id="f-aj" class="form-grid">'+
@@ -1714,16 +1728,16 @@ function modalAjustes(avanzado){
     '<div class="actions full"><button class="btn primary" type="submit">Guardar</button><button class="btn" type="button" id="fa-cancel">Cerrar</button></div></form>'+
     '<div class="card"><h3>Tu cuenta</h3>'+
     (con
-      ? '<p class="muted" style="margin:0">Sesión iniciada. Todo lo que registras se guarda en tu hoja de Google y aparece en tus otros dispositivos.</p><div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button><button class="btn" type="button" id="fa-desc" style="margin-left:auto">Cerrar sesión</button></div>'
-      : (DIRECTORIO_URL?'<p class="muted" style="margin:0">Inicia sesión para ver el inventario de tu negocio en cualquier celular o computadora.</p><button class="btn primary big" type="button" id="fa-login">Iniciar sesión con usuario y PIN</button>':'')+
-        '<details'+(avanzado||!DIRECTORIO_URL?' open':'')+'><summary class="muted">Conectar con dirección y clave (avanzado)</summary><div class="form-grid" style="margin-top:8px">'+
+      ? '<p class="muted" style="margin:0">Sesión iniciada. Todo lo que registras se guarda en tu hoja de Google y aparece en tus otros dispositivos.</p><div class="actions"><button class="btn" type="button" id="fa-sync">Actualizar ahora</button></div>'
+      : (DIRECTORIO_URL?'<p class="muted" style="margin:0">Inicia sesión para ver el inventario de tu negocio en cualquier celular o computadora.</p><button class="btn primary big" type="button" id="fa-login">Iniciar sesión</button>':'')+
+        '<div'+(DIRECTORIO_URL&&!avanzado?' hidden':'')+'><details'+(avanzado||!DIRECTORIO_URL?' open':'')+'><summary class="muted">Conectar con dirección y clave (avanzado)</summary><div class="form-grid" style="margin-top:8px">'+
         '<label class="full" for="fa-url">Dirección de tu hoja (termina en /exec)<input type="text" id="fa-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>'+
         '<label class="full" for="fa-clave">Clave<input type="text" id="fa-clave" placeholder="Ej.: 3f9a1c2b" autocomplete="off"></label>'+
-        '<div class="full" id="fa-msg"></div><div class="actions full"><button class="btn primary" type="button" id="fa-con">Conectar</button><button class="btn" type="button" id="fa-guia">¿Cómo la creo?</button></div></div></details>')+
+        '<div class="full" id="fa-msg"></div><div class="actions full"><button class="btn primary" type="button" id="fa-con">Conectar</button><button class="btn" type="button" id="fa-guia">¿Cómo la creo?</button></div></div></details></div>')+
     '</div>'+
     '<div class="card"><h3>Tipo de negocio</h3><div class="row" style="padding:0"><div><div class="name">'+esc((rubroDe(rubro())||{n:"Sin elegir"}).n)+'</div><div class="meta">'+(S.negocio.rubroPedido?'Pediste cambiar a '+esc((rubroDe(S.negocio.rubroPedido)||{}).n||"")+' · esperando aprobación':'Define qué funciones ves en la app.')+'</div></div><button class="btn small" type="button" id="fa-rubro">'+(rubro()?'Cambiar':'Elegir')+'</button></div></div>'+
     miPlanHTML()+(CFG.rol==="admin"?'<div class="card"><h3>Panel Cuadra</h3><div class="actions"><button class="btn primary" type="button" onclick="document.getElementById(\'modal-back\').classList.remove(\'open\')" id="fa-panel">Abrir panel</button></div></div>':'')+seccionQRHTML()+seccionTiendasHTML()+seccionTemaHTML()+
-    (con?'':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
+    (con?'<div class="card sesion-card"><h3>Sesión</h3><p class="muted" style="margin:0">'+(CFG.rol==="admin"?'Dueño de Cuadra':'Entraste'+(CFG.usuario?' como <b>'+esc(CFG.usuario)+'</b>':''))+'</p>'+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Espera el punto verde antes de cerrar sesión.</div>':'')+'<button class="btn salir big" type="button" id="fa-desc">Cerrar sesión</button></div>':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
   $("modal").querySelectorAll("[data-tienda]").forEach(function(b){b.onclick=function(){modalTienda(tienda(b.dataset.tienda));};});
   $("modal").querySelectorAll("[data-qr]").forEach(function(b){b.onclick=function(){modalQRTienda(b.dataset.qr);};});
   $("fa-rubro").onclick=function(){modalRubro(false);};bindTema();
@@ -1735,8 +1749,9 @@ function modalAjustes(avanzado){
   $("f-aj").onsubmit=function(e){e.preventDefault();S.negocio.nombre=$("fa-nombre").value.trim()||"Mi negocio";S.negocio.whatsapp=$("fa-wa").value.replace(/\D/g,"");save();encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();renderAll();toast("Ajustes guardados");};
   if(con){
     $("fa-sync").onclick=function(){closeModal();sincronizar(true);};
-    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<button class="btn danger" type="button" id="fa-desc2" style="margin-left:auto">Sí, cerrar sesión</button>';
-      $("fa-desc2").onclick=function(){cerrarSesion();toast("Sesión cerrada. Tus datos siguen guardados en tu hoja de Google.");};};
+    $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<div class="sesion-conf"><b>¿Cerrar sesión en este celular?</b><div class="actions"><button class="btn salir" type="button" id="fa-desc2">Sí, cerrar sesión</button><button class="btn" type="button" id="fa-desc3">No</button></div></div>';
+      $("fa-desc3").onclick=function(){closeModal();modalAjustes();};
+      $("fa-desc2").onclick=function(){cerrarSesion();closeModal();toast("Sesión cerrada. Tus datos siguen guardados en tu hoja de Google.");};};
   }else{
     if($("fa-login"))$("fa-login").onclick=modalLogin;
     $("fa-guia").onclick=modalGuia;
@@ -3316,11 +3331,11 @@ var PLAT_CFG=null;
 function platConfig(){if(PLAT_CFG)return Promise.resolve(PLAT_CFG);if(!DIRECTORIO_URL)return Promise.resolve({});
   return fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify({accion:"config"}),redirect:"follow"}).then(function(r){return r.json();}).then(function(j){PLAT_CFG=j&&j.ok?j:{};if(PLAT_CFG.soporte)SOPORTE_WA=PLAT_CFG.soporte;return PLAT_CFG;}).catch(function(){return {};});}
 function cargarGIS(){return new Promise(function(ok,no){if(window.google&&google.accounts&&google.accounts.id)return ok();var s=document.createElement("script");s.src="https://accounts.google.com/gsi/client";s.async=true;s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
-function pintarGoogle(div,msg){
-  platConfig().then(function(c){if(!c.clientId){div.innerHTML="";return;}
+function pintarGoogle(div,msg,solo){
+  platConfig().then(function(c){if(!c.clientId){div.innerHTML=solo?'<div class="alertbox bad">El inicio con Google todavía no está configurado. Usa usuario y PIN.</div>':"";return;}
     return cargarGIS().then(function(){
       google.accounts.id.initialize({client_id:c.clientId,callback:function(r){entrarGoogle(r.credential,msg);},ux_mode:"popup",auto_select:false});
-      div.innerHTML='<div class="muted" style="font-size:13px;margin-bottom:6px">Dueños de negocio</div><div id="g-btn"></div>';
+      div.innerHTML='<div id="g-btn"></div>';
       google.accounts.id.renderButton($("g-btn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",locale:"es",width:Math.min(320,div.clientWidth||300)});
     });}).catch(function(){div.innerHTML='<p class="muted">No se pudo cargar el botón de Google. Revisa tu internet.</p>';});
 }
@@ -3483,8 +3498,8 @@ function inactivo(n){return n.estado==="Activo"&&!n.bloqueado&&minDesde(n.uso)>7
 function etapa(n){if(n.estado==="Pendiente")return "aprobar";if(n.estado==="Suspendido"||n.bloqueado)return "vencido";if(n.plan==="prueba")return "prueba";if(n.dias<=7)return "porvencer";return "pagando";}
 var ETAPAS=[["aprobar","Por aprobar"],["prueba","En prueba"],["pagando","Pagando"],["porvencer","Por vencer"],["vencido","Vencidos o suspendidos"]];
 function negById(id){return PANEL&&PANEL.negocios.find(function(n){return n.id===id;});}
-function cargarPanel(silencioso){if(ADM.cargando)return Promise.resolve();ADM.cargando=true;
-  return adminCall("listar").then(function(){ADM.ultima=Date.now();renderAdmin();}).catch(function(){}).then(function(){ADM.cargando=false;});}
+function cargarPanel(silencioso){if(ADM.cargando)return Promise.resolve();ADM.cargando=true;ADM.error="";
+  return adminCall("listar").then(function(){ADM.ultima=Date.now();renderAdmin();}).catch(function(e){ADM.error="No se pudo cargar tu panel: "+(e&&e.message||"sin conexión")+".";renderAdmin();}).then(function(){ADM.cargando=false;});}
 function precioPlan(k){var p=PANEL?PANEL.precios:(S.plan&&S.plan.precios)||{};return Number(p[k])||0;}
 function llenarPlantilla(t,n){
   var av=PANEL&&PANEL.avisos.find(function(a){return a.activo;});
@@ -3603,12 +3618,17 @@ function admHTMLAjustes(){
     '<div class="card"><h3 style="margin-top:0">Plantillas de WhatsApp</h3><p class="muted" style="margin:0 0 6px">Se editan al enviar un mensaje (botón «Guardar como plantilla»).</p><div class="actions"><button class="btn wa" type="button" data-wamas="recordar">Abrir mensajes</button></div></div>'+
     '<div class="card"><h3 style="margin-top:0">Cuenta</h3><form id="f-pc" class="form-grid"><label class="full" for="pc-w">Tu WhatsApp de soporte (con 591)<input type="tel" id="pc-w" value="'+esc(cf.soporte||"")+'"></label><label class="full check"><input type="checkbox" id="pc-a"'+(cf.autoPrueba?' checked':'')+'> Activar solos a los nuevos con la prueba gratis</label><div class="actions full"><button class="btn primary" type="submit">Guardar</button></div></form>'+
       (cf.clientId?'':'<div class="alertbox bad">Falta el google_client_id en la pestaña Config de tu hoja Plataforma.</div>')+
-      '<div class="actions"><button class="btn" type="button" id="pn-salir" style="color:var(--bad)">Cerrar sesión</button></div></div>';
+      '</div><div class="card sesion-card"><h3 style="margin-top:0">Sesión</h3><button class="btn salir big" type="button" id="pn-salir">Cerrar sesión</button></div>';
 }
+var PLANT_DEF={recordar:"Hola {nombre} 👋 Tu plan de Cuadra vence el {fecha}. Renueva desde la app (Ajustes → Mi plan → Renovar). Mensual {mensual} · Anual {anual}.",promo:"🎉 {nombre}, oferta en Cuadra: {oferta}.",bienvenida:"¡Bienvenida a Cuadra, {nombre}! Tu cuenta está activa hasta el {fecha}.",gracias:"¡Gracias por tu pago, {nombre}! Tu plan quedó activo hasta el {fecha}.",extranamos:"Hola {nombre}, vimos que hace días no usas Cuadra. ¿Te ayudamos con algo?",vencido:"Hola {nombre}, tu plan de Cuadra venció el {fecha}. Renueva desde la app y sigue vendiendo."};
+function normalizarPanel(){if(!PANEL)return;PANEL._viejo=!PANEL.solicitudes;["negocios","pagos","avisos","solicitudes","cupones","soporte","qrs"].forEach(function(k){if(!Array.isArray(PANEL[k]))PANEL[k]=[];});
+  PANEL.ultimoMensaje=PANEL.ultimoMensaje||{};PANEL.plantillas=Object.assign({},PLANT_DEF,PANEL.plantillas||{});PANEL.novedades=PANEL.novedades||{};PANEL.precios=PANEL.precios||{};PANEL.config=PANEL.config||{};
+  PANEL.negocios.forEach(function(n){if(n.pagos===undefined)n.pagos=n.ingresos>0?1:0;});}
 function renderAdmin(){
   if(!modoDueno())return;
+  try{normalizarPanel();}catch(e){}
   var body={"adm-ini":admHTMLInicio,"adm-cli":admHTMLClientes,"adm-ban":admHTMLBandeja,"adm-ing":admHTMLIngresos,"adm-aju":admHTMLAjustes};
-  Object.keys(body).forEach(function(k){var el=$(k+"-body");if(!el)return;el.innerHTML=PANEL?body[k]():'<div class="empty">Cargando tus clientes…</div>';});
+  Object.keys(body).forEach(function(k){var el=$(k+"-body");if(!el)return;try{el.innerHTML=PANEL?(PANEL._viejo?'<div class="alertbox bad"><b>Tu plataforma tiene la versión anterior.</b> Pega el Plataforma.gs nuevo y haz Implementar → Administrar implementaciones → ✏️ → Nueva versión.</div>':'')+body[k]():(ADM.error?'<div class="alertbox bad">'+esc(ADM.error)+'</div><div class="actions"><button class="btn primary" type="button" onclick="void 0" id="adm-reint">Intentar de nuevo</button></div>':'<div class="empty">Cargando tus clientes…</div>');}catch(err){el.innerHTML='<div class="alertbox bad">No se pudo mostrar esta parte: '+esc(err.message)+'</div>';}});
   var nb=PANEL?PANEL.solicitudes.filter(function(s){return s.estado==="Pendiente";}).length+PANEL.negocios.filter(function(n){return n.estado==="Pendiente";}).length+PANEL.soporte.filter(function(s){return s.estado!=="Resuelta";}).length:0;
   var b=$("nav-adm-ban");if(b)b.querySelector(".nav-b").textContent=nb||"";if(b)b.querySelector(".nav-b").hidden=!nb;
   $("biz-name").textContent="Cuadra · Dueño";$("today-label").textContent=(CFG.usuario||"")+" · "+(PANEL?PANEL.negocios.filter(enLinea).length+" conectados":"");
@@ -3626,7 +3646,8 @@ function bindAdmin(){
   if($("f-cup"))$("f-cup").onsubmit=function(e){e.preventDefault();var c=$("cu-c").value.trim().toUpperCase();if(!c||!(+$("cu-d").value>0)){toast("Escribe el código y el descuento.");return;}adminCall("cupon",{codigo:c,desc:+$("cu-d").value,para:$("cu-p").value.trim(),max:+$("cu-m").value||0,hasta:$("cu-h").value,activo:true}).then(function(){toast("Cupón creado: "+c);renderAdmin();});};
   if($("f-pc"))$("f-pc").onsubmit=function(e){e.preventDefault();adminCall("config",{soporte:$("pc-w").value.trim(),autoPrueba:$("pc-a").checked}).then(function(){SOPORTE_WA=$("pc-w").value.trim();toast("Guardado");renderAdmin();});};
   if($("nv-ok"))$("nv-ok").onclick=function(){adminCall("novedades",{texto:$("nv-t").value.trim()}).then(function(){toast("Novedades publicadas");renderAdmin();});};
-  if($("pn-salir"))$("pn-salir").onclick=function(){PANEL=null;cerrarSesion();renderAll();};
+  if($("pn-salir"))$("pn-salir").onclick=function(){$("pn-salir").outerHTML='<div class="sesion-conf"><b>¿Cerrar sesión en este celular?</b><div class="actions"><button class="btn salir" type="button" id="pn-salir2">Sí, cerrar sesión</button><button class="btn" type="button" id="pn-salir3">No</button></div></div>';
+    $("pn-salir3").onclick=function(){renderAdmin();};$("pn-salir2").onclick=function(){PANEL=null;cerrarSesion();renderAll();toast("Sesión cerrada.");};};
   document.querySelectorAll("[data-qrplan]").forEach(function(i){i.onchange=function(e){var f=e.target.files&&e.target.files[0],plan=this.dataset.qrplan;if(!f)return;toast("Preparando el QR…");
     achicarQR(f,function(data){openModal('<h2 id="modal-title">QR '+esc(plan)+'</h2><img src="'+data+'" alt="QR" style="max-width:220px;margin:0 auto;display:block"><label for="qv">¿Hasta cuándo vale? (opcional)<input type="date" id="qv"></label><div class="actions"><button class="btn primary" type="button" id="qok">Guardar QR</button><button class="btn" type="button" id="qx">Cancelar</button></div>');
       $("qx").onclick=closeModal;$("qok").onclick=function(){adminCall("qr",{plan:plan,data:data,vence:$("qv").value}).then(function(){closeModal();toast("QR guardado");renderAdmin();});};});};});
@@ -3745,7 +3766,7 @@ document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("
   document.querySelectorAll("nav button").forEach(function(x){x.removeAttribute("aria-current");});b.setAttribute("aria-current","page");
   document.querySelectorAll(".view").forEach(function(v){v.classList.remove("active");});$("v-"+b.dataset.view).classList.add("active");
   document.querySelector("main").scrollTop=0;renderAll();});});
-$("btn-settings").onclick=modalAjustes;
+$("btn-settings").onclick=function(){if(typeof modoDueno==="function"&&modoDueno()){irA("adm-aju");return;}modalAjustes();};
 $("mas-body").addEventListener("click",function(e){var b=e.target.closest("[data-mas]");if(b)abrirMas(b.dataset.mas);});
 $("neto-mes").addEventListener("click",function(e){var b=e.target.closest("[data-mas]");if(b)abrirMas(b.dataset.mas);});
 $("mesas-body").addEventListener("click",function(e){var b=e.target.closest("[data-mz]");if(b)modalMesa(b.dataset.mz);});
@@ -3817,7 +3838,7 @@ $("btn-copiar").onclick=function(){var t=textoReporte();
 aplicarTema(temaActual());
 renderAll();
 $("plan-ban").addEventListener("click",function(e){var b=e.target.closest("[data-plan]");if(!b)return;if(b.dataset.plan==="volver")volverPanel();if(b.dataset.plan==="renovar")modalRenovar();if(b.dataset.plan==="aviso"){escribirLS("cuadra-aviso-"+b.dataset.av,1);renderAll();}});
-document.addEventListener("click",function(e){if(!e.target)return;if(e.target.id==="fa-panel")setTimeout(modalPanel,50);if(e.target.id==="mi-renovar")modalRenovar();if(e.target.id==="mi-pagos")modalMisPagos();});
+document.addEventListener("click",function(e){if(!e.target)return;if(e.target.id==="adm-reint")cargarPanel();if(e.target.id==="fa-panel")setTimeout(modalPanel,50);if(e.target.id==="mi-renovar")modalRenovar();if(e.target.id==="mi-pagos")modalMisPagos();});
 iniciarSync();
 if(CFG.rol==="admin")setTimeout(function(){CFG.ver="";modalPanel();},400);
 else if(DIRECTORIO_URL)platConfig();
