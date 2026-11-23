@@ -271,6 +271,25 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
  body.modo-dueno .adm-k{grid-template-columns:repeat(4,minmax(0,1fr))}body.modo-dueno .etapas{flex-direction:row;align-items:flex-start;overflow-x:auto}body.modo-dueno .etapa{min-width:230px;flex:1}}
 #adm-q,#cls-q,#ep-q{border:0;outline:0;background:transparent;flex:1;min-width:0;font:inherit;font-size:16px;color:var(--ink);padding:10px 4px}
 a.btn:not(.wa):not(.primary){color:var(--ink);text-decoration:none}
+#guia{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;padding:16px}
+@media (min-width:600px){#guia{align-items:center}}
+.guia-card{background:var(--surface);color:var(--ink);border-radius:20px;padding:18px 18px 14px;max-width:420px;width:100%;text-align:center;display:flex;flex-direction:column;gap:6px}
+.guia-card h2{margin:0;font-size:20px}.guia-card p{margin:0;line-height:1.5}.guia-top{display:flex;justify-content:space-between;align-items:center}.guia-ic{font-size:46px;margin-top:4px}
+.guia-link{display:block;margin:14px auto 2px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px}
+.guia-foco{position:relative;z-index:2;outline:3px solid var(--accent)!important;outline-offset:4px;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.35);animation:guiaLatido 1.4s ease-in-out infinite}
+@keyframes guiaLatido{50%{outline-offset:7px}}
+@media (prefers-reduced-motion:reduce){.guia-foco{animation:none}}
+#guia-b{position:fixed;left:12px;right:12px;bottom:16px;z-index:10001;background:var(--ink);color:var(--surface);border-radius:16px;padding:12px 14px;max-width:460px;margin:0 auto;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+#guia-b.arriba{bottom:auto;top:16px}#guia-b .btn{background:transparent;color:var(--surface);border-color:color-mix(in srgb,var(--surface) 40%,transparent)}#guia-b .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.faq-it{border-bottom:1px solid var(--line)}.faq-q{width:100%;display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;background:none;border:0;padding:12px 2px;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+.faq-a{padding:0 2px 12px;color:var(--ink)}.faq-it.on .faq-q{color:var(--accent)}
+#carga{position:fixed;inset:0;z-index:9999;background:var(--surface,#fff);display:none;align-items:center;justify-content:center;padding:24px}
+#carga.open{display:flex}.carga-box{max-width:360px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}.carga-box h2{margin:8px 0 0}.carga-ico{font-size:44px}
+.spin{width:48px;height:48px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}.spin.chico{width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:-2px}
+@keyframes gira{to{transform:rotate(360deg)}}
+#guardando{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--ink);color:var(--surface);padding:8px 16px;border-radius:999px;font-size:14px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}#guardando.open{display:block}
+.estado-serv{padding:10px 12px;border-radius:12px;font-weight:600;margin-bottom:6px}.estado-serv.ok{background:color-mix(in srgb,var(--ok,#2a9d5c) 14%,transparent)}.estado-serv.warn{background:color-mix(in srgb,#e9a23b 18%,transparent)}.estado-serv.bad{background:color-mix(in srgb,var(--bad) 15%,transparent)}
+.plan-serv{display:flex;flex-direction:column;gap:6px}
 .login-op{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit}
 .login-op:hover{border-color:var(--accent)}.login-op b{display:block;font-size:17px}.login-op small{color:var(--muted);font-size:13px}
 .lo-i{width:44px;height:44px;border-radius:12px;background:var(--bg,#fff);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
@@ -568,41 +587,104 @@ function toast(msg){var t=$("toast");t.textContent=msg;t.classList.add("show");c
 
 // ---------- datos de ejemplo ----------
 function seed(){
+  // Ejemplo completo: una ferretería que usa todas las funciones de Cuadra
+  var T1="t1",T2="t2";
+  function P(o){o.stocks={};o.stocks[T1]=o.stock||0;if(o.alm){o.stocks[T2]=o.alm;delete o.alm;}return o;}
   var productos=[
-    {id:"p1",nombre:"Cemento bolsa 50 kg",unidad:"bolsa",stock:40,min:15,costo:58,precio:68},
-    {id:"p2",nombre:"Fierro corrugado 3/8\"",unidad:"barra",stock:120,min:50,costo:38,precio:46},
-    {id:"p3",nombre:"Clavos 2\"",unidad:"kg",stock:8,min:10,costo:14,precio:20},
-    {id:"p4",nombre:"Pintura látex blanca 4 L",unidad:"balde",stock:12,min:6,costo:95,precio:130},
-    {id:"p5",nombre:"Tubo PVC 1/2\" (6 m)",unidad:"tubo",stock:25,min:10,costo:18,precio:26},
-    {id:"p6",nombre:"Cinta aislante",unidad:"rollo",stock:0,min:12,costo:4,precio:8},
-    {id:"p7",nombre:"Martillo de carpintero",unidad:"unid.",stock:9,min:4,costo:45,precio:70},
-    {id:"p8",nombre:"Brocha 3\"",unidad:"unid.",stock:5,min:6,costo:9,precio:16},
-    {id:"p9",nombre:"Foco LED 12 W",unidad:"unid.",stock:60,min:20,costo:9,precio:15},
-    {id:"p10",nombre:"Silicona transparente",unidad:"tubo",stock:14,min:8,costo:18,precio:28},
-    {id:"p11",nombre:"Lija al agua #120",unidad:"pliego",stock:70,min:30,costo:2,precio:4},
-    {id:"p12",nombre:"Candado 40 mm",unidad:"unid.",stock:7,min:5,costo:32,precio:50}
+    P({id:"p1",nombre:"Cemento",tam:"50 kg",unidad:"bolsa",stock:40,alm:160,min:15,costo:58,precio:68,categoria:"Construcción",codigo:"7771234500011",precios:{may:64}}),
+    P({id:"p2",nombre:"Fierro corrugado 3/8\"",tam:"12 m",unidad:"barra",stock:120,alm:300,min:50,costo:38,precio:46,categoria:"Construcción",codigo:"7771234500028",precios:{may:43}}),
+    P({id:"p3",nombre:"Clavos 2\"",tam:"1 kg",unidad:"bolsa",stock:8,min:10,costo:14,precio:20,categoria:"Ferretería"}),
+    P({id:"p4",nombre:"Pintura látex blanca",tam:"4 L",unidad:"balde",stock:12,min:6,costo:95,precio:130,categoria:"Pinturas",codigo:"7790001112223"}),
+    P({id:"p5",nombre:"Tubo PVC 1/2\"",tam:"6 m",unidad:"tubo",stock:25,min:10,costo:18,precio:26,categoria:"Plomería"}),
+    P({id:"p6",nombre:"Cinta aislante",tam:"",unidad:"rollo",stock:0,min:12,costo:4,precio:8,categoria:"Electricidad"}),
+    P({id:"p7",nombre:"Martillo de carpintero",tam:"",unidad:"unid.",stock:9,min:4,costo:45,precio:70,categoria:"Herramientas"}),
+    P({id:"p8",nombre:"Brocha 3\"",tam:"",unidad:"unid.",stock:5,min:6,costo:9,precio:16,desc:10,categoria:"Pinturas"}),
+    P({id:"p9",nombre:"Foco LED 12 W",tam:"",unidad:"unid.",stock:60,min:20,costo:9,precio:15,promo:{lleva:4,paga:3},categoria:"Electricidad",codigo:"6901234567892"}),
+    P({id:"p10",nombre:"Silicona transparente",tam:"280 ml",unidad:"tubo",stock:14,min:8,costo:18,precio:28,categoria:"Plomería"}),
+    P({id:"p11",nombre:"Lija al agua #120",tam:"",unidad:"pliego",stock:70,min:30,costo:2,precio:4,categoria:"Pinturas"}),
+    P({id:"p12",nombre:"Candado 40 mm",tam:"",unidad:"unid.",stock:7,min:5,costo:32,precio:50,categoria:"Herramientas"}),
+    P({id:"p13",nombre:"Pegamento PVC",tam:"250 ml",unidad:"lata",stock:10,min:4,costo:22,precio:35,categoria:"Plomería"}),
+    P({id:"p14",nombre:"Cable eléctrico #12",tipo:"medida",unidad:"m",stockModo:"si",stock:300,min:50,costo:3.5,precio:5,categoria:"Electricidad"}),
+    P({id:"p15",nombre:"Arena fina",tipo:"medida",unidad:"m3",stockModo:"no",stock:0,min:0,costo:120,precio:180,categoria:"Construcción"}),
+    P({id:"p16",nombre:"Instalación eléctrica (punto)",tipo:"servicio",unidad:"",sinStock:true,stock:0,min:0,costo:0,precio:80,categoria:"Servicios"}),
+    P({id:"p17",nombre:"Copia de llave",tipo:"servicio",unidad:"",sinStock:true,stock:0,min:0,costo:3,precio:10,categoria:"Servicios"}),
+    P({id:"p18",nombre:"Kit para pintar un cuarto",tipo:"combo",comp:[{pid:"p4",cant:1},{pid:"p8",cant:1},{pid:"p11",cant:3}],unidad:"kit",stock:0,min:0,costo:0,precio:150,categoria:"Pinturas"})
   ];
+  function pr(id){return productos.find(function(p){return p.id===id;});}
   var seedN=7;function rnd(){seedN=(seedN*9301+49297)%233280;return seedN/233280;}
-  var ventas=[];var now=new Date();
+  var now=new Date();
+  function F(dias,h,m){var d=addDays(now,-dias);d.setHours(h||10,m||0,0,0);if(d>now)d=new Date(now.getTime()-60000*(5+Math.floor(rnd()*50)));return d.toISOString();}
+  function dk(dias){return dayKey(addDays(now,dias));}
+  var trabajadores=[{id:"w1",nombre:"Joaquín",pct:40,activo:true,tel:"70011223"},{id:"w2",nombre:"Víctor",pct:50,activo:true,tel:"70033445"}];
+  var clientes=[
+    {id:"c1",creado:F(80),nombre:"Constructora Andina SRL",doc:"1023456027",tipoDoc:"nit",tel:"70122334",deuda:0},
+    {id:"c2",creado:F(60),nombre:"Juan Pérez",doc:"6543210",tipoDoc:"ci",tel:"76543210",deuda:0},
+    {id:"c3",creado:F(40),nombre:"Carmen Rojas",doc:"4455667",tipoDoc:"ci",tel:"71234567",deuda:0}
+  ];
+  var ventas=[],vendedores=["Dueña","Fer","Fer","Dueña"];
+  var normales=["p1","p2","p3","p4","p5","p7","p8","p9","p10","p11","p12","p13"];
+  function pagoDe(tot,met,cli){var o={metodo:met,efectivo:met==="efectivo"?tot:0,qr:met==="qr"?tot:0,tarjeta:met==="tarjeta"?tot:0,transf:met==="transf"?tot:0,fiado:met==="fiado"?tot:0,recibido:{},cambio:{},comprobante:"",estado:"ok"};if(cli)o.cliente=cli;return o;}
   for(var d=89;d>=0;d--){
-    var n = d===0 ? 6 : 5+Math.floor(rnd()*6);
+    var n=d===0?6:5+Math.floor(rnd()*6);
     for(var i=0;i<n;i++){
-      var dt=addDays(now,-d);dt.setHours(8+Math.floor(rnd()*(d===0?Math.max(1,now.getHours()-8):10)),Math.floor(rnd()*60),0,0);
-      if(d===0 && dt>now) dt=new Date(now.getTime()-60000*(i+1)*7);
-      var items=[];var k=1+Math.floor(rnd()*3);
-      for(var j=0;j<k;j++){var p=productos[Math.floor(rnd()*productos.length)];
+      var hh=8+Math.floor(rnd()*(d===0?Math.max(1,now.getHours()-8):10)),items=[],k=1+Math.floor(rnd()*3),r=rnd();
+      if(r<0.08){var cm=1+Math.floor(rnd()*30);items.push({pid:"p14",nombre:"Cable eléctrico #12",cant:cm,precio:5,costo:3.5,med:1,u:"m"});}
+      else if(r<0.11){items.push({pid:"p15",nombre:"Arena fina",cant:[0.5,1,1.5,2][Math.floor(rnd()*4)],precio:180,costo:120,med:1,u:"m3"});}
+      else if(r<0.16){items.push({pid:"p16",nombre:"Instalación eléctrica (punto)",cant:1+Math.floor(rnd()*4),precio:80,costo:0,trab:rnd()<0.6?"w1":"w2"});}
+      else if(r<0.21){items.push({pid:"p17",nombre:"Copia de llave",cant:1+Math.floor(rnd()*3),precio:10,costo:3,trab:"w2"});}
+      else if(r<0.24){items.push({pid:"p18",nombre:"Kit para pintar un cuarto",cant:1,precio:150,costo:110});}
+      for(var j=0;j<k;j++){var p=pr(normales[Math.floor(rnd()*normales.length)]);
         if(items.some(function(x){return x.pid===p.id;}))continue;
-        items.push({pid:p.id,nombre:p.nombre,cant:1+Math.floor(rnd()*(p.precio>60?2:6)),precio:p.precio,costo:p.costo});}
-      ventas.push({id:uid(),fecha:dt.toISOString(),items:items});
+        var c=1+Math.floor(rnd()*(p.precio>60?2:6)),it={pid:p.id,nombre:nombreDe(p),cant:c,precio:p.precio,costo:p.costo};
+        if(p.desc)it.precio=Math.round(p.precio*(100-p.desc))/100;
+        items.push(it);}
+      var v={id:"v"+d+"-"+i,fecha:F(d,hh,Math.floor(rnd()*60)),items:items,tienda:T1,usuario:vendedores[Math.floor(rnd()*vendedores.length)]};
+      var tot=items.reduce(function(a,x){return a+x.cant*x.precio;},0);tot=Math.round(tot*100)/100;
+      var m=rnd(),met=m<0.55?"efectivo":(m<0.9?"qr":(m<0.95?"tarjeta":"transf"));
+      v.pago=pagoDe(tot,met);
+      if(rnd()<0.08){var cl=clientes[1];v.cliente={id:cl.id,nombre:cl.nombre,doc:cl.doc};v.nota=true;v.pago.cliente=v.cliente;}
+      ventas.push(v);
     }
   }
-  return {negocio:{nombre:"Ferretería El Progreso (demo)",whatsapp:""},productos:productos,ventas:ventas};
+  // ventas grandes al por mayor y fiadas
+  function fiada(dias,cli,lst,lista){var its=lst.map(function(x){var p=pr(x[0]);return {pid:p.id,nombre:nombreDe(p),cant:x[1],precio:lista&&p.precios?p.precios.may:p.precio,costo:p.costo,lista:lista||undefined};});
+    var tot=its.reduce(function(a,x){return a+x.cant*x.precio;},0),c={id:cli.id,nombre:cli.nombre,doc:cli.doc},v={id:"vf"+dias+cli.id,fecha:F(dias,11),items:its,tienda:T1,usuario:"Dueña",cliente:c,nota:true,pago:pagoDe(tot,"fiado",c)};
+    ventas.push(v);cli.deuda=Math.round((cli.deuda+tot)*100)/100;return v;}
+  fiada(20,clientes[0],[["p1",20],["p2",30]],"may");fiada(6,clientes[0],[["p1",10],["p5",8]],"may");fiada(3,clientes[2],[["p4",1],["p8",2]]);
+  ventas.sort(function(a,b){return a.fecha<b.fecha?-1:1;});
+  var abonos=[{id:"a1",fecha:F(10,16),cliente:{id:"c1",nombre:clientes[0].nombre},monto:1000,metodo:"qr",tienda:T1,usuario:"Dueña"}];
+  clientes[0].deuda=Math.round((clientes[0].deuda-1000)*100)/100;
+  var it4=pr("p4"),it2=pr("p2");
+  var cotizaciones=[
+    {id:"k1",tipo:"cotizacion",fecha:F(2,15),vence:addDays(now,5).toISOString(),cliente:{id:"c1",nombre:clientes[0].nombre,doc:clientes[0].doc,tel:clientes[0].tel},items:[{pid:"p1",nombre:"Cemento 50 kg",cant:50,precio:64,costo:58,lista:"may"},{pid:"p2",nombre:nombreDe(it2),cant:80,precio:43,costo:38,lista:"may"}],total:6640,lista:"may",estado:"abierta",tienda:T1},
+    {id:"k2",tipo:"apartado",venta:"",fecha:F(1,12),cliente:{id:"c2",nombre:"Juan Pérez",doc:"6543210",tel:"76543210"},items:[{pid:"p4",nombre:nombreDe(it4),cant:3,precio:130,costo:95}],total:390,anticipo:150,estado:"por entregar",tienda:T1}
+  ];
+  var devoluciones=[{id:"d1",fecha:F(4,17),venta:ventas[ventas.length-30].id,items:[{pid:"p9",nombre:"Foco LED 12 W",cant:1,precio:15}],monto:15,metodo:"efectivo",alStock:true,tienda:T1,usuario:"Fer"}];
+  var gastos=[
+    {id:"g1",fecha:F(22,9),cat:"alquiler",monto:1500,nombre:"Alquiler del local",deCaja:false,tienda:T1},
+    {id:"g2",fecha:F(15,10),cat:"luz",monto:185,nombre:"Luz CRE",deCaja:false,tienda:T1},
+    {id:"g3",fecha:F(8,18),cat:"transporte",monto:120,nombre:"Flete de cemento",deCaja:true,tienda:T1},
+    {id:"g4",fecha:F(1,9),cat:"internet",monto:99,nombre:"Internet",deCaja:false,tienda:T1}
+  ];
+  var proveedores=[{id:"pv1",nombre:"Distribuidora de cemento",tel:"33445566",vende:"Cemento y fierro"},{id:"pv2",nombre:"Eléctrica del Sur",tel:"77889900",vende:"Cables, focos y cinta"}];
+  var cxp=[{id:"cx1",fecha:F(12),proveedor:{id:"pv1",nombre:proveedores[0].nombre},nombre:proveedores[0].nombre,monto:4600,vence:addDays(now,8).toISOString(),detalle:"80 bolsas de cemento",pagos:[{fecha:F(5),monto:2000}]}];
+  var ordenes=[{id:"o1",num:"1",fecha:F(1,10),estado:"recibido",cliente:"Luis Gutiérrez",tel:"72223344",equipo:"Amoladora 4½\"",problema:"No enciende, revisar carbones",presupuesto:"120",anticipo:"50",trab:"w2",entrega:dk(2),tienda:T1}];
+  var citas=[{id:"ct1",dia:dk(1),hora:"09:30",cliente:"Carmen Rojas",tel:"71234567",servicio:"p16",trab:"w1",estado:"pendiente",nota:"3 puntos de luz en la cocina"}];
+  var lotes=[{id:"lt1",fecha:F(30),pid:"p13",nombre:"Pegamento PVC 250 ml",vence:dk(18),cant:6,tienda:T1}];
+  var ajustesStock=[{id:"aj1",fecha:F(7,19),pid:"p3",nombre:"Clavos 2\" 1 kg",cant:-2,motivo:"Conteo físico",tienda:T1,usuario:"Dueña",monto:28}];
+  var comPagos=[{id:"cp1",trab:"w1",nombre:"Joaquín",monto:640,desde:F(37),hasta:F(7),fecha:F(7,19),deCaja:false}];
+  return {demo:2,negocio:{nombre:"Ferretería El Progreso (demo)",whatsapp:""},productos:productos,ventas:ventas,
+    tiendas:[{id:T1,nombre:"Tienda principal",tipo:"tienda",minCambio:50},{id:T2,nombre:"Almacén",tipo:"almacen",minCambio:0}],
+    usuarios:[{id:"u1",nombre:"Fer",usuario:"fer",tienda:T1,activo:true,rol:"vendedora"},{id:"u2",nombre:"Rosa",usuario:"rosa",tienda:T1,activo:true,rol:"encargada"}],
+    jornadas:[],movCaja:[],
+    reg:{clientes:clientes,abonos:abonos,cotizaciones:cotizaciones,devoluciones:devoluciones,gastos:gastos,proveedores:proveedores,cxp:cxp,trabajadores:trabajadores,comPagos:comPagos,ordenes:ordenes,citas:citas,lotes:lotes,ajustesStock:ajustesStock}};
 }
 
 var store=null;
 function load(){try{var r=window.localStorage.getItem(SKEY);if(r)return JSON.parse(r);}catch(e){}return null;}
 var avisoMemoria=false;function save(){try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){if(!avisoMemoria&&typeof toast==="function"){avisoMemoria=true;toast("El celular se quedó sin espacio para guardar aquí. Conecta Google Sheets o usa menos fotos.");}}}
 var S = load();
+try{if(S&&S.demo!==2&&S.negocio&&/\(demo\)/.test(S.negocio.nombre||"")&&!(JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null")||{}).url)S=null;}catch(e){}
 if(!S){var cfg0=null;try{cfg0=JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null");}catch(e){}
 if(cfg0&&cfg0.url){S={negocio:{nombre:"Cargando…",whatsapp:""},productos:[],ventas:[]};}else{S=seed();try{var old=window.localStorage.getItem(OLDKEY);if(old){var o=JSON.parse(old);if(o&&o.negocio)S.negocio=o.negocio;}}catch(e){}}save();}
 
@@ -903,7 +985,7 @@ function renderNav(){
 }
 function renderTiendaBar(){
   var el=$("tienda-bar");
-  if(esVend()||!multi()){el.hidden=true;el.innerHTML="";return;}
+  if(esVend()||!multi()||(typeof modoDueno==="function"&&modoDueno())){el.hidden=true;el.innerHTML="";return;}
   el.hidden=false;var v=vista();
   el.innerHTML='<label class="tienda-sel" style="width:100%">Ver<select id="tb-sel"><option value="todas">Todas las tiendas</option>'+tiendas().map(function(t){return '<option value="'+t.id+'"'+(t.id===v?' selected':'')+'>'+esc(t.nombre)+'</option>';}).join("")+'</select></label>';
   $("tb-sel").onchange=function(){tiendaVista=this.value;if(this.value!=="todas"&&tienda(this.value).tipo!=="almacen"){tiendaSel=this.value;cajaTiendaSel=this.value;}renderAll();};
@@ -1697,8 +1779,7 @@ function modalLogin(paso){
     var u=$("li-user").value.trim(),p=$("li-pin").value.trim(),msg=$("li-msg");
     if(!u||!p){msg.innerHTML='<div class="alertbox bad">Escribe tu usuario y tu contraseña.</div>';return;}
     $("li-go").disabled=true;msg.innerHTML='<p class="muted">Buscando tu cuenta…</p>';
-    fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify({usuario:u,pin:p}),redirect:"follow"})
-      .then(function(r){if(!r.ok)throw new Error("http");return r.json();})
+    postPlat({usuario:u,pin:p},60000)
       .then(function(j){
         if(!j||!j.ok){$("li-go").disabled=false;msg.innerHTML='<div class="alertbox bad">'+esc((j&&j.error)||"No se pudo iniciar sesión.")+'</div>';return;}
         if(j.vendedora)return entrarVendedora(j.url,j.vendedora,p,u,msg).catch(function(){$("li-go").disabled=false;});
@@ -1753,7 +1834,7 @@ function modalAjustes(avanzado){
       $("fa-desc3").onclick=function(){closeModal();modalAjustes();};
       $("fa-desc2").onclick=function(){cerrarSesion();closeModal();toast("Sesión cerrada. Tus datos siguen guardados en tu hoja de Google.");};};
   }else{
-    if($("fa-login"))$("fa-login").onclick=modalLogin;
+    if($("fa-login"))$("fa-login").onclick=function(){modalLogin();};
     $("fa-guia").onclick=modalGuia;
     $("fa-reset").onclick=function(){$("fa-reset").outerHTML='<button class="btn danger" type="button" id="fa-reset2">Sí, borrar y restablecer</button>';
       $("fa-reset2").onclick=function(){S=seed();carrito={};save();closeModal();renderAll();toast("Datos de ejemplo restablecidos");};};
@@ -1773,7 +1854,7 @@ function renderAvisos(){
   if(esVend()){var aqv=avisoQRTxt(yo().tienda);if(aqv)h+='<div class="alertbox"><b>'+esc(aqv)+'</b> Avisa a la dueña para que suba uno nuevo.</div>';}
   if(!conectado())h+='<div class="card demo"><div><b>Estás viendo datos de ejemplo.</b><div class="muted">Inicia sesión para ver el inventario de tu negocio.</div></div><button class="btn primary" type="button" id="av-login">Iniciar sesión</button></div>';
   var el=$("avisos");el.innerHTML=h;el.style.display=h?"":"none";
-  if($("av-login"))$("av-login").onclick=DIRECTORIO_URL?modalLogin:function(){modalAjustes(true);};
+  if($("av-login"))$("av-login").onclick=function(){if(DIRECTORIO_URL)modalLogin();else modalAjustes(true);};
   el.querySelectorAll("[data-avqr]").forEach(function(b){b.onclick=function(){modalQRTienda(b.dataset.avqr);};});
 }
 function modalGuia(){
@@ -1861,8 +1942,9 @@ var metodoRapido="efectivo",catVenta="",catInv="";
 var TEMAKEY="inventario-ia-tema";
 function aplicarTema(t){if(t==="claro")document.documentElement.setAttribute("data-theme","light");else if(t==="oscuro")document.documentElement.setAttribute("data-theme","dark");else document.documentElement.removeAttribute("data-theme");}
 function temaActual(){var t=leerLS(TEMAKEY,"auto");return t==="claro"||t==="oscuro"?t:"auto";}
-function seccionTemaHTML(){var t=temaActual();return '<div class="card"><h3>Apariencia</h3><div class="seg seg-full" id="fa-tema">'+[["auto","Automático"],["claro","Claro"],["oscuro","Oscuro"]].map(function(x){return '<button type="button" data-tema="'+x[0]+'" aria-pressed="'+(t===x[0])+'">'+x[1]+'</button>';}).join("")+'</div><p class="muted" style="margin:0">Automático sigue el modo del celular.</p></div>';}
-function bindTema(){var el=$("fa-tema");if(!el)return;el.onclick=function(e){var b=e.target.closest("[data-tema]");if(!b)return;escribirLS(TEMAKEY,b.dataset.tema);aplicarTema(b.dataset.tema);el.querySelectorAll("[data-tema]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};}
+function seccionTemaHTML(){return seccionTema0()+(typeof seccionGuiasHTML==="function"?seccionGuiasHTML():"");}
+function seccionTema0(){var t=temaActual();return '<div class="card"><h3>Apariencia</h3><div class="seg seg-full" id="fa-tema">'+[["auto","Automático"],["claro","Claro"],["oscuro","Oscuro"]].map(function(x){return '<button type="button" data-tema="'+x[0]+'" aria-pressed="'+(t===x[0])+'">'+x[1]+'</button>';}).join("")+'</div><p class="muted" style="margin:0">Automático sigue el modo del celular.</p></div>';}
+function bindTema(){if(typeof bindGuias==="function")bindGuias();var el=$("fa-tema");if(!el)return;el.onclick=function(e){var b=e.target.closest("[data-tema]");if(!b)return;escribirLS(TEMAKEY,b.dataset.tema);aplicarTema(b.dataset.tema);el.querySelectorAll("[data-tema]").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});};}
 function piezaTxt(c,n){return (c>=1000?(n>1?"billetes":"billete"):(n>1?"monedas":"moneda"));}
 function pilaHTML(c,n,chico){
   var bill=c>=1000,k=Math.min(n,4),paso=bill?(chico?7:10):(chico?5:6);
@@ -3193,11 +3275,12 @@ function renderMas(){
   if(!vend||enc)g.push(['Dinero',[tile("gastos","🧾","Gastos","Alquiler, luz, sueldos…"),tile("proveedores","🚚","Proveedores",cxp?cxp+" deuda(s) por vencer":"Lo que debes y a quién",cxp||""),!vend?tile("fiscal","🏷️","Datos para la nota","NIT, dirección, moneda"):""]]);
   g.push(['Servicios',[!vend?tile("trabajadores","🧑‍🔧","Trabajadores y comisiones","Cuánto se le debe a cada uno"):"",tile("ordenes","🛠️","Órdenes de trabajo","Recibido, en proceso, listo"),tile("agenda","📅","Agenda de citas","Con recordatorio por WhatsApp")]]);
   if(!vend||enc)g.push(['Inventario',[tile("conteo","✅","Conteo de inventario","Compara con lo que hay"),tile("ajuste","➖","Ajustar stock","Merma, vencido, robo…"),tile("vencimientos","⏳","Vencimientos",venc?venc+" por vencer":"Lotes con fecha",venc||""),tile("etiquetas","🏷️","Etiquetas con código","Imprime código y precio"),tile("importar","📥","Importar desde Excel","Pega tus productos")]]);
-  g.push(['Cuenta',[!vend?tile("historial","🕘","Historial de cambios","Quién hizo qué"):"",!vend?tile("copia","💾","Copia de seguridad","Descarga todo en Excel"):"",vend?tile("usuario","🔄","Cambiar de usuario","Otra persona en este celular"):"",tile("tutorial","❓","Cómo usar Cuadra","Tutorial rápido"),DIRECTORIO_URL&&conectado()?tile("ayuda","💬","Pedir ayuda","Te respondemos pronto"):(SOPORTE_WA?tile("soporte","💬","Ayuda por WhatsApp","Escríbenos"):"")]]);
+  g.unshift(['Ayuda',[tile("preguntas","📖","Preguntas frecuentes","¿Cómo hago…? Respuestas al toque"),tile("tutorial","❓","Tutorial general","Lo básico en 1 minuto"),DIRECTORIO_URL&&conectado()?tile("ayuda","💬","Pedir ayuda","Te respondemos pronto"):(SOPORTE_WA?tile("soporte","💬","Ayuda por WhatsApp","Escríbenos"):"")]]);
+  g.push(['Cuenta',[!vend?tile("historial","🕘","Historial de cambios","Quién hizo qué"):"",!vend?tile("copia","💾","Copia de seguridad","Descarga todo en Excel"):"",vend?tile("usuario","🔄","Cambiar de usuario","Otra persona en este celular"):""]]);
   $("mas-body").innerHTML=g.map(function(x){var t=x[1].filter(Boolean).join("");return t?'<h3 class="mas-h">'+x[0]+'</h3><div class="mas-grid">'+t+'</div>':'';}).join("");
 }
 function abrirMas(id){({reportes:modalReportes,clientes:modalClientes,cotizaciones:modalCotizaciones,mesas:function(){irA("mesas");},gastos:modalGastos,proveedores:modalProveedores,fiscal:modalFiscal,trabajadores:modalTrabajadores,ordenes:modalOrdenes,agenda:function(){modalAgenda();},
-  conteo:modalConteo,ajuste:function(){modalAjusteStock(null);},vencimientos:modalVencimientos,etiquetas:modalEtiquetas,importar:modalImportar,historial:modalHistorial,copia:copiaSeguridad,usuario:cambiarUsuario,tutorial:function(){modalTutorial(0);},ayuda:modalAyuda,
+  conteo:modalConteo,ajuste:function(){modalAjusteStock(null);},vencimientos:modalVencimientos,etiquetas:modalEtiquetas,importar:modalImportar,historial:modalHistorial,copia:copiaSeguridad,usuario:cambiarUsuario,tutorial:function(){modalTutorial(0);},ayuda:modalAyuda,preguntas:function(){modalPreguntas();},
   soporte:function(){window.open("https://wa.me/"+waNum(SOPORTE_WA)+"?text="+encodeURIComponent("Hola, necesito ayuda con Cuadra ("+S.negocio.nombre+")"),"_blank");}})[id]();}
 
 // ---------- ganancia neta del mes en Resumen ----------
@@ -3339,20 +3422,45 @@ function pintarGoogle(div,msg,solo){
       google.accounts.id.renderButton($("g-btn"),{theme:"outline",size:"large",text:"continue_with",shape:"pill",locale:"es",width:Math.min(320,div.clientWidth||300)});
     });}).catch(function(){div.innerHTML='<p class="muted">No se pudo cargar el botón de Google. Revisa tu internet.</p>';});
 }
-function postPlat(b){return fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify(b),redirect:"follow"}).then(function(r){if(!r.ok)throw new Error("http");return r.json();});}
+function postPlat(b,ms,intento){intento=intento||0;return postPlat1(b,ms).then(function(j){
+    if(j&&j.error==="ocupado"&&intento<4){if($("cg-p"))$("cg-p").textContent="Mucha gente entrando a la vez. Reintentando ("+(intento+1)+" de 4)…";return new Promise(function(r){setTimeout(r,2000+intento*1500);}).then(function(){return postPlat(b,ms,intento+1);});}
+    if(j&&j.error==="ocupado")j.error="El servidor está muy ocupado ahora. Espera un minuto y vuelve a intentar.";return j;});}
+function postPlat1(b,ms){var ac=ms&&window.AbortController?new AbortController():null,tm=ac?setTimeout(function(){ac.abort();},ms):0;
+  return fetch(DIRECTORIO_URL,{method:"POST",body:JSON.stringify(b),redirect:"follow",signal:ac?ac.signal:undefined}).then(function(r){clearTimeout(tm);if(!r.ok)throw new Error("http");return r.json();},function(e){clearTimeout(tm);throw e&&e.name==="AbortError"?new Error("tiempo"):e;});}
+// Pantalla de carga a pantalla completa: dice qué pasa, cuánto lleva y deja reintentar
+function pantallaCarga(titulo,pasoTxt){
+  var el=$("carga");if(!el){el=document.createElement("div");el.id="carga";el.setAttribute("role","alertdialog");el.setAttribute("aria-live","polite");document.body.appendChild(el);}
+  var t0=Date.now(),vivo=true,paso=pasoTxt||"";
+  el.innerHTML='<div class="carga-box"><div class="spin" id="cg-spin" aria-hidden="true"></div><h2 id="cg-t"></h2><p class="muted" id="cg-p"></p><p class="muted" id="cg-s" style="font-size:13px"></p><div id="cg-msg"></div><div class="actions" id="cg-a" style="justify-content:center"></div></div>';
+  el.classList.add("open");$("cg-t").textContent=titulo;$("cg-p").textContent=paso;
+  var iv=setInterval(function(){if(!vivo||!$("cg-s"))return;var sg=Math.round((Date.now()-t0)/1000);
+    $("cg-s").textContent=sg<15?"Esto suele tardar entre 5 y 20 segundos. No cierres la app.":(sg<40?"Está tardando un poco más de lo normal… sigue esperando ("+sg+" s).":"Tu internet o el servidor están lentos ("+sg+" s). Puedes esperar o volver a intentar.");
+    if(sg===40&&!$("cg-re0")){$("cg-a").innerHTML='<button class="btn" type="button" id="cg-re0">Cancelar</button>';$("cg-re0").onclick=c.fin;}},1000);
+  var c={paso:function(t){paso=t;if($("cg-p"))$("cg-p").textContent=t;},msg:function(){return $("cg-msg");},
+    listo:function(t,p){vivo=false;clearInterval(iv);if(!$("cg-t"))return;$("cg-spin").outerHTML='<div class="carga-ico" aria-hidden="true">📋</div>';$("cg-t").textContent=t;$("cg-p").textContent=p||"";$("cg-s").textContent="";},
+    fin:function(){vivo=false;clearInterval(iv);el.classList.remove("open");el.innerHTML="";},
+    error:function(m,reintentar){vivo=false;clearInterval(iv);if(!$("cg-t"))return;$("cg-spin").outerHTML='<div class="carga-ico" aria-hidden="true">⚠️</div>';$("cg-t").textContent="No se pudo entrar";$("cg-p").textContent=m;$("cg-s").textContent="";
+      $("cg-a").innerHTML=(reintentar?'<button class="btn primary" type="button" id="cg-re">Volver a intentar</button>':'')+'<button class="btn" type="button" id="cg-x">Cerrar</button>';
+      if(reintentar)$("cg-re").onclick=function(){c.fin();reintentar();};$("cg-x").onclick=c.fin;}};
+  return c;
+}
 function entrarGoogle(cred,msg,reg){
-  if(msg)msg.innerHTML='<p class="muted">Verificando tu cuenta de Google…</p>';
-  return postPlat(reg?{accion:"registrar",idToken:cred,negocio:reg}:{accion:"google",idToken:cred}).then(function(j){
-    if(!j||!j.ok){var m=(j&&j.error)||"No se pudo entrar.";if(msg)msg.innerHTML='<div class="alertbox bad">'+esc(m)+'</div>';else toast(m);return;}
+  var cg=pantallaCarga(reg?"Creando tu negocio…":"Entrando con Google…",reg?"Preparando tu hoja y tu prueba gratis":"Verificando tu cuenta de Google");
+  function otraVez(){entrarGoogle(cred,msg,reg);}
+  function fallo(m){cg.error(m,otraVez);}
+  return postPlat(reg?{accion:"registrar",idToken:cred,negocio:reg}:{accion:"google",idToken:cred},90000).then(function(j){
+    if(!j||!j.ok){var m=(j&&j.error)||"No se pudo entrar.";if(/token|vencid|expir/i.test(m)){cg.error("Tu inicio con Google venció. Toca Cerrar y vuelve a elegir tu cuenta.",null);return;}fallo(m);return;}
+    if(!j.url||j.nuevo||j.pendiente)cg.fin();
     if(j.soporte)SOPORTE_WA=j.soporte;
-    if(j.admin){CFG={url:j.url,clave:j.clave,rol:"admin",usuario:j.correo||"admin"};escribirLS(CFGKEY,CFG);cola=[];escribirLS(COLAKEY,cola);S=seed();save();renderAll();pintarSync();modalPanel();return;}
+    if(j.admin){cg.fin();CFG={url:j.url,clave:j.clave,rol:"admin",usuario:j.correo||"admin"};escribirLS(CFGKEY,CFG);cola=[];escribirLS(COLAKEY,cola);S=seed();save();renderAll();pintarSync();modalPanel();return;}
     if(j.nuevo){modalRegistro(cred,j);return;}
     if(j.pendiente){modalPendiente(j);return;}
-    var m2=msg||document.createElement("div");
-    return conectarCon(j.url,j.clave,m2,function(){if(j.plan)S.plan=j.plan;
+    cg.paso("Cargando tu negocio: productos y ventas");
+    return conectarCon(j.url,j.clave,cg.msg(),function(){cg.fin();if(j.plan)S.plan=j.plan;
       if(j.rubro&&rubroDe(j.rubro)&&(S.negocio.rubro!==j.rubro||!S.negocio.rubroFijo)){S.negocio.rubro=j.rubro;S.negocio.rubroFijo=true;S.negocio.rubroPedido="";save();encolar({op:"rubro",rubro:j.rubro,origen:"directorio"});}
-      renderAll();revisarRubro();if(j.nueva)toast("¡Bienvenida! Tienes "+((j.plan&&j.plan.dias)||7)+" días gratis.");},j.usuario||"");
-  }).catch(function(){if(msg)msg.innerHTML='<div class="alertbox bad">No se pudo conectar. Revisa tu internet e intenta de nuevo.</div>';});
+      renderAll();revisarRubro();if(j.nueva)toast("¡Bienvenida! Tienes "+((j.plan&&j.plan.dias)||7)+" días gratis.");},j.usuario||"").then(function(){
+        if($("fa-subir")||$("fa-cero"))cg.listo("Tu hoja está lista","¿Con qué empiezas?");});
+  }).catch(function(e){fallo(e&&e.message==="tiempo"?"El servidor tardó demasiado en responder. Revisa tu internet y vuelve a intentar.":"No se pudo conectar. Revisa tu internet y vuelve a intentar.");});
 }
 function slugUsuario(t){return sinAcento(String(t||"").toLowerCase()).replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,20);}
 function modalRegistro(cred,j){
@@ -3400,7 +3508,17 @@ function miPlanHTML(){
 }
 // ---------- panel del dueño de Cuadra ----------
 var PANEL=null,panelTab="negocios",panelFiltro="pendientes";
-function adminCall(op,d){return postPlat({accion:"admin",clave:CFG.clave,op:op,d:d||{}}).then(function(j){if(!j||!j.ok){var m=(j&&j.error)||"Error";if(m==="clave"){toast("Tu sesión venció. Vuelve a entrar con Google.");cerrarSesion();modalLogin();}else toast(m);throw new Error(m);}if(j.negocios)PANEL=j;return j;});}
+var ADM_PEND={},ADM_OCUP=0;
+function ocupado(n){ADM_OCUP=Math.max(0,ADM_OCUP+n);var el=$("guardando");if(!el){el=document.createElement("div");el.id="guardando";el.setAttribute("role","status");el.innerHTML='<span class="spin chico" aria-hidden="true"></span> Guardando…';document.body.appendChild(el);}el.classList.toggle("open",ADM_OCUP>0);}
+function adminCall(op,d){d=d||{};if(op==="listar"||op==="ficha")return adminCall0(op,d);
+  var key=op+JSON.stringify(d);if(ADM_PEND[key]){toast("Ya se está guardando. Espera un momento…");return ADM_PEND[key];}
+  d._req=op+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);ocupado(1);
+  var p=adminCall0(op,d).then(function(j){delete ADM_PEND[key];ocupado(-1);return j;},function(e){delete ADM_PEND[key];ocupado(-1);throw e;});
+  ADM_PEND[key]=p;return p;}
+// pone el botón en "Guardando…" y lo bloquea hasta que termine
+function conCarga(btn,prom,txt){if(btn){btn.disabled=true;btn.dataset.txt=btn.innerHTML;btn.innerHTML='<span class="spin chico" aria-hidden="true"></span> '+(txt||"Guardando…");}
+  return prom.then(function(j){if(btn&&btn.isConnected){btn.disabled=false;btn.innerHTML=btn.dataset.txt;}return j;},function(e){if(btn&&btn.isConnected){btn.disabled=false;btn.innerHTML=btn.dataset.txt;}throw e;});}
+function adminCall0(op,d){return postPlat({accion:"admin",clave:CFG.clave,op:op,d:d||{}}).then(function(j){if(!j||!j.ok){var m=(j&&j.error)||"Error";if(m==="clave"){toast("Tu sesión venció. Vuelve a entrar con Google.");cerrarSesion();modalLogin();}else toast(m);throw new Error(m);}if(j.negocios)PANEL=j;return j;});}
 function modalPanel(){
   if(CFG.rol!=="admin")return;
   if(!PANEL){openModal('<h2 id="modal-title">Panel Cuadra</h2><p class="muted">Cargando tus negocios…</p>');adminCall("listar").then(modalPanel).catch(function(){});return;}
@@ -3452,17 +3570,22 @@ function modalPanel(){
 }
 var PLAN_OPS=[["prueba","Prueba gratis"],["mensual","Mensual"],["trimestral","3 meses"],["semestral","6 meses"],["anual","Anual"]],PLAN_MESES={mensual:1,trimestral:3,semestral:6,anual:12};
 function modalAprobar(n){
-  var st={plan:n.estado==="Pendiente"?"prueba":(n.plan&&n.plan!=="prueba"?n.plan:"mensual"),te:n.tiendasExtra||0};
+  var st={plan:n.estado==="Pendiente"?"prueba":(n.plan&&n.plan!=="prueba"?n.plan:"mensual"),te:n.tiendasExtra||0,regalo:false};
   function monto(){var pr=PANEL.precios;if(st.plan==="prueba")return 0;return (pr[st.plan]||0)+st.te*(pr.tiendaExtra||0)*PLAN_MESES[st.plan];}
   function render(){
     openModal('<h2 id="modal-title">'+(n.estado==="Pendiente"?'Aprobar':'Renovar')+' · '+esc(n.nombre)+'</h2><p class="muted" style="margin:0">'+esc(n.correo||"")+(n.cel?' · '+esc(n.cel):'')+(n.vence?' · vence '+fechaCorta(new Date(n.vence+"T12:00:00")):'')+'</p>'+
       chipsHTML("ap-plan",PLAN_OPS.map(function(x){return [x[0],x[1]+(x[0]==="prueba"?" ("+PANEL.precios.pruebaDias+" días)":" · "+bs(PANEL.precios[x[0]]))];}),st.plan)+
-      (st.plan!=="prueba"?'<div class="form-grid"><label for="ap-te">Tiendas extra<input type="number" id="ap-te" min="0" value="'+st.te+'"></label><label for="ap-m">Cobraste ('+MON()+')<input type="number" id="ap-m" value="'+monto()+'"></label><label class="full" for="ap-n">Nota (opcional)<input type="text" id="ap-n" placeholder="Ej.: pagó por QR"></label></div>':'<p class="muted">Se le activa la prueba gratis. No se registra pago.</p>')+
-      '<div class="actions"><button class="btn primary" type="button" id="ap-ok">'+(n.estado==="Pendiente"?'Aprobar':'Renovar')+'</button><button class="btn" type="button" id="ap-x">Cancelar</button></div>');
+      (st.plan!=="prueba"?'<div class="seg" id="ap-tipo" style="margin-top:4px"><button type="button" data-rg="0" aria-pressed="'+!st.regalo+'">💵 Me pagó</button><button type="button" data-rg="1" aria-pressed="'+st.regalo+'">🎁 Es un regalo</button></div>'+
+        '<div class="form-grid"><label for="ap-te">Tiendas extra<input type="number" id="ap-te" min="0" value="'+st.te+'"></label>'+(st.regalo?'<p class="muted" style="margin:0;align-self:end">Valor del regalo: <b>'+bs(monto())+'</b></p>':'<label for="ap-m">Cobraste ('+MON()+')<input type="number" id="ap-m" value="'+monto()+'"></label>')+'<label class="full" for="ap-n">Nota (opcional)<input type="text" id="ap-n" placeholder="'+(st.regalo?'Ej.: regalo para mi tía':'Ej.: pagó por QR')+'"></label></div>'+
+        (st.regalo?'<p class="muted" style="margin:0;font-size:13px">Queda anotado en tu panel como regalo (con su valor), pero no suma a lo que cobraste.</p>':'')+
+        '<p class="muted" style="margin:0;font-size:13px">Se suma a su fecha actual'+(n.vence&&n.dias>=0?' (vence '+fechaCorta(new Date(n.vence+"T12:00:00"))+')':'')+'.</p>':'<p class="muted">Se le activa la prueba gratis. No se registra pago.</p>')+
+      '<div class="actions"><button class="btn primary" type="button" id="ap-ok">'+(n.estado==="Pendiente"?'Aprobar':(st.regalo?'🎁 Regalar plan':'Renovar'))+'</button><button class="btn" type="button" id="ap-x">Cancelar</button></div>');
+    if($("ap-tipo"))$("ap-tipo").onclick=function(e){var b=e.target.closest("[data-rg]");if(b){st.regalo=b.dataset.rg==="1";render();}};
     $("ap-plan").onclick=function(e){var b=e.target.closest("[data-v]");if(b){st.plan=b.dataset.v;render();}};
     if($("ap-te"))$("ap-te").onchange=function(){st.te=Math.max(0,Math.floor(+this.value||0));render();};
-    $("ap-x").onclick=modalPanel;
-    $("ap-ok").onclick=function(){this.disabled=true;adminCall(n.estado==="Pendiente"?"aprobar":"renovar",{id:n.id,plan:st.plan,tiendasExtra:st.te,monto:$("ap-m")?+$("ap-m").value||0:0,nota:$("ap-n")?$("ap-n").value.trim():""}).then(function(){toast("Listo: "+n.nombre+" está activo.");modalPanel();}).catch(function(){render();});};
+    $("ap-x").onclick=function(){if(modoDueno())modalFicha(n.id);else modalPanel();};
+    $("ap-ok").onclick=function(){var dd={id:n.id,plan:st.plan,tiendasExtra:st.te,monto:st.regalo?0:($("ap-m")?+$("ap-m").value||0:0),nota:$("ap-n")?$("ap-n").value.trim():""};if(st.regalo){dd.regalo=true;dd.valor=monto();}
+      conCarga(this,adminCall(n.estado==="Pendiente"?"aprobar":"renovar",dd)).then(function(){var n2=negById(n.id)||n;toast((st.regalo?"🎁 Regalo aplicado. ":"Listo. ")+n2.nombre+" está activo"+(n2.vence?" hasta el "+fechaCorta(new Date(n2.vence+"T12:00:00")):"")+".");if(modoDueno()){renderAdmin();modalFicha(n.id);}else modalPanel();}).catch(function(){});};
   }
   render();
 }
@@ -3596,14 +3719,30 @@ function admHTMLIngresos(){
   var prox=ns.filter(function(n){return n.estado==="Activo"&&!n.bloqueado&&n.dias<=30&&n.plan!=="prueba";}).sort(function(a,b){return a.dias-b.dias;}),porCobrar=prox.reduce(function(a,n){return a+precioPlan(n.plan);},0);
   var pagando=ns.filter(function(n){return n.estado==="Activo"&&!n.bloqueado&&n.plan&&n.plan!=="prueba";}),mensual=pagando.reduce(function(a,n){return a+precioPlan(n.plan)/(({mensual:1,trimestral:3,semestral:6,anual:12})[n.plan]||1);},0);
   var fueron=ns.filter(function(n){return n.estado!=="Pendiente"&&n.dias<-15;}).length,meses={},ks=[];
+  var anio=String(new Date().getFullYear()),regs=PANEL.pagos.filter(function(p){return !(p.monto>0)&&/^Regalo/.test(p.nota||p.plan||"")&&String(p.fecha).slice(0,4)===anio;}),valReg=regs.reduce(function(a,p){var m=/valor ([\d.]+)/.exec(p.nota||"");return a+(m?+m[1]:0);},0);
   PANEL.pagos.forEach(function(p){var k=String(p.fecha).slice(0,7);meses[k]=(meses[k]||0)+p.monto;});for(var i=11;i>=0;i--){var d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);ks.push(dayKey(d).slice(0,7));}
   var mx=Math.max.apply(null,ks.map(function(k){return meses[k]||0;}).concat([1]));
-  return '<div class="adm-k"><div class="kpi-mini neta"><span class="muted">Cobrado este mes</span><b class="num">'+bs(ing)+'</b></div><div class="kpi-mini"><span class="muted">Por cobrar (30 días)</span><b class="num">'+bs(porCobrar)+'</b></div><div class="kpi-mini"><span class="muted">Ingreso mensual fijo</span><b class="num">'+bs(Math.round(mensual))+'</b></div><div class="kpi-mini"><span class="muted">Clientes que se fueron</span><b class="num">'+fueron+'</b></div></div>'+
+  return '<div class="adm-k"><div class="kpi-mini neta"><span class="muted">Cobrado este mes</span><b class="num">'+bs(ing)+'</b></div><div class="kpi-mini"><span class="muted">Por cobrar (30 días)</span><b class="num">'+bs(porCobrar)+'</b></div><div class="kpi-mini"><span class="muted">Ingreso mensual fijo</span><b class="num">'+bs(Math.round(mensual))+'</b></div><div class="kpi-mini"><span class="muted">Clientes que se fueron</span><b class="num">'+fueron+'</b></div><div class="kpi-mini"><span class="muted">🎁 Regalaste este año</span><b class="num">'+regs.length+'</b><span class="muted" style="font-size:12px">'+(valReg?'valen '+bs(valReg):'')+'</span></div></div>'+
     '<div class="card"><h3 style="margin-top:0">Últimos 12 meses</h3><div class="barras">'+ks.map(function(k){var v=meses[k]||0;return '<div class="barra"><span class="bv num">'+(v?Math.round(v):"")+'</span><span class="bb" style="height:'+Math.round(v/mx*100)+'%"></span><span class="bl">'+new Date(k+"-15T12:00:00").toLocaleDateString("es-BO",{month:"short"})+'</span></div>';}).join("")+'</div></div>'+
     '<div class="card"><h3 style="margin-top:0">Próximos cobros</h3>'+(prox.map(function(n){return '<div class="row"><div><div class="name">'+esc(n.nombre)+'</div><div class="meta">'+fechaCorta(new Date(n.vence+"T12:00:00"))+' · '+esc(n.nombrePlan||n.plan)+'</div></div><div class="row-btns"><b class="num">'+bs(precioPlan(n.plan))+'</b>'+(n.cel?'<button class="btn small wa" data-wa1="'+n.id+'" data-tipo="recordar">Recordar</button>':'')+'</div></div>';}).join("")||'<div class="empty">Nadie vence en los próximos 30 días.</div>')+'</div>'+
     '<div class="card"><h3 style="margin-top:0">Pagos recibidos</h3>'+(PANEL.pagos.slice(0,80).map(function(p){return '<div class="row"><div><div class="name">'+esc(p.nombre)+'</div><div class="meta">'+fechaCorta(p.fecha)+' · '+esc(p.plan)+(p.nota?' · '+esc(p.nota):'')+'</div></div><div class="row-btns"><b class="num">'+bs(p.monto)+'</b>'+(p.monto>0?'<button class="btn small" data-recibo="'+p.id+'">Recibo</button>':'')+'</div></div>';}).join("")||'<div class="empty">Todavía no registraste pagos.</div>')+'</div>'+
     '<div class="actions"><button class="btn" type="button" id="adm-xc">📊 Clientes en Excel</button><button class="btn" type="button" id="adm-xp">📊 Pagos en Excel</button></div>';
 }
+function admFaqHTML(){var l=PANEL.faq||[];return '<div class="card" id="adm-faq"><h3 style="margin-top:0">Tus preguntas frecuentes</h3><p class="muted" style="margin:0 0 6px">Se suman a las '+FAQ.length+' que ya trae la app. Agrega aquí lo que tus clientes te preguntan seguido.</p>'+
+  (l.length?l.map(function(x,i){return '<div class="row"><div><div class="name">'+esc(x.q)+'</div><div class="meta">'+esc(x.c||"Más preguntas")+' · '+esc(String(x.a).slice(0,70))+(String(x.a).length>70?'…':'')+'</div></div><div class="row-btns"><button class="btn small" type="button" data-faqe="'+i+'">Editar</button><button class="btn small" type="button" data-faqb="'+i+'" aria-label="Borrar pregunta">🗑</button></div></div>';}).join(""):'<div class="empty">Todavía no agregaste preguntas.</div>')+
+  '<div class="actions"><button class="btn primary" type="button" data-faqe="-1">＋ Agregar pregunta</button><button class="btn" type="button" id="adm-faqv">👀 Ver como cliente</button></div></div>';}
+function modalFaqAdm(i){var l=(PANEL.faq||[]).slice(),x=i>=0?l[i]:{c:"",q:"",a:""},cs=[];FAQ.concat(l).forEach(function(y){if(y.c&&cs.indexOf(y.c)<0)cs.push(y.c);});
+  openModal('<h2 id="modal-title">'+(i>=0?'Editar pregunta':'Nueva pregunta')+'</h2><form id="f-faq" class="form-grid"><label class="full" for="fq-q">Pregunta<input type="text" id="fq-q" maxlength="140" value="'+esc(x.q)+'" placeholder="Ej.: ¿Cómo cambio el precio de un producto?"></label>'+
+    '<label class="full" for="fq-a">Respuesta<textarea id="fq-a" rows="5" maxlength="1200" placeholder="Explícalo paso a paso, como se lo dirías por WhatsApp">'+esc(x.a)+'</textarea></label>'+
+    '<label class="full" for="fq-c">Tema<input type="text" id="fq-c" list="fq-cl" maxlength="30" value="'+esc(x.c||"")+'" placeholder="Ej.: Productos"><datalist id="fq-cl">'+cs.map(function(c){return '<option value="'+esc(c)+'">';}).join("")+'</datalist></label>'+
+    '<div class="actions full"><button class="btn primary" type="submit" id="fq-ok">Guardar</button><button class="btn" type="button" id="fq-x">Cancelar</button></div></form>');
+  $("fq-x").onclick=closeModal;
+  $("f-faq").onsubmit=function(e){e.preventDefault();var y={q:$("fq-q").value.trim(),a:$("fq-a").value.trim(),c:$("fq-c").value.trim()||"Más preguntas"};if(!y.q||!y.a){toast("Escribe la pregunta y la respuesta.");return;}
+    if(i>=0)l[i]=y;else l.unshift(y);conCarga($("fq-ok"),adminCall("faq",{lista:l})).then(function(){closeModal();toast("Pregunta guardada. Tus clientes ya la ven.");renderAdmin();}).catch(function(){});};}
+document.addEventListener("click",function(e){if(!e.target.closest||!modoDueno())return;var b=e.target.closest("[data-faqe],[data-faqb],#adm-faqv");if(!b||!b.closest("#adm-faq"))return;
+  if(b.id==="adm-faqv"){PLAT_CFG=Object.assign({},PLAT_CFG||{},{faq:PANEL.faq||[]});modalPreguntas();return;}
+  if(b.dataset.faqe!==undefined){modalFaqAdm(+b.dataset.faqe);return;}
+  var i=+b.dataset.faqb,l=(PANEL.faq||[]).slice();if(!window.confirm("¿Borrar la pregunta: "+l[i].q+"?"))return;l.splice(i,1);conCarga(b,adminCall("faq",{lista:l})).then(function(){toast("Pregunta borrada");renderAdmin();}).catch(function(){});});
 function admHTMLAjustes(){
   var pr=PANEL.precios,cf=PANEL.config,qm={};(PANEL.qrs||[]).forEach(function(q){qm[q.plan]=q;});
   var QP=[["mensual","Mensual · "+bs(pr.mensual)],["trimestral","3 meses · "+bs(pr.trimestral)],["semestral","6 meses · "+bs(pr.semestral)],["anual","Anual · "+bs(pr.anual)],["libre","Sin monto (para cupones y ofertas)"]];
@@ -3622,12 +3761,12 @@ function admHTMLAjustes(){
 }
 var PLANT_DEF={recordar:"Hola {nombre} 👋 Tu plan de Cuadra vence el {fecha}. Renueva desde la app (Ajustes → Mi plan → Renovar). Mensual {mensual} · Anual {anual}.",promo:"🎉 {nombre}, oferta en Cuadra: {oferta}.",bienvenida:"¡Bienvenida a Cuadra, {nombre}! Tu cuenta está activa hasta el {fecha}.",gracias:"¡Gracias por tu pago, {nombre}! Tu plan quedó activo hasta el {fecha}.",extranamos:"Hola {nombre}, vimos que hace días no usas Cuadra. ¿Te ayudamos con algo?",vencido:"Hola {nombre}, tu plan de Cuadra venció el {fecha}. Renueva desde la app y sigue vendiendo."};
 function normalizarPanel(){if(!PANEL)return;PANEL._viejo=!PANEL.solicitudes;["negocios","pagos","avisos","solicitudes","cupones","soporte","qrs"].forEach(function(k){if(!Array.isArray(PANEL[k]))PANEL[k]=[];});
-  PANEL.ultimoMensaje=PANEL.ultimoMensaje||{};PANEL.plantillas=Object.assign({},PLANT_DEF,PANEL.plantillas||{});PANEL.novedades=PANEL.novedades||{};PANEL.precios=PANEL.precios||{};PANEL.config=PANEL.config||{};
+  PANEL.ultimoMensaje=PANEL.ultimoMensaje||{};PANEL.faq=Array.isArray(PANEL.faq)?PANEL.faq:[];PANEL.plantillas=Object.assign({},PLANT_DEF,PANEL.plantillas||{});PANEL.novedades=PANEL.novedades||{};PANEL.precios=PANEL.precios||{};PANEL.config=PANEL.config||{};
   PANEL.negocios.forEach(function(n){if(n.pagos===undefined)n.pagos=n.ingresos>0?1:0;});}
 function renderAdmin(){
   if(!modoDueno())return;
   try{normalizarPanel();}catch(e){}
-  var body={"adm-ini":admHTMLInicio,"adm-cli":admHTMLClientes,"adm-ban":admHTMLBandeja,"adm-ing":admHTMLIngresos,"adm-aju":admHTMLAjustes};
+  var body={"adm-ini":admHTMLInicio,"adm-cli":admHTMLClientes,"adm-ban":admHTMLBandeja,"adm-ing":admHTMLIngresos,"adm-aju":function(){return admHTMLAjustes()+admFaqHTML();}};
   Object.keys(body).forEach(function(k){var el=$(k+"-body");if(!el)return;try{el.innerHTML=PANEL?(PANEL._viejo?'<div class="alertbox bad"><b>Tu plataforma tiene la versión anterior.</b> Pega el Plataforma.gs nuevo y haz Implementar → Administrar implementaciones → ✏️ → Nueva versión.</div>':'')+body[k]():(ADM.error?'<div class="alertbox bad">'+esc(ADM.error)+'</div><div class="actions"><button class="btn primary" type="button" onclick="void 0" id="adm-reint">Intentar de nuevo</button></div>':'<div class="empty">Cargando tus clientes…</div>');}catch(err){el.innerHTML='<div class="alertbox bad">No se pudo mostrar esta parte: '+esc(err.message)+'</div>';}});
   var nb=PANEL?PANEL.solicitudes.filter(function(s){return s.estado==="Pendiente";}).length+PANEL.negocios.filter(function(n){return n.estado==="Pendiente";}).length+PANEL.soporte.filter(function(s){return s.estado!=="Resuelta";}).length:0;
   var b=$("nav-adm-ban");if(b)b.querySelector(".nav-b").textContent=nb||"";if(b)b.querySelector(".nav-b").hidden=!nb;
@@ -3659,18 +3798,18 @@ document.addEventListener("click",function(e){
   if(!b||!b.closest(".view,.modal"))return;var d=b.dataset;
   if(d.ficha)modalFicha(d.ficha);
   else if(d.aprobar||d.renovar)modalAprobar(negById(d.aprobar||d.renovar));
-  else if(d.prueba)adminCall("aprobar",{id:d.prueba,plan:"prueba"}).then(function(){toast("Prueba activada");renderAdmin();});
+  else if(d.prueba)conCarga(b,adminCall("aprobar",{id:d.prueba,plan:"prueba"})).then(function(){toast("Prueba activada");renderAdmin();}).catch(function(){});
   else if(d.wa1){var n=negById(d.wa1);if(!n||!n.cel){toast("Este cliente no tiene celular anotado.");return;}modalWA([n.id],d.tipo||"recordar");}
   else if(d.wamas)modalWA(null,d.wamas==="1"?"recordar":d.wamas);
   else if(d.adm)irA("adm-ban");
-  else if(d.confirmar){var s=PANEL.solicitudes.find(function(x){return x.id===d.confirmar;});b.disabled=true;adminCall("confirmarPago",{id:d.confirmar}).then(function(){toast("Pago confirmado y plan renovado");renderAdmin();var n=negById(s.negocio);if(n&&n.cel&&confirmarSimple("¿Le mandas el recibo por WhatsApp a "+n.nombre+"?")){var p=PANEL.pagos.find(function(x){return x.negocio===n.id;});if(p)window.open(waTo(n.cel,reciboTexto(p,n)),"_blank");}}).catch(function(){b.disabled=false;});}
+  else if(d.confirmar){var s=PANEL.solicitudes.find(function(x){return x.id===d.confirmar;});conCarga(b,adminCall("confirmarPago",{id:d.confirmar})).then(function(){toast("Pago confirmado y plan renovado");renderAdmin();var n=negById(s.negocio);if(n&&n.cel&&confirmarSimple("¿Le mandas el recibo por WhatsApp a "+n.nombre+"?")){var p=PANEL.pagos.find(function(x){return x.negocio===n.id;});if(p)window.open(waTo(n.cel,reciboTexto(p,n)),"_blank");}}).catch(function(){b.disabled=false;});}
   else if(d.rechazar){var m=window.prompt("¿Por qué lo rechazas? (se lo verá el cliente)","No encontramos el pago");if(m!==null)adminCall("rechazarPago",{id:d.rechazar,nota:m}).then(function(){toast("Rechazado");renderAdmin();});}
   else if(d.resolver){var r=window.prompt("Respuesta para el cliente (opcional)","");if(r!==null)adminCall("soporte",{id:d.resolver,estado:"Resuelta",respuesta:r}).then(function(){toast("Marcada como resuelta");renderAdmin();});}
-  else if(d.regalo)adminCall("regalarMes",{id:d.regalo,nota:"Referido: "+(d.por||"")}).then(function(){toast("Mes de regalo aplicado");renderAdmin();});
+  else if(d.regalo)conCarga(b,adminCall("regalarMes",{id:d.regalo,nota:"Referido: "+(d.por||"")})).then(function(){toast("Mes de regalo aplicado");renderAdmin();}).catch(function(){});
   else if(d.recibo){var p=PANEL.pagos.find(function(x){return x.id===d.recibo;}),n2=p&&negById(p.negocio);if(p&&n2)modalRecibo(p,n2);}
   else if(d.cup){var c=PANEL.cupones.find(function(x){return x.codigo===d.cup;});adminCall("cupon",Object.assign({},c,{activo:!c.activo})).then(renderAdmin);}
   else if(d.av){var a=PANEL.avisos.find(function(x){return x.id===d.av;});adminCall("aviso",Object.assign({},a,{activo:!a.activo})).then(renderAdmin);}
-  else if(d.qrquitar)adminCall("qr",{plan:d.qrquitar,quitar:true}).then(function(){toast("QR quitado");renderAdmin();});
+  else if(d.qrquitar)conCarga(b,adminCall("qr",{plan:d.qrquitar,quitar:true})).then(function(){toast("QR quitado");renderAdmin();});
 });
 function modalRecibo(p,n){
   openModal('<h2 id="modal-title">Recibo</h2><div class="nota-wrap">'+reciboHTML(p,n)+'</div><div class="actions"><button class="btn primary" type="button" id="rc-p">🖨️ Imprimir o PDF</button>'+(n.cel?'<a class="btn wa" target="_blank" rel="noopener" href="'+waTo(n.cel,reciboTexto(p,n))+'">WhatsApp</a>':'')+'<button class="btn" type="button" id="rc-x">Cerrar</button></div>');
@@ -3685,19 +3824,34 @@ function modalFicha(id){
       '<div class="adm-k"><div class="kpi-mini"><span class="muted">Plan</span><b>'+esc(n.estado==="Pendiente"?"Por aprobar":(n.nombrePlan||n.plan||"—"))+'</b><span class="muted" style="font-size:12px">'+(n.vence?(n.dias<0?'venció ':'vence ')+fechaCorta(new Date(n.vence+"T12:00:00")):'')+'</span></div><div class="kpi-mini"><span class="muted">Último uso</span><b>'+hace(n.uso)+'</b><span class="muted" style="font-size:12px">'+esc(n.usoPor||"")+'</span></div>'+
         '<div class="kpi-mini neta"><span class="muted">Vendió este mes</span><b class="num">'+(f?bs(f.ventasMes):'…')+'</b><span class="muted" style="font-size:12px">'+(f?f.nVentasMes+' ventas · hoy '+bs(f.ventasHoy):'')+'</span></div><div class="kpi-mini"><span class="muted">Productos · vendedoras</span><b class="num">'+(f?f.productos+' · '+f.vendedoras:'…')+'</b><span class="muted" style="font-size:12px">te pagó '+bs(n.ingresos)+'</span></div></div>'+
       (f&&f.error?'<div class="alertbox bad">No se pudo leer su hoja: '+esc(f.error)+'</div>':'')+
-      '<div class="actions">'+(n.hoja?'<button class="btn primary" type="button" data-pv="'+n.id+'" id="fc-ver">👀 Ver sus ventas</button>':'')+'<button class="btn" type="button" data-renovar="'+n.id+'">'+(n.estado==="Pendiente"?'Aprobar':'Renovar')+'</button>'+(n.cel?'<button class="btn wa" type="button" data-wa1="'+n.id+'" data-tipo="recordar">WhatsApp</button>':'')+'</div>'+
+      '<div class="actions">'+(n.hoja?'<button class="btn" type="button" data-pv="'+n.id+'" id="fc-ver">👀 Ver sus ventas</button>':'')+(n.cel?'<button class="btn wa" type="button" data-wa1="'+n.id+'" data-tipo="recordar">WhatsApp</button>':'')+'</div>'+
       '<div><div class="muted" style="font-size:13px;margin-bottom:4px">Etiquetas</div><div class="chips" id="fc-tags">'+ETIQUETAS.concat(tags.filter(function(t){return ETIQUETAS.indexOf(t)<0;})).map(function(t){return '<button type="button" class="cat" data-tag="'+esc(t)+'" aria-pressed="'+(tags.indexOf(t)>=0)+'">'+esc(t)+'</button>';}).join("")+'</div></div>'+
       '<label for="fc-nota">Notas<textarea id="fc-nota" rows="2" placeholder="Ej.: paga por QR los 5 de cada mes">'+esc(n.nota||"")+'</textarea></label>'+
       (n.referido?'<p class="muted" style="margin:0">Lo recomendó: <b>'+esc(n.referido)+'</b></p>':'')+
-      '<h3>Pagos</h3>'+((f&&f.pagos.length)?f.pagos.map(function(p){return '<div class="row"><div><div class="name">'+esc(p.plan)+' · '+bs(p.monto)+'</div><div class="meta">'+fechaCorta(p.fecha)+(p.nota?' · '+esc(p.nota):'')+'</div></div>'+(p.monto>0?'<button class="btn small" type="button" data-rc="'+esc(p.fecha)+'">Recibo</button>':'')+'</div>';}).join(""):'<div class="empty">'+(f?'Sin pagos todavía.':'Cargando…')+'</div>')+
+      '<div class="card plan-serv"><h3 style="margin-top:0">Plan y servicio</h3>'+
+        '<div class="estado-serv '+(n.estado==="Suspendido"?'bad':(n.bloqueado?'warn':'ok'))+'">'+(n.estado==="Suspendido"?'⛔ Servicio suspendido: no puede usar la app.':(n.estado==="Pendiente"?'⏳ Esperando tu aprobación.':(n.bloqueado?'⚠️ Plan vencido: solo puede mirar.':'✅ Activo'+(n.vence?' hasta el '+fechaCorta(new Date(n.vence+"T12:00:00")):''))))+'</div>'+
+        '<div class="actions"><button class="btn primary" type="button" data-renovar="'+n.id+'">'+(n.estado==="Pendiente"?'Aprobar':'Renovar o regalar')+'</button>'+(n.estado!=="Pendiente"?'<button class="btn" type="button" id="fc-fecha">📅 Cambiar fecha</button>':'')+'</div>'+
+        '<div id="fc-fbox"></div>'+
+        (n.estado!=="Pendiente"?'<div id="fc-sbox"><button class="btn '+(n.estado==="Suspendido"?'':'salir')+'" type="button" id="fc-susp">'+(n.estado==="Suspendido"?'✅ Reactivar servicio':'⛔ Suspender servicio')+'</button></div>':'')+'</div>'+
+      '<h3>Pagos y regalos</h3>'+(function(){var ps=PANEL.pagos.filter(function(p){return p.negocio===n.id;});return ps.length?ps.map(function(p){return '<div class="row" id="pg-'+esc(p.id)+'"><div><div class="name">'+esc(p.plan)+' · '+(p.monto>0?bs(p.monto):'🎁 regalo')+'</div><div class="meta">'+fechaCorta(p.fecha)+(p.nota?' · '+esc(p.nota):'')+'</div></div><div class="row-btns">'+(p.monto>0?'<button class="btn small" type="button" data-rc="'+esc(p.id)+'">Recibo</button>':'')+'<button class="btn small" type="button" data-pgb="'+esc(p.id)+'" aria-label="Borrar este pago">🗑</button></div></div>';}).join(""):'<div class="empty">Sin pagos todavía.</div>';})()+
       (um?'<p class="muted">Último mensaje: '+esc((TIPOS_MSG.find(function(t){return t[0]===um.tipo;})||[0,um.tipo])[1])+' · '+hace(um.fecha)+'</p>':'')+
-      '<div class="actions"><button class="btn" type="button" id="fc-reg">🎁 Regalar 1 mes</button><button class="btn" type="button" id="fc-edit">Editar datos</button><button class="btn" type="button" id="fc-x">Cerrar</button></div>');
-    $("fc-tags").onclick=function(e){var b=e.target.closest("[data-tag]");if(!b)return;var t=b.dataset.tag,i=tags.indexOf(t);if(i>=0)tags.splice(i,1);else tags.push(t);n.etiquetas=tags.join(", ");adminCall("editar",{id:n.id,etiquetas:n.etiquetas}).then(function(){n=negById(id)||n;render();});};
+      '<div class="actions"><button class="btn" type="button" id="fc-edit">Editar datos</button><button class="btn" type="button" id="fc-x">Cerrar</button></div>');
+    $("fc-tags").onclick=function(e){var b=e.target.closest("[data-tag]");if(!b)return;var t=b.dataset.tag,i=tags.indexOf(t);if(i>=0)tags.splice(i,1);else tags.push(t);
+      n.etiquetas=tags.join(", ");b.setAttribute("aria-pressed",String(i<0));renderAdmin();// se ve al instante; se guarda por detrás
+      clearTimeout(n._tt);n._tt=setTimeout(function(){adminCall("editar",{id:n.id,etiquetas:n.etiquetas}).then(function(){toast("Etiquetas guardadas");}).catch(function(){});},700);};
+    if($("fc-fecha"))$("fc-fecha").onclick=function(){$("fc-fbox").innerHTML='<div class="form-grid"><label for="fc-fv">Nueva fecha de vencimiento<input type="date" id="fc-fv" value="'+esc(n.vence||dayKey(new Date()))+'"></label><div class="actions" style="align-self:end"><button class="btn primary" type="button" id="fc-fok">Guardar fecha</button></div></div><p class="muted" style="margin:0;font-size:13px">Úsalo para corregir si renovaste de más o para quitarle tiempo.</p>';
+      $("fc-fok").onclick=function(){var v=$("fc-fv").value;if(!v){toast("Elige la fecha.");return;}conCarga(this,adminCall("editar",{id:n.id,vence:v})).then(function(){toast("Fecha cambiada");renderAdmin();n=negById(id)||n;render();}).catch(function(){});};};
+    if($("fc-susp"))$("fc-susp").onclick=function(){var susp=n.estado==="Suspendido";
+      $("fc-sbox").innerHTML='<div class="sesion-conf"><b>'+(susp?'¿Reactivar a '+esc(n.nombre)+'?':'¿Suspender a '+esc(n.nombre)+'? No podrá usar la app hasta que lo reactives. Sus datos no se borran.')+'</b><div class="actions"><button class="btn '+(susp?'primary':'salir')+'" type="button" id="fc-s2">'+(susp?'Sí, reactivar':'Sí, suspender')+'</button><button class="btn" type="button" id="fc-s3">No</button></div></div>';
+      $("fc-s3").onclick=function(){render();};
+      $("fc-s2").onclick=function(){conCarga(this,adminCall(susp?"reactivar":"suspender",{id:n.id})).then(function(){toast(susp?"Servicio reactivado":"Servicio suspendido");renderAdmin();n=negById(id)||n;render();}).catch(function(){});};};
+    document.querySelectorAll("[data-pgb]").forEach(function(b){b.onclick=function(){var pid=b.dataset.pgb,row=$("pg-"+pid);if(!row)return;
+      row.insertAdjacentHTML("afterend",'<div class="sesion-conf" id="pgc-'+pid+'"><b>¿Borrar este pago del historial?</b> <span class="muted" style="font-size:13px">No cambia su fecha de vencimiento (para eso usa Cambiar fecha).</span><div class="actions"><button class="btn salir" type="button" id="pgs-'+pid+'">Sí, borrar</button><button class="btn" type="button" id="pgn-'+pid+'">No</button></div></div>');b.disabled=true;
+      $("pgn-"+pid).onclick=function(){render();};$("pgs-"+pid).onclick=function(){conCarga(this,adminCall("borrarPago",{pago:pid})).then(function(){toast("Pago borrado");renderAdmin();render();}).catch(function(){});};};});
     $("fc-nota").onchange=function(){n.nota=this.value;adminCall("editar",{id:n.id,nota:n.nota}).then(function(){toast("Nota guardada");});};
     if($("fc-ver"))$("fc-ver").onclick=function(){verNegocio(n.id);};
-    $("fc-reg").onclick=function(){adminCall("regalarMes",{id:n.id,nota:"Regalo"}).then(function(){toast("Un mes más para "+n.nombre);n=negById(id);render();renderAdmin();});};
     $("fc-edit").onclick=function(){modalNegocio(n);};$("fc-x").onclick=closeModal;
-    document.querySelectorAll("[data-rc]").forEach(function(b){b.onclick=function(){var p=f.pagos.find(function(x){return x.fecha===b.dataset.rc;});if(p)modalRecibo(p,n);};});
+    document.querySelectorAll("[data-rc]").forEach(function(b){b.onclick=function(){var p=PANEL.pagos.find(function(x){return x.id===b.dataset.rc;});if(p)modalRecibo(p,n);};});
   }
   render();
   adminCall("ficha",{id:id}).then(function(j){f=j;if($("fc-tags"))render();}).catch(function(){});
@@ -3751,8 +3905,11 @@ function modalMisPagos(){
 }
 function modalAyuda(){
   openModal('<h2 id="modal-title">Pedir ayuda</h2><p class="muted" style="margin:0">Cuéntanos qué pasa. Te respondemos por WhatsApp o aquí mismo.</p><label for="ay-t">Tu consulta<textarea id="ay-t" rows="5" placeholder="Ej.: No sé cómo cambiar el precio de un producto"></textarea></label>'+
-    '<div class="actions"><button class="btn primary" type="button" id="ay-ok">Enviar</button>'+(SOPORTE_WA?'<a class="btn wa" target="_blank" rel="noopener" href="'+waTo(SOPORTE_WA,"Hola, necesito ayuda con Cuadra ("+S.negocio.nombre+")")+'">WhatsApp</a>':'')+'<button class="btn" type="button" id="ay-x">Cancelar</button></div>');
+    '<div class="actions"><button class="btn primary" type="button" id="ay-ok">Enviar</button>'+(SOPORTE_WA?'<a class="btn wa" target="_blank" rel="noopener" id="ay-wa" href="#">Enviar por WhatsApp</a>':'')+'<button class="btn" type="button" id="ay-x">Cancelar</button></div>');
   $("ay-x").onclick=closeModal;
+  function textoWA(){var t=$("ay-t").value.trim();return "Hola, necesito ayuda con Cuadra.\nNegocio: "+S.negocio.nombre+(CFG.usuario?" ("+CFG.usuario+")":"")+(esVend()?"\nSoy: "+yo().nombre:"")+(t?"\n\n"+t:"");}
+  if($("ay-wa")){var pw=function(){$("ay-wa").href=waTo(SOPORTE_WA,textoWA());};pw();$("ay-t").addEventListener("input",pw);
+    $("ay-wa").onclick=function(e){if(!$("ay-t").value.trim()){e.preventDefault();toast("Primero escribe tu consulta.");$("ay-t").focus();return;}pw();var t=$("ay-t").value.trim();postCli({accion:"ayuda",mensaje:t+" (también por WhatsApp)"}).catch(function(){});setTimeout(closeModal,300);};}
   $("ay-ok").onclick=function(){var t=$("ay-t").value.trim();if(!t){toast("Escribe tu consulta.");return;}this.disabled=true;
     postCli({accion:"ayuda",mensaje:t}).then(function(j){if(j&&j.ok){closeModal();toast("Enviado. Te responderemos pronto.");}else{toast((j&&j.error)||"No se pudo enviar");$("ay-ok").disabled=false;}}).catch(function(){toast("Sin conexión.");$("ay-ok").disabled=false;});};
 }
@@ -3760,6 +3917,238 @@ var novIntentos=0;
 function revisarNovedades(){var nv=S.plan&&S.plan.novedades;if(!nv||!nv.texto||!nv.version||esVend()||CFG.rol==="admin")return;if(leerLS("cuadra-nov",0)===nv.version)return;
   setTimeout(function(){if($("modal-back").classList.contains("open")){if(novIntentos++<30)revisarNovedades();return;}escribirLS("cuadra-nov",nv.version);
     openModal('<div class="tuto"><div class="tuto-i">✨</div><h2 id="modal-title">Qué hay de nuevo</h2><p style="white-space:pre-line;text-align:left">'+esc(nv.texto)+'</p></div><div class="actions"><button class="btn primary" type="button" id="nv-x" style="margin-left:auto">¡Genial!</button></div>');$("nv-x").onclick=closeModal;},1200);}
+
+// ======================= Cuadra 4.2: tutoriales por herramienta y preguntas frecuentes =======================
+// Cada guía: t = nombre, cards = tarjetas de la primera vez [ícono, título, texto], pasos = guía paso a paso [selector, título, texto]
+var GUIAS={
+  producto:{t:"Agregar producto",cards:[
+    ["📦","Agrega tu producto","Elige primero el tipo: Normal (lo compras y lo revendes), Por medida (metros, kilos), Lo hago yo (pan, jugos) o Servicio (mano de obra)."],
+    ["📏","Tamaño","Es cuánto trae cada uno: bolsa de 50 kg, botella de 2 L, tubo de 6 m. Si no tiene tamaño, elige Sin tamaño."],
+    ["💰","Costo, precio y mínimo","Costo es lo que te cuesta a ti; Precio es lo que cobras. El mínimo te avisa cuando quedan pocos."]],
+   pasos:[["#fp-tipo","Tipo de producto","Normal: lo compras y lo revendes igual. Por medida: lo vendes por metro, kilo o litro. Lo hago yo: tú lo preparas. Servicio: mano de obra, no lleva stock."],
+    ["#fp-nombre","Nombre","Escribe cómo lo buscas tú. Ej.: Cemento, Coca-Cola, Pan de batalla."],
+    ["#fp-tam-n","Tamaño","Número y medida de cada uno. Ej.: 50 + kg, 2 + litros. Así puedes tener Coca-Cola 500 ml y 2 L por separado."],
+    ["#fp-cat","Categoría","Sirve para agrupar y filtrar al vender. Ej.: Bebidas, Construcción."],
+    ["#fp-cod","Código de barras","Opcional. Toca la cámara para escanearlo; después solo escaneas para vender."],
+    ["[id^='fp-st-']","¿Cuántos tienes?","Lo que hay ahora en tu tienda. Cada venta lo descuenta sola."],
+    ["#fp-pp-box,#fp-paq-box,.paq-box","Llegó en paquetes","Si te llegan cajas, pon cuántos paquetes y cuánto trae cada uno: la app multiplica por ti."],
+    ["#fp-min","Mínimo","Cuando quedan menos de este número te avisa en rojo para que vuelvas a comprar."],
+    ["#fp-costo","Costo","Lo que pagaste por cada uno. Con esto la app calcula tu ganancia real."],
+    ["#fp-precio","Precio de venta","Lo que cobras por cada uno. Abajo ves cuánto ganas."],
+    ["#fp-promo-abrir","Ofertas y precio por mayor","Ej.: lleva 3 paga 2, o un precio especial para clientes mayoristas."]]},
+  medida:{t:"Vender por medida",cards:[
+    ["📏","Por medida","Para cosas que se venden por metro, kilo, litro o m²: cable, tela, carne, viguetas, gasolina."],
+    ["✏️","Al vender","Tocas el producto y escribes cuánto lleva (ej.: 3,5 metros). El precio se calcula solo."],
+    ["🔁","Dos medidas","Si también lo vendes por rollo o por bolsa, activa También lo vendo por otra medida."]],
+   pasos:[["#fp-nombre","Nombre","Ej.: Cable #12, Tela jean, Carne molida."],
+    ["#fp-u","Medida","En qué lo vendes: metros, kilos, litros, m² o m³."],
+    ["#fp-modo","¿Controlas cuánto te queda?","Sí: la app descuenta lo que vendes. No: para cosas que no cuentas, como arena del montón."],
+    ["[id^='fp-st-']","Cuánto tienes","En la medida que elegiste. Ej.: 300 metros."],
+    ["#fp-costo","Costo por medida","Lo que te cuesta 1 metro (o 1 kilo)."],
+    ["#fp-precio","Precio por medida","Lo que cobras por 1 metro (o 1 kilo)."],
+    ["#fp-m2on","Otra medida","Ej.: vendes cable por metro y también el rollo de 100 m."],
+    ["#fp-minv","Precio mínimo","Lo más bajo que puede cobrar una vendedora si hace rebaja."]]},
+  hago:{t:"Producto que hago yo",cards:[
+    ["🍳","Lo hago yo","Para lo que preparas: pan, tortas, jugos, comida. El costo sale de tu receta."],
+    ["🧮","Calcular costo","Toca Calcular costo, anota los ingredientes que usas y cuánto rinde. La app saca el costo de cada uno."],
+    ["🏭","Producción","Cuando preparas una tanda, toca Producir: descuenta los ingredientes del almacén y suma lo preparado."]],
+   pasos:[["#fp-nombre","Nombre","Ej.: Limonada, Torta de chocolate."],
+    ["#fp-u","¿Cómo lo vendes?","Por vaso, porción, unidad o plato."],
+    ["#fp-receta","Calcular costo","Anota tu receta (ingredientes y cuánto usas). La app calcula cuánto te cuesta cada vaso o porción."],
+    ["#fp-sinst","Sin stock","Márcalo si lo preparas al momento (ej.: jugos) y no quieres contar cuántos hay."],
+    ["#fp-precio","Precio","Lo que cobras. Abajo ves cuánto ganas por cada uno."]]},
+  servicio:{t:"Servicio",cards:[
+    ["✂️","Servicios","Mano de obra que no lleva stock: corte, arreglo, instalación, lavado."],
+    ["🧑‍🔧","¿Quién lo hizo?","Al vender te pregunta qué trabajador lo hizo y calcula su comisión sola."],
+    ["⏱️","Por tiempo","Solo si cobras por hora (ej.: alquiler de cancha). Un taller que cobra por trabajo no necesita marcarlo."]],
+   pasos:[["#fp-nombre","Nombre","Ej.: Cambio de aceite, Corte de cabello."],
+    ["#fp-tiempo","¿Se cobra por tiempo?","Márcalo solo si cobras por hora o por minuto."],
+    ["#fp-precio","Precio","Lo que cobras por el servicio."],
+    ["#fp-costo","Costo","Opcional: materiales que usas en cada servicio."]]},
+  combo:{t:"Combo",cards:[
+    ["🎁","Combos","Junta varios productos y véndelos juntos a un precio especial. Ej.: Kit para pintar = pintura + brocha + lijas."],
+    ["📦","Stock automático","Al vender un combo se descuenta cada producto que lleva."]],
+   pasos:[["#fp-nombre","Nombre del combo","Ej.: Kit para pintar, Combo desayuno."],["#fp-cb-add","Qué lleva","Agrega cada producto y cuántos lleva."],["#fp-precio","Precio del combo","Lo que cobras por todo el combo."]]},
+  receta:{t:"Calcular costo",cards:[
+    ["🧮","Tu receta","Anota los ingredientes que usas en una tanda y cuánto rinde. Ej.: 1 kg de limón + 1 kg de azúcar = 20 vasos."],
+    ["💡","Costo exacto","Cuadra divide el costo de los ingredientes entre lo que rinde. Así sabes cuánto ganas de verdad."]],
+   pasos:[["#w-rinde","¿Cuánto rinde?","Cuántos vasos, porciones o unidades salen de una tanda."],["#w-add","Ingredientes","Agrega cada cosa que usas y cuánto."],["#w-next","Seguir","Revisa el costo final y guárdalo."]]},
+  llego:{t:"Llegó mercadería",cards:[
+    ["🚚","Llegó mercadería","Úsalo cada vez que compras. Suma al stock y actualiza tu costo promedio."],
+    ["📦","Paquetes","Si compraste 5 paquetes de 6, escribe 5 × 6 y la app suma 30."]],
+   pasos:[["#ll-paq,#ll-cant","¿Cuántos llegaron?","Escribe la cantidad, o los paquetes si viene en cajas."],["#ll-por","Trae cada paquete","Cuántas unidades vienen en cada paquete."],["#ll-res","Resultado","Aquí ves cuánto se suma en total."],["#ll-ok","Guardar","Toca para sumar al stock."]]},
+  compraIns:{t:"Comprar materia prima",cards:[["🛒","Materia prima","Anota lo que compras para producir: harina, azúcar, carne. No aparece en Vender."]],pasos:[["#ci-cant","Cantidad","Cuánto compraste."],["#ci-precio","Cuánto pagaste","El total que pagaste. La app saca el costo por kilo o litro."]]},
+  insumo:{t:"Materia prima",cards:[["🏭","Almacén","Aquí van las cosas que compras para preparar tus productos (harina, azúcar). Son diferentes de lo que vendes."]]},
+  produccion:{t:"Registrar producción",cards:[["🏭","Producir","Cuando preparas una tanda, anótala: se descuentan los ingredientes del almacén y se suma lo preparado al inventario."]]},
+  cobrar:{t:"Cobrar",cards:[
+    ["💵","Cómo te pagan","Elige Efectivo, QR, Tarjeta, Mixto o Fiado."],
+    ["🪙","Cambio exacto","En efectivo toca los billetes que te dieron; la app te dice cuánto cambio dar y con qué billetes."]],
+   pasos:[["#cb-met","Forma de pago","Efectivo, QR, Tarjeta, Mixto (parte y parte) o Fiado (te paga después)."],["#cb-den","Billetes recibidos","Toca los billetes que te entregó el cliente."],["#cb-exacto","Pagó justo","Si te pagó exacto, toca aquí."]]},
+  ventaMedida:{t:"Vender por medida",cards:[["📏","¿Cuánto lleva?","Escribe la cantidad (ej.: 2,5 metros). Puedes ajustar el precio si haces rebaja, hasta el mínimo."]],pasos:[["#mm-med","Medida","Si lo vendes de dos formas, elige cuál."],["#mm-cant","Cantidad","Cuántos metros, kilos o litros lleva."]]},
+  rapida:{t:"Venta rápida",cards:[["⚡","Venta rápida","Para cobrar algo que no está en tu lista: escribe el monto y qué fue. No descuenta stock."]]},
+  clientes:{t:"Clientes y fiado",cards:[
+    ["👥","Tus clientes","Guarda nombre, CI o NIT y celular. Sirve para la nota de venta y para fiar."],
+    ["📒","Fiado","Al cobrar elige Fiado: se suma a lo que te debe. Cuando te paga, entra al cliente y toca Cobrar deuda."]]},
+  cliente:{t:"Datos del cliente",cards:[["🧾","Datos del cliente","Con CI o NIT lo encuentras la próxima vez. Marca Quiere nota de venta si la pide."]],pasos:[["#cl-doc","CI o NIT","Escríbelo y aparecen los clientes guardados."],["#cl-nom","Nombre","Nombre o razón social."],["#cl-tel","Celular","Para enviarle la nota o recordarle su deuda por WhatsApp."],["#cl-nota","Nota de venta","Márcalo si quiere su nota."]]},
+  abono:{t:"Cobrar deuda",cards:[["💸","Pago de deuda","Anota cuánto te pagó. Puede pagar por partes."]]},
+  cotizaciones:{t:"Cotizaciones y apartados",cards:[
+    ["📝","Cotización","Arma el carrito y toca Cotizar: le mandas un presupuesto con validez de 7 días. Si acepta, la conviertes en venta."],
+    ["🔖","Apartado","Cuando deja un anticipo: guarda lo que se lleva y cuánto falta pagar."]]},
+  apartado:{t:"Apartar con anticipo",cards:[["🔖","Anticipo","Escribe cuánto dejó. El resto queda como saldo pendiente del cliente."]]},
+  devolucion:{t:"Devolución",cards:[["↩️","Devolución","Elige qué devuelve. Puedes regresarlo al stock y devolver el dinero en efectivo o QR."]]},
+  gastos:{t:"Gastos",cards:[["🧾","Gastos del negocio","Anota alquiler, luz, sueldos, transporte. Se restan para darte tu ganancia neta del mes."]]},
+  gasto:{t:"Anotar gasto",cards:[["🧾","Gasto","Elige la categoría y el monto. Marca De la caja si sacaste el dinero de la caja de hoy."]]},
+  proveedores:{t:"Proveedores",cards:[["🚚","Proveedores","Guarda a quién le compras y anota las compras a crédito para saber cuánto debes y cuándo vence."]]},
+  cxp:{t:"Compra a crédito",cards:[["📅","A crédito","Anota el monto y la fecha en que debes pagar. Te avisamos cuando se acerque."]]},
+  trabajadores:{t:"Trabajadores y comisiones",cards:[["🧑‍🔧","Comisiones","Agrega a cada trabajador con su porcentaje. Cada servicio que haga suma a lo que le debes; aquí ves cuánto pagarle."]]},
+  trabajador:{t:"Trabajador",cards:[["🧑‍🔧","Porcentaje","Ej.: 40 significa que se lleva el 40% de cada servicio que hace."]],pasos:[["#tw-n","Nombre","Nombre del trabajador."],["#tw-p","Porcentaje","Cuánto se lleva de cada servicio."]]},
+  ordenes:{t:"Órdenes de trabajo",cards:[["🛠️","Órdenes","Para talleres: anota el equipo que recibes, el problema, presupuesto y anticipo. Lo pasas a Listo y Entregado."]]},
+  orden:{t:"Orden de trabajo",cards:[["🛠️","Nueva orden","Anota quién lo trae, qué equipo, qué tiene y cuándo lo entregas. Al entregarlo se cobra solo."]]},
+  agenda:{t:"Agenda",cards:[["📅","Citas","Agenda servicios por día y hora, con recordatorio por WhatsApp para el cliente."]]},
+  cita:{t:"Cita",cards:[["📅","Nueva cita","Elige el servicio, la hora y quién lo hace."]]},
+  conteo:{t:"Conteo de inventario",cards:[["✅","Contar","Cuenta lo que hay en el estante y escríbelo. La app te dice qué falta o sobra y corrige el stock."]]},
+  ajuste:{t:"Ajustar stock",cards:[["➖","Ajustes","Para lo que se rompió, venció o se perdió. Queda anotado el motivo y cuánto perdiste."]]},
+  vencimientos:{t:"Vencimientos",cards:[["⏳","Fechas","Al registrar una compra pon la fecha de vencimiento. Aquí ves qué vence pronto."]]},
+  etiquetas:{t:"Etiquetas",cards:[["🏷️","Etiquetas","Elige productos y cuántas etiquetas. Se imprimen con código de barras y precio."]]},
+  importar:{t:"Importar desde Excel",cards:[["📥","Importar","Copia las columnas de tu Excel (nombre, stock, costo, precio) y pégalas aquí."]]},
+  reportes:{t:"Reportes",cards:[["📊","Reportes","Elige el periodo. Ves ventas, ganancia, lo más vendido. Descárgalo en PDF o Excel, o mándalo por WhatsApp."]]},
+  cerrarCaja:{t:"Cerrar caja",cards:[["🔒","Cerrar jornada","Cuenta los billetes que hay en la caja. La app compara con lo que debería haber y te dice si falta o sobra."]]},
+  movCaja:{t:"Mover dinero",cards:[["💵","Sacar o poner","Si sacas dinero de la caja (o pones cambio), anótalo con el motivo para que la caja cuadre."]]},
+  enviar:{t:"Enviar mercadería",cards:[["🚛","Entre tiendas","Pasa mercadería de una tienda o almacén a otra. Se descuenta de una y se suma en la otra."]]},
+  fiscal:{t:"Datos para la nota",cards:[["🏷️","Nota de venta","Tu NIT, dirección y teléfono salen arriba de cada nota de venta."]]},
+  vendedora:{t:"Vendedora",cards:[["👩‍💼","Vendedoras","Cada vendedora entra con usuario.nombre y su PIN. Solo ve las ventas de su día, no tus costos ni ganancias."]]},
+  tienda:{t:"Tienda",cards:[["🏬","Tiendas y almacén","Si tienes otra sucursal o un depósito, agrégalo. Cada uno lleva su propio stock."]]},
+  "v-vender":{t:"Vender",cards:[["🛒","Vender","Toca los productos (o escanea el código) para agregarlos. Abajo toca Cobrar."],["⚡","Venta rápida","Para algo que no está en tu lista, usa Venta rápida."]]},
+  "v-productos":{t:"Inventario",cards:[["📦","Tu inventario","Aquí agregas y editas productos. En rojo lo que se acaba."],["🚚","Llegó mercadería","Toca un producto → + Llegó para sumar lo que compraste."]]},
+  "v-caja":{t:"Caja",cards:[["💵","Caja del día","Al empezar el día abre la caja con el cambio que tienes. Al final ciérrala contando los billetes."]]},
+  "v-mesas":{t:"Mesas",cards:[["🍽️","Mesas","Toca una mesa para anotar el pedido. Cuando pidan la cuenta, toca Cobrar."]]},
+  "v-inicio":{t:"Resumen",cards:[["📈","Tu resumen","Ventas de hoy, ganancia del mes y lo que debes reponer. Desliza para ver más."]]}
+};
+function guiaDeModal(){
+  var m=$("modal");if(!m||!$("modal-back").classList.contains("open"))return "";
+  function h(s){return !!m.querySelector(s);}var tit=(($("modal-title")||{}).textContent||"").trim();
+  if(h("#f-prod")){if(h("#fp-cb-add"))return "combo";var tb=m.querySelector("#fp-tipo [aria-pressed='true']"),tp=tb?tb.dataset.tipo:"normal";return tp==="medida"?"medida":(tp==="hago"?"hago":(tp==="servicio"?"servicio":"producto"));}
+  var L=[["#w-rinde","receta"],["#ll-cant,#ll-paq","llego"],["#f-ci","compraIns"],["#pr-q","produccion"],["#cb-met","cobrar"],["#mm-cant","ventaMedida"],["#vr-monto","rapida"],["#cls-q","clientes"],["#cl-nom","cliente"],["#f-ab","abono"],["#ap-m","apartado"],["#kc-x","cotizaciones"],["#dv-st","devolucion"],["#f-gs","gasto"],["#gs-n","gastos"],["#f-cp","cxp"],["#pv-n","proveedores"],["#f-tw","trabajador"],["#tw-nuevo","trabajadores"],["#f-od","orden"],["#or-n","ordenes"],["#f-ct","cita"],["#ag-nueva","agenda"],["#cn-ok","conteo"],["#aj-ok","ajuste"],["#vc-x","vencimientos"],["#et-ok","etiquetas"],["#im-t","importar"],["#rp-a","reportes"],["#mv-tipo","movCaja"],["#en-hacia","enviar"],["#f-fis","fiscal"],["#f-ve","vendedora"],["#f-ti","tienda"]];
+  for(var i=0;i<L.length;i++)if(h(L[i][0]))return L[i][1];
+  if(/^Cerrar jornada/.test(tit))return "cerrarCaja";if(/materia prima/i.test(tit))return "insumo";if(/^Ajustar stock/.test(tit))return "ajuste";
+  return "";
+}
+function guiasVistas(){return leerLS("cuadra-guias",{})||{};}
+function guiaMarcar(k){var g=guiasVistas();g[k]=1;escribirLS("cuadra-guias",g);}
+function guiasActivas(){return leerLS("cuadra-guias-off",0)!==1;}
+function guiaPermitida(){return !(CFG.rol==="admin")&&!CFG.ver&&!($("carga")&&$("carga").classList.contains("open"));}
+var guiaObs=null,guiaT=0;
+function guiaRevisar(){clearTimeout(guiaT);guiaT=setTimeout(function(){
+  var k=guiaDeModal(),m=$("modal");if(!k||!GUIAS[k]||CFG.rol==="admin")return;
+  var l=m.querySelector(".guia-link");if(!l||l.dataset.guia!==k){if(l)l.remove();m.insertAdjacentHTML("beforeend",'<button type="button" class="guia-link" data-guia="'+k+'">❓ ¿Cómo se usa? Ver tutorial</button>');}
+  if(guiasActivas()&&guiaPermitida()&&!guiasVistas()[k]&&!$("guia"))guiaTarjetas(k);
+},250);}
+function guiaVista(view){var k="v-"+view;if(!GUIAS[k]||!guiasActivas()||!guiaPermitida()||guiasVistas()[k]||$("guia"))return;setTimeout(function(){if(!$("modal-back").classList.contains("open"))guiaTarjetas(k);},350);}
+function guiaCerrar(){var g=$("guia");if(g)g.remove();var b=$("guia-b");if(b)b.remove();document.querySelectorAll(".guia-foco").forEach(function(e){e.classList.remove("guia-foco");});}
+function guiaTarjetas(k,i){
+  var G=GUIAS[k];if(!G)return;i=i||0;guiaMarcar(k);
+  var c=G.cards[i],ult=i===G.cards.length-1,g=$("guia");
+  if(!g){g=document.createElement("div");g.id="guia";g.setAttribute("role","dialog");g.setAttribute("aria-modal","true");g.setAttribute("aria-labelledby","guia-t");document.body.appendChild(g);}
+  g.innerHTML='<div class="guia-card"><div class="guia-top"><span class="pill">Tutorial · '+esc(G.t)+'</span><button type="button" class="linkbtn" id="guia-x">Saltar</button></div><div class="guia-ic" aria-hidden="true">'+c[0]+'</div><h2 id="guia-t">'+esc(c[1])+'</h2><p>'+esc(c[2])+'</p>'+
+    (G.cards.length>1?'<div class="tuto-dots">'+G.cards.map(function(x,j){return '<span class="'+(j===i?'on':'')+'"></span>';}).join("")+'</div>':'')+
+    '<div class="actions" style="justify-content:center">'+(i>0?'<button class="btn" type="button" id="guia-ant">Atrás</button>':'')+(ult?(G.pasos&&G.pasos.length&&$("modal-back").classList.contains("open")?'<button class="btn" type="button" id="guia-pp">Guíame paso a paso</button>':'')+'<button class="btn primary" type="button" id="guia-ok">Entendido</button>':'<button class="btn primary" type="button" id="guia-sig">Siguiente</button>')+'</div>'+
+    '<p class="muted" style="font-size:12px;margin:6px 0 0">Puedes volver a verlo con <b>Ver tutorial</b>, abajo de cada herramienta.</p></div>';
+  $("guia-x").onclick=guiaCerrar;if($("guia-ant"))$("guia-ant").onclick=function(){guiaTarjetas(k,i-1);};if($("guia-sig"))$("guia-sig").onclick=function(){guiaTarjetas(k,i+1);};
+  if($("guia-ok"))$("guia-ok").onclick=guiaCerrar;if($("guia-pp"))$("guia-pp").onclick=function(){guiaCerrar();guiaPasos(k);};
+  setTimeout(function(){var b=$("guia-sig")||$("guia-ok");if(b)b.focus();},50);
+}
+function guiaPasos(k,i){
+  var G=GUIAS[k];if(!G)return;
+  var ps=(G.pasos||[]).filter(function(p){var e=document.querySelector("#modal "+p[0].split(",").join(",#modal "));return e&&e.offsetParent!==null;});
+  if(!ps.length){guiaTarjetas(k);return;}
+  i=i||0;guiaMarcar(k);document.querySelectorAll(".guia-foco").forEach(function(e){e.classList.remove("guia-foco");});
+  var p=ps[i],el=document.querySelector("#modal "+p[0].split(",").join(",#modal ")),box=el.closest("label")||el;
+  box.classList.add("guia-foco");box.scrollIntoView({block:"center",behavior:"smooth"});
+  var b=$("guia-b");if(!b){b=document.createElement("div");b.id="guia-b";b.setAttribute("role","dialog");b.setAttribute("aria-live","polite");document.body.appendChild(b);}
+  b.innerHTML='<div class="muted" style="font-size:12px">Paso '+(i+1)+' de '+ps.length+'</div><b>'+esc(p[1])+'</b><p style="margin:4px 0 8px">'+esc(p[2])+'</p><div class="actions"><button class="btn small" type="button" id="gb-x">Salir</button>'+(i>0?'<button class="btn small" type="button" id="gb-a" style="margin-left:auto">Atrás</button>':'')+'<button class="btn small primary" type="button" id="gb-s"'+(i>0?'':' style="margin-left:auto"')+'>'+(i===ps.length-1?'Terminar':'Siguiente')+'</button></div>';
+  setTimeout(function(){var r=box.getBoundingClientRect();b.classList.toggle("arriba",r.top>window.innerHeight*0.5);},350);
+  $("gb-x").onclick=guiaCerrar;if($("gb-a"))$("gb-a").onclick=function(){guiaPasos(k,i-1);};
+  $("gb-s").onclick=function(){if(i===ps.length-1){guiaCerrar();toast("¡Listo! Puedes repetirlo con Ver tutorial.");}else guiaPasos(k,i+1);};
+}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".guia-link");if(!b)return;var k=b.dataset.guia,G=GUIAS[k];if(!G)return;if(G.pasos&&G.pasos.length)guiaPasos(k);else guiaTarjetas(k);});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&($("guia")||$("guia-b")))guiaCerrar();});
+(function(){var m=$("modal");if(m&&window.MutationObserver){guiaObs=new MutationObserver(guiaRevisar);guiaObs.observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:["aria-pressed"]});}
+  var mb=$("modal-back");if(mb&&window.MutationObserver)new MutationObserver(function(){if(!mb.classList.contains("open"))guiaCerrar();}).observe(mb,{attributes:true,attributeFilter:["class"]});
+  document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("click",function(){guiaVista(b.dataset.view);});});})();
+function seccionGuiasHTML(){if(CFG.rol==="admin")return "";return '<div class="card"><h3>Tutoriales</h3><label class="check" style="margin:0"><input type="checkbox" id="fa-guias"'+(guiasActivas()?' checked':'')+'> Mostrar un tutorial la primera vez que uso cada herramienta</label><div class="actions"><button class="btn" type="button" id="fa-guias-re">↺ Volver a ver todos los tutoriales</button><button class="btn" type="button" id="fa-faq">📖 Preguntas frecuentes</button></div></div>';}
+function bindGuias(){if($("fa-guias"))$("fa-guias").onchange=function(){escribirLS("cuadra-guias-off",this.checked?0:1);toast(this.checked?"Tutoriales activados":"Tutoriales desactivados");};
+  if($("fa-guias-re"))$("fa-guias-re").onclick=function(){escribirLS("cuadra-guias",{});escribirLS("cuadra-guias-off",0);escribirLS("cuadra-tuto",0);if($("fa-guias"))$("fa-guias").checked=true;toast("Listo: verás de nuevo el tutorial de cada herramienta al abrirla.");};
+  if($("fa-faq"))$("fa-faq").onclick=function(){modalPreguntas();};}
+
+// ---------- preguntas frecuentes ----------
+// ir: herramienta de Más (abrirMas), "v:vista" para una pestaña, o "+producto" para el formulario de producto nuevo
+var FAQ=[
+  {c:"Empezar",q:"¿Por dónde empiezo?",a:"1) Agrega tus productos en Inventario → + Nuevo. 2) Vende desde la pestaña Vender. 3) Cuando compres, usa + Llegó para sumar al stock. Lo demás (clientes, gastos, caja) lo usas cuando lo necesites.",ir:"+producto",g:"producto"},
+  {c:"Empezar",q:"¿Qué pasa si no hay internet?",a:"Puedes seguir vendiendo. Todo se guarda en el celular y se sube solo cuando vuelve el internet. El punto verde arriba significa que todo está guardado."},
+  {c:"Empezar",q:"¿Dónde se guardan mis datos?",a:"En tu propia hoja de Google, que es tuya. Puedes descargar todo en Excel desde Más → Copia de seguridad."},
+  {c:"Productos",q:"¿Cómo agrego un producto?",a:"Ve a Inventario y toca + Nuevo. Elige el tipo, escribe nombre, tamaño, cuántos tienes, costo y precio.",ir:"+producto",g:"producto"},
+  {c:"Productos",q:"¿Qué es el tamaño?",a:"Es cuánto trae cada uno: bolsa de 50 kg, botella de 2 L, tubo de 6 m. No es la cantidad que tienes. Si no tiene tamaño, elige Sin tamaño.",ir:"+producto",g:"producto"},
+  {c:"Productos",q:"¿Cómo vendo por metro, kilo o litro?",a:"Al crear el producto elige el tipo Por medida y la medida (metros, kilos…). Pones el precio por 1 metro. Al vender escribes cuánto lleva y el precio sale solo.",ir:"+producto",g:"medida"},
+  {c:"Productos",q:"¿Cómo calculo el costo de lo que preparo?",a:"Crea el producto con el tipo Lo hago yo y toca Calcular costo. Anota los ingredientes de una tanda y cuánto rinde. La app saca el costo de cada vaso o porción.",ir:"+producto",g:"hago"},
+  {c:"Productos",q:"¿Cómo hago un combo o kit?",a:"En + Nuevo elige Combo, agrega los productos que lleva y pon el precio del combo. Al venderlo se descuenta cada producto.",ir:"+producto",g:"combo"},
+  {c:"Productos",q:"¿Cómo pongo una oferta (3x2) o precio por mayor?",a:"Edita el producto y toca Ofertas y precio por mayor. Al vender eliges la lista Por mayor para ese cliente."},
+  {c:"Productos",q:"¿Cómo registro un servicio con comisión?",a:"1) En Más → Trabajadores agrega a cada uno con su porcentaje. 2) Crea el producto tipo Servicio. 3) Al venderlo eliges quién lo hizo y su comisión se calcula sola.",ir:"trabajadores",g:"trabajadores"},
+  {c:"Inventario",q:"¿Diferencia entre inventario y almacén?",a:"Inventario es lo que vendes (pan, gaseosas). Almacén es la materia prima que compras para prepararlo (harina, azúcar). Lo del almacén no aparece en Vender; se descuenta cuando registras una producción.",ir:"v:productos",g:"v-productos"},
+  {c:"Inventario",q:"Me llegó mercadería, ¿cómo la sumo?",a:"En Inventario toca el producto → + Llegó. Si vino en paquetes, escribe paquetes × lo que trae cada uno y la app suma el total. También puedes escanear el código.",ir:"v:productos",g:"llego"},
+  {c:"Inventario",q:"Mi stock no cuadra, ¿qué hago?",a:"Usa Más → Conteo de inventario: cuentas lo que hay en el estante y la app corrige el stock y anota la diferencia. Si algo se rompió o venció, usa Ajustar stock.",ir:"conteo",g:"conteo"},
+  {c:"Inventario",q:"¿Cómo controlo fechas de vencimiento?",a:"Al registrar lo que llegó, pon la fecha de vencimiento. En Más → Vencimientos ves qué vence pronto.",ir:"vencimientos",g:"vencimientos"},
+  {c:"Inventario",q:"¿Puedo subir mis productos desde Excel?",a:"Sí: Más → Importar desde Excel. Copia las columnas de tu Excel y pégalas.",ir:"importar",g:"importar"},
+  {c:"Vender",q:"¿Cómo doy cambio exacto?",a:"Al cobrar en efectivo toca los billetes que te dio el cliente. La app te dice cuánto cambio dar y con qué billetes.",g:"cobrar"},
+  {c:"Vender",q:"¿Cómo hago una nota de venta?",a:"Antes de cobrar toca Cliente, escribe su CI o NIT y marca Quiere nota de venta. Al terminar la puedes imprimir o mandar por WhatsApp. Tus datos para la nota van en Más → Datos para la nota.",ir:"fiscal",g:"cliente"},
+  {c:"Vender",q:"¿Cómo hago una cotización o un apartado?",a:"Arma el carrito y en vez de Cobrar toca Cotizar (presupuesto) o Apartar (deja anticipo). Las ves en Más → Cotizaciones y apartados.",ir:"cotizaciones",g:"cotizaciones"},
+  {c:"Vender",q:"El cliente devolvió algo, ¿qué hago?",a:"Abre la venta en Ventas de hoy (o en Reportes) y toca Devolver. Puedes regresar el producto al stock y devolver el dinero."},
+  {c:"Vender",q:"Me equivoqué en una venta",a:"Abre la venta y toca Anular (si eres vendedora, pides la anulación y la dueña la aprueba). El stock vuelve solo."},
+  {c:"Clientes y fiado",q:"¿Cómo fío y cómo cobro después?",a:"Al cobrar elige Fiado y el cliente. Cuando te pague, ve a Más → Clientes, entra al cliente y toca Cobrar deuda. Puede pagar por partes.",ir:"clientes",g:"clientes"},
+  {c:"Dinero",q:"¿Cómo veo mi ganancia real?",a:"En Resumen ves la ganancia neta del mes: ventas menos costo de lo vendido menos gastos. Anota tus gastos en Más → Gastos para que sea exacta.",ir:"reportes",g:"reportes"},
+  {c:"Dinero",q:"¿Cómo anoto alquiler, luz o sueldos?",a:"Más → Gastos → + Anotar gasto. Elige la categoría y el monto.",ir:"gastos",g:"gastos"},
+  {c:"Dinero",q:"¿Cómo uso la caja y el cierre del día?",a:"Actívala en Ajustes → Usar control de caja. Cada día abres la caja con el cambio que tienes y al final la cierras contando los billetes; te dice si falta o sobra.",ir:"v:caja",g:"v-caja"},
+  {c:"Dinero",q:"¿Cómo anoto lo que le debo a un proveedor?",a:"Más → Proveedores → entra al proveedor → Compra a crédito. Pon el monto y cuándo vence; te avisamos antes.",ir:"proveedores",g:"proveedores"},
+  {c:"Equipo",q:"¿Cómo agrego a una vendedora?",a:"Ajustes → Vendedoras → + Agregar vendedora. Ella entra con usuario.nombre y su PIN, y solo ve las ventas de su día.",g:"vendedora"},
+  {c:"Equipo",q:"¿Qué es una encargada?",a:"Una vendedora que además puede editar productos, registrar compras y gastos, y ver costos. Se elige en Qué puede hacer al crearla."},
+  {c:"Equipo",q:"¿Tengo dos tiendas o un depósito?",a:"En Ajustes → Tiendas agrega la otra tienda o almacén. Cada una lleva su stock y puedes Enviar mercadería de una a otra."},
+  {c:"Cuenta",q:"¿Cómo renuevo mi plan?",a:"Ajustes → Mi plan → Renovar. Eliges el plan, pagas con el QR y subes la foto del comprobante."},
+  {c:"Cuenta",q:"¿Cómo vuelvo a ver los tutoriales?",a:"Abajo de cada herramienta hay un botón ¿Cómo se usa? Ver tutorial. Para verlos todos otra vez: Ajustes → Tutoriales → Volver a ver todos."}
+];
+function faqTodas(){var ex=(PLAT_CFG&&PLAT_CFG.faq)||[];return ex.filter(function(x){return x&&x.q&&x.a;}).map(function(x){return {c:x.c||"Más preguntas",q:x.q,a:x.a,nueva:true};}).concat(FAQ);}
+function faqIr(ir,g){closeModal();setTimeout(function(){
+  if(ir==="+producto"){irA("productos");if($("btn-nuevo"))$("btn-nuevo").click();}
+  else if(/^v:/.test(ir))irA(ir.slice(2));
+  else if(ir)abrirMas(ir);
+  if(g&&GUIAS[g])setTimeout(function(){if(g==="medida"||g==="hago"||g==="servicio"||g==="combo"){var b=document.querySelector('#fp-tipo [data-tipo="'+g+'"]');if(b)b.click();}
+    setTimeout(function(){if(GUIAS[g].pasos&&$("modal-back").classList.contains("open"))guiaPasos(g);else guiaTarjetas(g);},300);},400);
+},60);}
+function modalPreguntas(){
+  var st={q:"",c:"",abierta:-1};
+  function lista(){var q=sinAcento(st.q.toLowerCase().trim());return faqTodas().filter(function(x){if(st.c&&x.c!==st.c)return false;if(!q)return true;return q.split(/\s+/).every(function(w){return sinAcento((x.q+" "+x.a+" "+x.c).toLowerCase()).indexOf(w)>=0;});});}
+  function cats(){var o=[];faqTodas().forEach(function(x){if(o.indexOf(x.c)<0)o.push(x.c);});return o;}
+  function pintar(){var l=lista();
+    $("pf-l").innerHTML=l.length?l.map(function(x,i){var ab=i===st.abierta||(st.q&&l.length<=2);return '<div class="faq-it'+(ab?' on':'')+'"><button type="button" class="faq-q" data-fi="'+i+'" aria-expanded="'+ab+'"><span>'+esc(x.q)+(x.nueva?' <span class="pill ok" style="font-size:11px">Nuevo</span>':'')+'</span><span aria-hidden="true">'+(ab?'▴':'▾')+'</span></button>'+
+      (ab?'<div class="faq-a"><p style="margin:0 0 8px;white-space:pre-line">'+esc(x.a)+'</p>'+((x.ir||x.g)?'<div class="actions">'+(x.ir?'<button class="btn small primary" type="button" data-fir="'+i+'">Ir ahí →</button>':'')+(x.g&&GUIAS[x.g]?'<button class="btn small" type="button" data-fg="'+i+'">Ver tutorial</button>':'')+'</div>':'')+'</div>':'')+'</div>';}).join(""):
+      '<div class="empty">No encontramos esa pregunta.</div>';
+    $("pf-l").onclick=function(e){var b=e.target.closest("[data-fi],[data-fir],[data-fg]");if(!b)return;var x=l[+(b.dataset.fi||b.dataset.fir||b.dataset.fg)];
+      if(b.dataset.fi!==undefined){st.abierta=st.abierta===+b.dataset.fi?-1:+b.dataset.fi;pintar();}
+      else if(b.dataset.fir!==undefined)faqIr(x.ir,null);
+      else faqIr(x.ir||"",x.g);};
+  }
+  function render(){
+    openModal('<h2 id="modal-title">Preguntas frecuentes</h2><div class="searchbar"><input type="search" id="pf-q" placeholder="Busca tu duda: metro, costo, fiado…" value="'+esc(st.q)+'" aria-label="Buscar pregunta"></div>'+
+      '<div class="chips" id="pf-c"><button type="button" class="cat" data-v="" aria-pressed="'+(!st.c)+'">Todas</button>'+cats().map(function(c){return '<button type="button" class="cat" data-v="'+esc(c)+'" aria-pressed="'+(st.c===c)+'">'+esc(c)+'</button>';}).join("")+'</div>'+
+      '<div id="pf-l"></div>'+
+      '<div class="card" style="margin-top:8px"><b>¿No encontraste tu respuesta?</b><div class="actions">'+(DIRECTORIO_URL&&conectado()?'<button class="btn primary" type="button" id="pf-ay">💬 Pedir ayuda</button>':(SOPORTE_WA?'<a class="btn wa" target="_blank" rel="noopener" href="'+waTo(SOPORTE_WA,"Hola, tengo una duda con Cuadra: ")+'">💬 Escríbenos</a>':''))+'<button class="btn" type="button" id="pf-tu">❓ Tutorial general</button></div></div>'+
+      '<div class="actions"><button class="btn" type="button" id="pf-x">Cerrar</button></div>');
+    $("pf-q").oninput=function(){st.q=this.value;st.abierta=-1;pintar();};
+    $("pf-c").onclick=function(e){var b=e.target.closest("[data-v]");if(!b)return;st.c=b.dataset.v;st.abierta=-1;render();};
+    if($("pf-ay"))$("pf-ay").onclick=modalAyuda;$("pf-tu").onclick=function(){modalTutorial(0);};$("pf-x").onclick=closeModal;
+    pintar();
+  }
+  render();
+  if(DIRECTORIO_URL&&!(PLAT_CFG&&PLAT_CFG.faq))platConfig().then(function(){if($("pf-l"))pintar();}).catch(function(){});
+}
 
 // ---------- eventos ----------
 document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("click",function(){
