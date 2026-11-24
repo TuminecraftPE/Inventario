@@ -271,6 +271,37 @@ label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4
  body.modo-dueno .adm-k{grid-template-columns:repeat(4,minmax(0,1fr))}body.modo-dueno .etapas{flex-direction:row;align-items:flex-start;overflow-x:auto}body.modo-dueno .etapa{min-width:230px;flex:1}}
 #adm-q,#cls-q,#ep-q{border:0;outline:0;background:transparent;flex:1;min-width:0;font:inherit;font-size:16px;color:var(--ink);padding:10px 4px}
 a.btn:not(.wa):not(.primary){color:var(--ink);text-decoration:none}
+#bienv{position:fixed;inset:0;z-index:9;background:var(--bg,#fff);overflow:auto;display:flex;align-items:center;justify-content:center;padding:24px 18px}
+.bv-box{max-width:400px;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px}
+.bv-logo{width:84px;height:84px;border-radius:22px;margin:0 auto}.bv-box h1{margin:0;font-size:30px}.bv-sub{margin:0 0 8px;color:var(--muted);font-size:16px;line-height:1.5}
+.bv-g{border-color:var(--accent)}.bv-nuevo{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:12px;font-size:14px;line-height:1.5;text-align:left}
+.bv-ej{margin-top:6px;font-size:15px;color:var(--accent);font-weight:600}
+#ej-bar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:color-mix(in srgb,#e9a23b 20%,var(--surface));padding:8px 14px;font-size:14px;border-bottom:1px solid var(--line)}
+#ej-bar span{flex:1;min-width:160px}
+body.en-ejemplo #btn-settings{display:none}
+.login-op.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+.pasos-reg{display:flex;gap:6px}.pasos-reg span{flex:1;height:4px;border-radius:4px;background:var(--line)}.pasos-reg span.on{background:var(--accent)}
+.rubro-tip{background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.5;margin-bottom:8px}.rubro-tip ul{margin:4px 0 0;padding-left:18px}
+.modal-top{position:sticky;top:-1px;z-index:3;margin:-6px -4px 4px;padding:4px 0;background:var(--surface);display:flex}
+.modal-volver{background:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
+.modal-volver:hover{border-color:var(--accent);color:var(--accent)}
+@media (min-width:900px){
+ nav{position:fixed;left:0;top:0;bottom:0;width:210px;display:flex!important;flex-direction:column;justify-content:flex-start;gap:4px;padding:84px 12px 12px;border-top:0;border-right:1px solid var(--line);height:auto;z-index:4}
+ nav button{flex-direction:row;justify-content:flex-start;gap:10px;font-size:15px;padding:10px 12px;border-radius:12px;flex:none}
+ main,header,#ej-bar{margin-left:210px}
+ main{width:auto!important;max-width:1180px;margin-right:auto;padding-bottom:40px}
+ html,body{overflow-x:hidden}
+ .modal-back{align-items:center!important}.modal-back .modal{max-width:640px;width:calc(100% - 48px);border-radius:20px;max-height:88vh}
+ #venta-productos{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}
+ .mas-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ body.pc-venta #cart-back .modal::before{display:none}
+ body.pc-venta main{margin-right:370px!important}body.pc-venta header,body.pc-venta #ej-bar{margin-right:370px}
+ body.pc-venta #cart-back{display:flex;position:fixed;top:0;right:0;bottom:0;left:auto;width:370px;background:transparent;z-index:5;align-items:stretch;justify-content:stretch}
+ body.pc-venta #cart-back .modal{max-width:none;width:100%;margin:0;border-radius:0;max-height:none;height:100%;border-left:1px solid var(--line);overflow:auto;animation:none;transform:none;box-shadow:none}
+ body.pc-venta #cobrar-bar,body.pc-venta #cart-close,body.pc-venta #btn-seguir{display:none!important}
+ body.pc-venta #cart-title::after{content:"  ·  F2 para cobrar";font-size:12px;font-weight:400;color:var(--muted)}
+ body.pc #buscar-venta::placeholder{color:var(--muted)}
+}
 #guia{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;padding:16px}
 @media (min-width:600px){#guia{align-items:center}}
 .guia-card{background:var(--surface);color:var(--ink);border-radius:20px;padding:18px 18px 14px;max-width:420px;width:100%;text-align:center;display:flex;flex-direction:column;gap:6px}
@@ -673,7 +704,7 @@ function seed(){
   var lotes=[{id:"lt1",fecha:F(30),pid:"p13",nombre:"Pegamento PVC 250 ml",vence:dk(18),cant:6,tienda:T1}];
   var ajustesStock=[{id:"aj1",fecha:F(7,19),pid:"p3",nombre:"Clavos 2\" 1 kg",cant:-2,motivo:"Conteo físico",tienda:T1,usuario:"Dueña",monto:28}];
   var comPagos=[{id:"cp1",trab:"w1",nombre:"Joaquín",monto:640,desde:F(37),hasta:F(7),fecha:F(7,19),deCaja:false}];
-  return {demo:2,negocio:{nombre:"Ferretería El Progreso (demo)",whatsapp:""},productos:productos,ventas:ventas,
+  return {demo:3,negocio:{nombre:"Ferretería El Progreso (ejemplo)",whatsapp:""},productos:productos,ventas:ventas,
     tiendas:[{id:T1,nombre:"Tienda principal",tipo:"tienda",minCambio:50},{id:T2,nombre:"Almacén",tipo:"almacen",minCambio:0}],
     usuarios:[{id:"u1",nombre:"Fer",usuario:"fer",tienda:T1,activo:true,rol:"vendedora"},{id:"u2",nombre:"Rosa",usuario:"rosa",tienda:T1,activo:true,rol:"encargada"}],
     jornadas:[],movCaja:[],
@@ -682,9 +713,9 @@ function seed(){
 
 var store=null;
 function load(){try{var r=window.localStorage.getItem(SKEY);if(r)return JSON.parse(r);}catch(e){}return null;}
-var avisoMemoria=false;function save(){try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){if(!avisoMemoria&&typeof toast==="function"){avisoMemoria=true;toast("El celular se quedó sin espacio para guardar aquí. Conecta Google Sheets o usa menos fotos.");}}}
+var avisoMemoria=false;function save(){if(typeof modoEjemplo==="function"&&modoEjemplo()&&esEjemploS())return;try{window.localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){if(!avisoMemoria&&typeof toast==="function"){avisoMemoria=true;toast("El celular se quedó sin espacio para guardar aquí. Conecta Google Sheets o usa menos fotos.");}}}
 var S = load();
-try{if(S&&S.demo!==2&&S.negocio&&/\(demo\)/.test(S.negocio.nombre||"")&&!(JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null")||{}).url)S=null;}catch(e){}
+try{if(S&&S.demo!==3&&S.negocio&&/\((demo|ejemplo)\)/.test(S.negocio.nombre||"")&&!(JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null")||{}).url)S=null;}catch(e){}
 if(!S){var cfg0=null;try{cfg0=JSON.parse(window.localStorage.getItem("inventario-ia-conexion")||"null");}catch(e){}
 if(cfg0&&cfg0.url){S={negocio:{nombre:"Cargando…",whatsapp:""},productos:[],ventas:[]};}else{S=seed();try{var old=window.localStorage.getItem(OLDKEY);if(old){var o=JSON.parse(old);if(o&&o.negocio)S.negocio=o.negocio;}}catch(e){}}save();}
 
@@ -990,7 +1021,7 @@ function renderTiendaBar(){
   el.innerHTML='<label class="tienda-sel" style="width:100%">Ver<select id="tb-sel"><option value="todas">Todas las tiendas</option>'+tiendas().map(function(t){return '<option value="'+t.id+'"'+(t.id===v?' selected':'')+'>'+esc(t.nombre)+'</option>';}).join("")+'</select></label>';
   $("tb-sel").onchange=function(){tiendaVista=this.value;if(this.value!=="todas"&&tienda(this.value).tipo!=="almacen"){tiendaSel=this.value;cajaTiendaSel=this.value;}renderAll();};
 }
-function renderAll(){normalizar();renderNav();if(typeof renderAvisos==="function")renderAvisos();renderTiendaBar();renderHeader();renderInicio();renderVender();renderProductos();renderAlmacen();renderReporte();renderCaja();renderMas();renderMesas();if($("plan-ban"))$("plan-ban").innerHTML=planBannerHTML();if($("neto-mes"))$("neto-mes").innerHTML=netoMesHTML();if(modoDueno())renderAdmin();}
+function renderAll(){if(typeof pintarBienvenida==="function")pintarBienvenida();normalizar();renderNav();if(typeof renderAvisos==="function")renderAvisos();renderTiendaBar();renderHeader();renderInicio();renderVender();renderProductos();renderAlmacen();renderReporte();renderCaja();renderMas();renderMesas();if($("plan-ban"))$("plan-ban").innerHTML=planBannerHTML();if($("neto-mes"))$("neto-mes").innerHTML=netoMesHTML();if(modoDueno())renderAdmin();}
 
 // ---------- acciones de negocio ----------
 function registrarVenta(lista,extra){ // lista: [{pid,cant}]
@@ -1033,7 +1064,9 @@ function mostrarAlertasVenta(list){
 }
 
 // ---------- modal ----------
-function openModal(html){$("modal").innerHTML=html;$("modal-back").classList.add("open");var f=$("modal").querySelector("input,select,button");if(f)f.focus();}
+function conVolver(html){return /id="(li|rg)-back"|class="tuto"/.test(html)?html:'<div class="modal-top"><button type="button" class="modal-volver" aria-label="Volver">← Volver</button></div>'+html;}
+function openModal(html){$("modal").innerHTML=conVolver(html);$("modal-back").classList.add("open");$("modal").scrollTop=0;var f=$("modal").querySelector("input:not([type=hidden]):not([type=checkbox]),select,textarea")||$("modal").querySelector("button:not(.modal-volver)");if(f&&window.matchMedia("(min-width:900px)").matches||f&&f.tagName==="BUTTON")f.focus({preventScroll:true});else if($("modal").querySelector(".modal-volver"))$("modal").querySelector(".modal-volver").focus({preventScroll:true});}
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest(".modal-volver"))closeModal();});
 function closeModal(){$("modal-back").classList.remove("open");}
 $("modal-back").addEventListener("click",function(e){if(e.target.id==="modal-back")closeModal();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
@@ -1731,7 +1764,9 @@ function conectarCon(url,clave,msg,alTerminar,usuario){
     if(vacia){
       msg.innerHTML='<div class="alertbox">Tu hoja está vacía. ¿Qué quieres hacer?<div class="actions"><button class="btn primary small" type="button" id="fa-subir">Subir lo que tengo en este dispositivo</button><button class="btn small" type="button" id="fa-cero">Empezar desde cero</button></div></div>';
       $("fa-subir").onclick=function(){escribirLS(CFGKEY,CFG);S.yo={rol:"duena",nombre:"Dueña"};encolar({op:"importar",estado:clone(S)});closeModal();pintarSync();toast("Subiendo tus datos a la hoja…");iniciarSync();if(alTerminar)alTerminar();};
-      $("fa-cero").onclick=function(){escribirLS(CFGKEY,CFG);S.yo={rol:"duena",nombre:"Dueña"};aplicarEstado({negocio:{nombre:S.negocio.nombre,whatsapp:S.negocio.whatsapp},productos:[],ventas:[]});encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();toast("Listo. Empieza agregando tus productos.");iniciarSync();if(alTerminar)alTerminar();};
+      var deEjemplo=esEjemploS();
+      $("fa-cero").onclick=function(){escribirLS(CFGKEY,CFG);if(deEjemplo){S={negocio:{nombre:"",whatsapp:""},productos:[],ventas:[],tiendas:[],usuarios:[],jornadas:[],movCaja:[],reg:{},papelera:[]};carrito={};}S.yo={rol:"duena",nombre:"Dueña"};aplicarEstado({negocio:{nombre:(e.negocio&&e.negocio.nombre)||(deEjemplo?(CFG.usuario||"Mi negocio"):S.negocio.nombre),whatsapp:deEjemplo?"":S.negocio.whatsapp},productos:[],ventas:[]});encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();toast("Listo. Empieza agregando tus productos.");iniciarSync();if(alTerminar)alTerminar();};
+      if(deEjemplo)setTimeout(function(){if($("fa-cero"))$("fa-cero").click();},0);
     }else{
       escribirLS(CFGKEY,CFG);aplicarEstado(e,r.yo);closeModal();toast("Listo, se cargó tu inventario.");iniciarSync();if(alTerminar)alTerminar();
     }
@@ -1756,7 +1791,7 @@ function modalLogin(paso){
   if(!paso){
     openModal('<h2 id="modal-title">Iniciar sesión</h2><p class="muted" style="margin:0">¿Cómo quieres entrar?</p>'+
       '<button type="button" class="login-op" id="lo-g"><span class="lo-i"><svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg></span><span><b>Continuar con Google</b><small>Dueñas y dueños de negocio</small></span></button>'+
-      '<button type="button" class="login-op" id="lo-u"><span class="lo-i">🔑</span><span><b>Usuario y contraseña</b><small>Vendedoras y encargadas</small></span></button>'+
+      '<button type="button" class="login-op" id="lo-u"><span class="lo-i">🔑</span><span><b>Usuario y contraseña</b><small>En la PC de la tienda, o si eres vendedora</small></span></button>'+
       '<p class="muted" style="margin:0;font-size:12px;text-align:center">Al entrar aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Privacidad</a>.</p>'+
       '<div class="actions"><button class="btn" type="button" id="li-cancel">Cancelar</button></div>');
     $("lo-g").onclick=function(){modalLogin("google");};$("lo-u").onclick=function(){modalLogin("pin");};$("li-cancel").onclick=closeModal;return;
@@ -1773,7 +1808,7 @@ function modalLogin(paso){
     '<label class="full" for="li-pin">Contraseña (PIN)<input type="password" id="li-pin" inputmode="numeric" autocomplete="current-password" placeholder="••••"></label>'+
     '<div class="full" id="li-msg"></div>'+
     '<div class="actions full"><button class="btn primary big" type="submit" id="li-go">Entrar</button></div>'+
-    '<p class="muted full" style="margin:0;font-size:12px">Tu usuario y contraseña te los da la dueña o el dueño del negocio.</p></form>');
+    '<p class="muted full" style="margin:0;font-size:12px"><b>Dueña:</b> tu usuario es el de tu negocio (ej.: dulcedosis). <b>Vendedora:</b> negocio.tunombre (ej.: dulcedosis.fer).</p></form>');
   $("li-back").onclick=function(){modalLogin();};setTimeout(function(){if($("li-user"))$("li-user").focus();},80);
   $("f-login").onsubmit=function(e){e.preventDefault();
     var u=$("li-user").value.trim(),p=$("li-pin").value.trim(),msg=$("li-msg");
@@ -1818,7 +1853,8 @@ function modalAjustes(avanzado){
     '</div>'+
     '<div class="card"><h3>Tipo de negocio</h3><div class="row" style="padding:0"><div><div class="name">'+esc((rubroDe(rubro())||{n:"Sin elegir"}).n)+'</div><div class="meta">'+(S.negocio.rubroPedido?'Pediste cambiar a '+esc((rubroDe(S.negocio.rubroPedido)||{}).n||"")+' · esperando aprobación':'Define qué funciones ves en la app.')+'</div></div><button class="btn small" type="button" id="fa-rubro">'+(rubro()?'Cambiar':'Elegir')+'</button></div></div>'+
     miPlanHTML()+(CFG.rol==="admin"?'<div class="card"><h3>Panel Cuadra</h3><div class="actions"><button class="btn primary" type="button" onclick="document.getElementById(\'modal-back\').classList.remove(\'open\')" id="fa-panel">Abrir panel</button></div></div>':'')+seccionQRHTML()+seccionTiendasHTML()+seccionTemaHTML()+
-    (con?'<div class="card sesion-card"><h3>Sesión</h3><p class="muted" style="margin:0">'+(CFG.rol==="admin"?'Dueño de Cuadra':'Entraste'+(CFG.usuario?' como <b>'+esc(CFG.usuario)+'</b>':''))+'</p>'+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Espera el punto verde antes de cerrar sesión.</div>':'')+'<button class="btn salir big" type="button" id="fa-desc">Cerrar sesión</button></div>':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
+    (con?'<div class="card sesion-card"><h3>Sesión</h3><p class="muted" style="margin:0">'+(CFG.rol==="admin"?'Dueño de Cuadra':'Entraste'+(CFG.usuario?' como <b>'+esc(CFG.usuario)+'</b>':''))+'</p>'+
+      (CFG.rol!=="admin"&&DIRECTORIO_URL&&CFG.usuario?'<p class="muted" style="margin:0;font-size:13px">🖥️ En la PC de tu tienda entra con <b>Usuario y contraseña</b>: usuario <b>'+esc(CFG.usuario)+'</b> y tu contraseña.</p><button class="btn" type="button" id="fa-clave2">🔑 Crear o cambiar mi contraseña</button>':'')+(cola.length?'<div class="alertbox">Hay '+cola.length+' cambio'+(cola.length>1?'s':'')+' sin guardar. Espera el punto verde antes de cerrar sesión.</div>':'')+'<button class="btn salir big" type="button" id="fa-desc">Cerrar sesión</button></div>':'<div class="actions"><button class="btn" type="button" id="fa-reset">Restablecer datos de ejemplo</button></div>'));
   $("modal").querySelectorAll("[data-tienda]").forEach(function(b){b.onclick=function(){modalTienda(tienda(b.dataset.tienda));};});
   $("modal").querySelectorAll("[data-qr]").forEach(function(b){b.onclick=function(){modalQRTienda(b.dataset.qr);};});
   $("fa-rubro").onclick=function(){modalRubro(false);};bindTema();
@@ -1830,6 +1866,7 @@ function modalAjustes(avanzado){
   $("f-aj").onsubmit=function(e){e.preventDefault();S.negocio.nombre=$("fa-nombre").value.trim()||"Mi negocio";S.negocio.whatsapp=$("fa-wa").value.replace(/\D/g,"");save();encolar({op:"negocio",negocio:clone(S.negocio)});closeModal();renderAll();toast("Ajustes guardados");};
   if(con){
     $("fa-sync").onclick=function(){closeModal();sincronizar(true);};
+    if($("fa-clave2"))$("fa-clave2").onclick=modalMiClave;
     $("fa-desc").onclick=function(){$("fa-desc").outerHTML='<div class="sesion-conf"><b>¿Cerrar sesión en este celular?</b><div class="actions"><button class="btn salir" type="button" id="fa-desc2">Sí, cerrar sesión</button><button class="btn" type="button" id="fa-desc3">No</button></div></div>';
       $("fa-desc3").onclick=function(){closeModal();modalAjustes();};
       $("fa-desc2").onclick=function(){cerrarSesion();closeModal();toast("Sesión cerrada. Tus datos siguen guardados en tu hoja de Google.");};};
@@ -1852,7 +1889,7 @@ function renderAvisos(){
   if(!almacenOK)h+='<div class="alertbox bad"><b>Este navegador no está guardando los datos de la app.</b> Por eso, cada vez que recargas, se cierra la sesión.<br>Para arreglarlo: 1) no uses una pestaña de incógnito; 2) en Chrome toca ⋮ → Configuración → Configuración de sitios → Datos del dispositivo (o Cookies) y elige Permitir; 3) si la abriste desde WhatsApp, ábrela en Chrome.</div>';
   if(!esVend()&&usaCaja()||!esVend()){tiendasVenta().forEach(function(t){var a=avisoQRTxt(t.id);if(a)h+='<div class="alertbox"><b>'+esc(a)+'</b><div class="actions"><button class="btn small" type="button" data-avqr="'+t.id+'">Cambiar QR</button></div></div>';});}
   if(esVend()){var aqv=avisoQRTxt(yo().tienda);if(aqv)h+='<div class="alertbox"><b>'+esc(aqv)+'</b> Avisa a la dueña para que suba uno nuevo.</div>';}
-  if(!conectado())h+='<div class="card demo"><div><b>Estás viendo datos de ejemplo.</b><div class="muted">Inicia sesión para ver el inventario de tu negocio.</div></div><button class="btn primary" type="button" id="av-login">Iniciar sesión</button></div>';
+  if(!conectado()&&!DIRECTORIO_URL)h+='<div class="card demo"><div><b>Estás viendo datos de ejemplo.</b><div class="muted">Inicia sesión para ver el inventario de tu negocio.</div></div><button class="btn primary" type="button" id="av-login">Iniciar sesión</button></div>';
   var el=$("avisos");el.innerHTML=h;el.style.display=h?"":"none";
   if($("av-login"))$("av-login").onclick=function(){if(DIRECTORIO_URL)modalLogin();else modalAjustes(true);};
   el.querySelectorAll("[data-avqr]").forEach(function(b){b.onclick=function(){modalQRTienda(b.dataset.avqr);};});
@@ -1935,7 +1972,7 @@ function contadorHTML(id,d,disp){
     '<div class="total"><span>Total</span><span class="num">'+bsd(totD(d)/100,2)+'</span></div>'+(totD(d)?'<div style="padding:6px 0 4px">'+piezasHTML(d,"chico")+'</div>':'')+'</div>';
 }
 function bindContador(id,d,cambio){var el=$(id);if(!el)return;el.addEventListener("click",function(e){var b=e.target.closest("[data-c]");if(!b)return;var c=b.dataset.c;d[c]=Math.max(0,(Number(d[c])||0)+Number(b.dataset.s));if(!d[c])delete d[c];cambio();});}
-function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("open")?m.scrollTop:0;m.innerHTML=h;$("modal-back").classList.add("open");m.scrollTop=st;}
+function abrirModal(h){var m=$("modal"),st=$("modal-back").classList.contains("open")?m.scrollTop:0;m.innerHTML=conVolver(h);$("modal-back").classList.add("open");m.scrollTop=st;}
 
 // ---------- cobro ----------
 var metodoRapido="efectivo",catVenta="",catInv="";
@@ -2290,14 +2327,14 @@ function seccionTiendasHTML(){
 
 // ---------- tipo de negocio ----------
 var RUBROS=[
-  {id:"comercio",n:"Tienda comercial",d:"Compra y revende: abarrotes, ferretería, cosméticos",ic:"M3 9l1.5-5h15L21 9M4 9h16v11H4zM9 20v-6h6v6",fx:["vencimientos"]},
-  {id:"produccion",n:"Produce lo que vende",d:"Cafetería, panadería, heladería, snacks",ic:"M7 10a5 5 0 0110 0v1H7zM5 11h14l-1.5 9h-11zM12 5V3",fx:["insumos"]},
-  {id:"servicios",n:"Taller o servicios",d:"Mecánico, lavadero, técnico de celulares",ic:"M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z",fx:["servicios"]},
-  {id:"belleza",n:"Belleza",d:"Peluquería, barbería, uñas, spa",ic:"M6 6a3 3 0 100 .1M6 18a3 3 0 100 .1M8.1 7.9L20 20M8.1 16.1L20 4",fx:["servicios"]},
-  {id:"restaurante",n:"Restaurante",d:"Mesas, meseros y propinas",ic:"M5 3v8a2 2 0 002 2v8M9 3v8M7 3v4M17 3c-2 0-3 3-3 7h3v11",fx:["insumos","mesas"]},
-  {id:"ropa",n:"Ropa y calzado",d:"Tallas y colores por producto",ic:"M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z",fx:["tallas"]},
-  {id:"farmacia",n:"Farmacia o botica",d:"Lotes y fechas de vencimiento",ic:"M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z",fx:["vencimientos"]},
-  {id:"distribuidora",n:"Distribuidora",d:"Precio por mayor y fiado",ic:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 100-.1M17 19a2 2 0 100-.1",fx:["mayorista","fiado"]}
+  {id:"comercio",n:"Tienda comercial",d:"Compras productos y los revendes: abarrotes, ferretería, cosméticos y maquillaje, celulares",ic:"M3 9l1.5-5h15L21 9M4 9h16v11H4zM9 20v-6h6v6",fx:["vencimientos"]},
+  {id:"produccion",n:"Produce lo que vende",d:"Tú preparas lo que vendes: panadería, pastelería, heladería, jugos, snacks",ic:"M7 10a5 5 0 0110 0v1H7zM5 11h14l-1.5 9h-11zM12 5V3",fx:["insumos"]},
+  {id:"servicios",n:"Taller o servicios",d:"Cobras por tu trabajo: mecánico, lavadero, técnico de celulares, costura",ic:"M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z",fx:["servicios"]},
+  {id:"belleza",n:"Salón de belleza",d:"Atiendes clientes en tu salón: cortes, uñas, barbería, spa (no es para vender cosméticos)",ic:"M6 6a3 3 0 100 .1M6 18a3 3 0 100 .1M8.1 7.9L20 20M8.1 16.1L20 4",fx:["servicios"]},
+  {id:"restaurante",n:"Restaurante",d:"Atiendes por mesas: restaurante, pollería, cafetería con mesas",ic:"M5 3v8a2 2 0 002 2v8M9 3v8M7 3v4M17 3c-2 0-3 3-3 7h3v11",fx:["insumos","mesas"]},
+  {id:"ropa",n:"Ropa y calzado",d:"Vendes por tallas y colores: ropa, zapatos, uniformes",ic:"M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z",fx:["tallas"]},
+  {id:"farmacia",n:"Farmacia o botica",d:"Medicamentos con lotes y fechas de vencimiento",ic:"M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z",fx:["vencimientos"]},
+  {id:"distribuidora",n:"Distribuidora",d:"Vendes por mayor a otras tiendas, con fiado",ic:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 100-.1M17 19a2 2 0 100-.1",fx:["mayorista","fiado"]}
 ];
 var FX_NOMBRE={insumos:"Almacén de insumos y recetas",servicios:"Servicios y comisiones",mesas:"Mesas y meseros",tallas:"Tallas y colores",vencimientos:"Fechas de vencimiento",mayorista:"Precio por mayor",fiado:"Fiado"};
 function rubro(){return (S.negocio&&S.negocio.rubro)||"";}
@@ -2312,7 +2349,7 @@ function modalRubro(primera){
     var r=rubroDe(sel);
     abrirModal('<h2 id="modal-title">'+(primera?'¿Qué tipo de negocio es?':'Tipo de negocio')+'</h2><p class="muted" style="margin:0">'+(primera?'Así te mostramos solo lo que necesitas. Después lo encuentras en Ajustes.':(fijo?'Para cambiarlo se envía un pedido a tu proveedor del sistema.':'Elige el que más se parece a tu negocio.'))+'</p>'+
       (ped?'<div class="alertbox">Pediste cambiar a <b>'+esc((rubroDe(ped)||{}).n||ped)+'</b>. Espera la aprobación de tu proveedor.</div>':'')+
-      '<div class="rubros" id="rb-grid">'+RUBROS.map(function(x){return '<button type="button" class="rubro'+(x.id===sel?' on':'')+'" data-r="'+x.id+'" aria-pressed="'+(x.id===sel)+'">'+icono(x.ic)+'<span><b>'+esc(x.n)+'</b><small>'+esc(x.d)+'</small></span></button>';}).join("")+'</div>'+
+      rubroTipHTML()+'<div class="rubros" id="rb-grid">'+RUBROS.map(function(x){return '<button type="button" class="rubro'+(x.id===sel?' on':'')+'" data-r="'+x.id+'" aria-pressed="'+(x.id===sel)+'">'+icono(x.ic)+'<span><b>'+esc(x.n)+'</b><small>'+esc(x.d)+'</small></span></button>';}).join("")+'</div>'+
       (r?'<div><div class="muted" style="margin-bottom:6px">Funciones que se activan:</div><div class="chips">'+['Inventario','Caja'].concat(r.fx.map(function(f){return FX_NOMBRE[f];})).map(function(t){return '<span class="pill ok">'+esc(t)+'</span>';}).join("")+'</div>'+(r.fx.some(function(f){return f!=="insumos"&&f!=="vencimientos";})?'<p class="muted" style="margin:6px 0 0">Algunas de estas funciones llegan en las próximas actualizaciones.</p>':'')+'</div>':'')+
       '<div class="actions"><button class="btn" type="button" id="rb-no">'+(primera?'Ahora no':'Cerrar')+'</button><button class="btn primary" type="button" id="rb-ok" style="margin-left:auto"'+(sel&&sel!==rubro()||primera&&sel?'':' disabled')+'>'+(fijo&&rubro()?'Enviar pedido de cambio':'Guardar')+'</button></div>');
     $("rb-grid").onclick=function(e){var b=e.target.closest("[data-r]");if(b){sel=b.dataset.r;render();}};
@@ -2325,6 +2362,7 @@ function modalRubro(primera){
   }
   render();
 }
+function rubroTipHTML(){return '<div class="rubro-tip"><b>💡 ¿Cuál elijo?</b><ul><li>¿<b>Vendes</b> cremas, maquillaje o perfumes? → <b>Tienda comercial</b>.</li><li>¿<b>Atiendes</b> clientes (cortes, uñas)? → <b>Salón de belleza</b>.</li><li>¿Haces las dos cosas? Elige lo que más haces. Igual puedes vender productos en cualquier tipo.</li></ul></div>';}
 function revisarRubro(){
   if(rubroPreguntado||esVend()||!conectado()||rubro()||$("modal-back").classList.contains("open"))return;
   rubroPreguntado=true;setTimeout(function(){if(!$("modal-back").classList.contains("open"))modalRubro(true);},600);
@@ -3458,28 +3496,98 @@ function entrarGoogle(cred,msg,reg){
     cg.paso("Cargando tu negocio: productos y ventas");
     return conectarCon(j.url,j.clave,cg.msg(),function(){cg.fin();if(j.plan)S.plan=j.plan;
       if(j.rubro&&rubroDe(j.rubro)&&(S.negocio.rubro!==j.rubro||!S.negocio.rubroFijo)){S.negocio.rubro=j.rubro;S.negocio.rubroFijo=true;S.negocio.rubroPedido="";save();encolar({op:"rubro",rubro:j.rubro,origen:"directorio"});}
-      renderAll();revisarRubro();if(j.nueva)toast("¡Bienvenida! Tienes "+((j.plan&&j.plan.dias)||7)+" días gratis.");},j.usuario||"").then(function(){
+      renderAll();revisarRubro();if(j.nueva){if(REG_PAGAR){REG_PAGAR=false;escribirLS("cuadra-tuto",1);setTimeout(function(){modalRenovar();toast("Tu cuenta ya está lista. Elige tu plan y paga con el QR.");},700);}else toast("¡Bienvenida! Tienes "+((j.plan&&j.plan.dias)||7)+" días gratis.");}},j.usuario||"").then(function(){
         if($("fa-subir")||$("fa-cero"))cg.listo("Tu hoja está lista","¿Con qué empiezas?");});
   }).catch(function(e){fallo(e&&e.message==="tiempo"?"El servidor tardó demasiado en responder. Revisa tu internet y vuelve a intentar.":"No se pudo conectar. Revisa tu internet y vuelve a intentar.");});
 }
 function slugUsuario(t){return sinAcento(String(t||"").toLowerCase()).replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,20);}
+// ======================= Cuadra 4.3: bienvenida, modo ejemplo y registro por pasos =======================
+var EJKEY="cuadra-ejemplo";
+function verEjemplo(){try{return window.sessionStorage.getItem(EJKEY)==="1";}catch(e){return false;}}
+function esEjemploS(){return !!(S&&(S.demo||(S.negocio&&/\((demo|ejemplo)\)/.test(S.negocio.nombre||""))));}
+// Con plataforma y sin sesión: se ve la bienvenida o, si lo pidió, el ejemplo (que no se guarda)
+function modoEjemplo(){return !!(typeof CFG!=="undefined"&&CFG&&typeof DIRECTORIO_URL!=="undefined"&&DIRECTORIO_URL)&&!conectado();}
+function entrarEjemplo(){
+  try{window.sessionStorage.setItem(EJKEY,"1");}catch(e){}
+  if(!esEjemploS()){var tiene=S&&S.productos&&S.productos.length;if(tiene)escribirLS("inventario-ia-local-respaldo",S);}
+  S=seed();carrito={};if(typeof lineas!=="undefined"&&Array.isArray(lineas))lineas.length=0;
+  pintarBienvenida();irA("vender");renderAll();toast("Este es un ejemplo: toca y prueba todo. Nada se guarda.");
+}
+function salirEjemplo(){try{window.sessionStorage.removeItem(EJKEY);}catch(e){}pintarBienvenida();}
+function pintarBienvenida(){
+  if(typeof CFG==="undefined"||!CFG)return;
+  var on=modoEjemplo()&&!verEjemplo(),el=$("bienv");
+  document.body.classList.toggle("en-ejemplo",modoEjemplo()&&verEjemplo());
+  var bar=$("ej-bar");
+  if(modoEjemplo()&&verEjemplo()){if(!bar){bar=document.createElement("div");bar.id="ej-bar";bar.setAttribute("role","region");bar.setAttribute("aria-label","Modo ejemplo");
+      bar.innerHTML='<span><b>Estás viendo un ejemplo.</b> Nada se guarda.</span><button class="btn small primary" type="button" id="ej-crear">Crear mi cuenta</button><button class="btn small" type="button" id="ej-salir">Iniciar sesión</button>';
+      var hd=document.querySelector("header");if(hd&&hd.parentNode)hd.parentNode.insertBefore(bar,hd.nextSibling);else document.body.insertBefore(bar,document.body.firstChild);
+      $("ej-crear").onclick=function(){modalLogin("google");};$("ej-salir").onclick=function(){salirEjemplo();};}}
+  else if(bar)bar.remove();
+  if(!on){if(el)el.remove();return;}
+  if(el)return;
+  el=document.createElement("div");el.id="bienv";el.setAttribute("role","main");
+  el.innerHTML='<div class="bv-box"><div class="bv-logo" aria-hidden="true">'+(function(){var l=document.querySelector("#biz-logo svg");return l?l.outerHTML.replace(/width="38" height="38"/,'width="84" height="84"'):"";})()+'</div><h1>Cuadra</h1>'+
+    '<p class="bv-sub">Inventario, ventas y caja de tu negocio en el celular. Sabe cuánto ganas cada día.</p>'+
+    '<button type="button" class="login-op bv-g" id="bv-g"><span class="lo-i"><svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg></span><span><b>Continuar con Google</b><small>Dueñas y dueños de negocio</small></span></button>'+
+    '<button type="button" class="login-op" id="bv-u"><span class="lo-i">🔑</span><span><b>Usuario y contraseña</b><small>En la PC de la tienda, o si eres vendedora</small></span></button>'+
+    '<div class="bv-nuevo"><b>¿Eres nuevo?</b> Toca <b>Continuar con Google</b>, elige tu cuenta y empieza tu prueba gratis de 7 días. No necesitas tarjeta.</div>'+
+    '<button type="button" class="linkbtn bv-ej" id="bv-ej">👀 Ver un ejemplo con todas las herramientas</button>'+
+    '<p class="muted" style="font-size:12px;margin:10px 0 0"><a href="terminos.html" target="_blank" rel="noopener">Términos</a> · <a href="privacidad.html" target="_blank" rel="noopener">Privacidad</a>'+(SOPORTE_WA?' · <a target="_blank" rel="noopener" href="'+waTo(SOPORTE_WA,"Hola, quiero saber más de Cuadra")+'">¿Dudas? Escríbenos</a>':'')+'</p></div>';
+  document.body.appendChild(el);
+  $("bv-g").onclick=function(){modalLogin("google");};$("bv-u").onclick=function(){modalLogin("pin");};$("bv-ej").onclick=entrarEjemplo;
+}
+// ---------- registro: 1) prueba o pagar  2) datos del negocio con tipo explicado ----------
 function modalRegistro(cred,j){
-  var pr=(j.precios||(PLAT_CFG&&PLAT_CFG.precios)||{}),dias=pr.pruebaDias||7;
-  openModal('<h2 id="modal-title">Registra tu negocio</h2><p class="muted" style="margin:0">Entraste como <b>'+esc(j.correo)+'</b>. Completa estos datos y empieza tu prueba gratis de '+dias+' días'+(pr.mensual?' (después, desde '+bs(pr.mensual)+' al mes)':'')+'.</p><form id="f-reg" class="form-grid">'+
-    '<label class="full" for="rg-n">Nombre de tu negocio<input type="text" id="rg-n" placeholder="Ej.: Dulce Dosis" autocomplete="organization"></label>'+
-    '<label class="full" for="rg-u">Usuario del negocio<input type="text" id="rg-u" autocapitalize="none" spellcheck="false" placeholder="Ej.: dulcedosis"><span class="muted" style="font-size:12px">Tus vendedoras entrarán como <b id="rg-ej">usuario.nombre</b> con su PIN.</span></label>'+
-    '<label for="rg-c">Tu celular (WhatsApp)<input type="tel" id="rg-c" placeholder="70000000"></label>'+
-    '<label for="rg-r">Tipo de negocio<select id="rg-r"><option value="">Elige…</option>'+RUBROS.map(function(r){return '<option value="'+r.id+'">'+esc(r.n)+'</option>';}).join("")+'</select></label>'+
-    '<label class="full" for="rg-ref">¿Quién te recomendó? (usuario de su negocio, opcional)<input type="text" id="rg-ref" autocapitalize="none" placeholder="Ej.: dulcedosis"></label>'+
-    '<div class="full" id="rg-msg"></div><p class="muted full" style="margin:0;font-size:12px">Al registrarte aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos de uso</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</p>'+
-    '<div class="actions full"><button class="btn primary big" type="submit">Registrar mi negocio</button><button class="btn" type="button" id="rg-x">Cancelar</button></div></form>');
-  var tocado=false;$("rg-n").oninput=function(){if(!tocado)$("rg-u").value=slugUsuario(this.value);$("rg-ej").textContent=($("rg-u").value||"usuario")+".nombre";};
-  $("rg-u").oninput=function(){tocado=true;this.value=slugUsuario(this.value);$("rg-ej").textContent=(this.value||"usuario")+".nombre";};
-  $("rg-x").onclick=closeModal;
-  $("f-reg").onsubmit=function(e){e.preventDefault();var d={nombre:$("rg-n").value.trim(),usuario:$("rg-u").value.trim(),cel:$("rg-c").value.trim(),rubro:$("rg-r").value,referido:slugUsuario($("rg-ref").value)};
-    if(!d.nombre||!d.usuario){$("rg-msg").innerHTML='<div class="alertbox bad">Escribe el nombre y el usuario de tu negocio.</div>';return;}
-    if(!d.rubro){$("rg-msg").innerHTML='<div class="alertbox bad">Elige el tipo de negocio.</div>';return;}
-    entrarGoogle(cred,$("rg-msg"),d);};
+  var pr=(j.precios||(PLAT_CFG&&PLAT_CFG.precios)||{}),dias=pr.pruebaDias||7,st={paso:1,modo:"prueba",d:{nombre:"",usuario:"",cel:"",rubro:"",referido:""},tocado:false};
+  var nom=String(j.nombre||j.correo||"").split(/[ @]/)[0];
+  function paso1(){
+    openModal('<div class="pasos-reg" aria-hidden="true"><span class="on"></span><span></span></div><h2 id="modal-title">¡Hola'+(nom?', '+esc(nom.charAt(0).toUpperCase()+nom.slice(1)):'')+'! ¿Cómo quieres empezar?</h2><p class="muted" style="margin:0">Entraste como <b>'+esc(j.correo||"")+'</b>.</p>'+
+      '<button type="button" class="login-op'+(st.modo==="prueba"?' on':'')+'" id="rg-pr"><span class="lo-i">🎁</span><span><b>Probar '+dias+' días gratis</b><small>Sin pagar nada ahora. Empiezas al instante.</small></span></button>'+
+      '<button type="button" class="login-op'+(st.modo==="pagar"?' on':'')+'" id="rg-pg"><span class="lo-i">💳</span><span><b>Pagar mi plan</b><small>'+(pr.mensual?'Desde '+bs(pr.mensual)+' al mes · ':'')+'pagas con QR y empiezas ya</small></span></button>'+
+      '<div class="actions"><button class="btn" type="button" id="rg-x">Cancelar</button></div>');
+    $("rg-pr").onclick=function(){st.modo="prueba";paso2();};$("rg-pg").onclick=function(){st.modo="pagar";paso2();};$("rg-x").onclick=closeModal;
+  }
+  function paso2(){
+    var d=st.d;
+    openModal('<div class="pasos-reg" aria-hidden="true"><span class="on"></span><span class="on"></span></div><button type="button" class="linkbtn" id="rg-back">← Volver</button><h2 id="modal-title">Datos de tu negocio</h2>'+
+      '<form id="f-reg" class="form-grid">'+
+      '<label class="full" for="rg-n">Nombre de tu negocio<input type="text" id="rg-n" placeholder="Ej.: Dulce Dosis" autocomplete="organization" value="'+esc(d.nombre)+'"></label>'+
+      '<label class="full" for="rg-u">Usuario del negocio<input type="text" id="rg-u" autocapitalize="none" spellcheck="false" placeholder="Ej.: dulcedosis" value="'+esc(d.usuario)+'"><span class="muted" style="font-size:12px">Con este usuario entras desde la PC de tu tienda. Tus vendedoras entrarán como <b id="rg-ej">'+esc(d.usuario||"usuario")+'.nombre</b>.</span></label>'+
+      '<label for="rg-p">Crea tu contraseña<input type="password" id="rg-p" autocomplete="new-password" minlength="4" placeholder="Mínimo 4 letras o números" value="'+esc(d.pin||"")+'"></label>'+
+      '<label for="rg-p2">Repite tu contraseña<input type="password" id="rg-p2" autocomplete="new-password" placeholder="La misma otra vez" value="'+esc(d.pin2||"")+'"></label>'+
+      '<p class="muted full" style="margin:-4px 0 0;font-size:12px">🖥️ Para entrar en la PC de tu tienda sin poner tu correo: <b>Usuario y contraseña</b>. En tu celular sigues entrando con Google.</p>'+
+      '<label class="full" for="rg-c">Tu celular (WhatsApp)<input type="tel" id="rg-c" inputmode="tel" placeholder="70000000" value="'+esc(d.cel)+'"></label>'+
+      '<div class="full"><div style="font-weight:600;margin-bottom:4px">¿Qué hace tu negocio?</div>'+rubroTipHTML()+'<div class="rubros" id="rg-r" role="group" aria-label="Tipo de negocio">'+RUBROS.map(function(x){return '<button type="button" class="rubro'+(x.id===d.rubro?' on':'')+'" data-r="'+x.id+'" aria-pressed="'+(x.id===d.rubro)+'">'+icono(x.ic)+'<span><b>'+esc(x.n)+'</b><small>'+esc(x.d)+'</small></span></button>';}).join("")+'</div></div>'+
+      '<label class="full" for="rg-ref">¿Quién te recomendó? (opcional)<input type="text" id="rg-ref" autocapitalize="none" placeholder="Usuario de su negocio, ej.: dulcedosis" value="'+esc(d.referido)+'"></label>'+
+      '<div class="full" id="rg-msg"></div><p class="muted full" style="margin:0;font-size:12px">Al registrarte aceptas los <a href="terminos.html" target="_blank" rel="noopener">Términos de uso</a> y la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>.</p>'+
+      '<div class="actions full"><button class="btn primary big" type="submit">'+(st.modo==="pagar"?'Seguir al pago':'Empezar mi prueba gratis')+'</button></div></form>');
+    function leer(){d.nombre=$("rg-n").value.trim();d.usuario=$("rg-u").value.trim();d.cel=$("rg-c").value.trim();d.referido=slugUsuario($("rg-ref").value);d.pin=$("rg-p").value;d.pin2=$("rg-p2").value;}
+    $("rg-back").onclick=function(){leer();paso1();};
+    $("rg-n").oninput=function(){if(!st.tocado)$("rg-u").value=slugUsuario(this.value);$("rg-ej").textContent=($("rg-u").value||"usuario")+".nombre";};
+    $("rg-u").oninput=function(){st.tocado=true;this.value=slugUsuario(this.value);$("rg-ej").textContent=(this.value||"usuario")+".nombre";};
+    $("rg-r").onclick=function(e){var b=e.target.closest("[data-r]");if(!b)return;d.rubro=b.dataset.r;$("rg-r").querySelectorAll("[data-r]").forEach(function(x){var on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",String(on));});};
+    $("f-reg").onsubmit=function(e){e.preventDefault();leer();
+      if(!d.nombre||!d.usuario){$("rg-msg").innerHTML='<div class="alertbox bad">Escribe el nombre y el usuario de tu negocio.</div>';$("rg-n").focus();return;}
+      if(String(d.pin).trim().length<4){$("rg-msg").innerHTML='<div class="alertbox bad">Crea una contraseña de al menos 4 letras o números.</div>';$("rg-p").focus();return;}
+      if(d.pin!==d.pin2){$("rg-msg").innerHTML='<div class="alertbox bad">Las dos contraseñas no son iguales. Escríbelas otra vez.</div>';$("rg-p2").value="";$("rg-p2").focus();return;}
+      if(!d.rubro){$("rg-msg").innerHTML='<div class="alertbox bad">Toca el tipo de negocio que más se parece al tuyo.</div>';$("rg-r").scrollIntoView({block:"center"});return;}
+      REG_PAGAR=st.modo==="pagar";entrarGoogle(cred,$("rg-msg"),{nombre:d.nombre,usuario:d.usuario,cel:d.cel,rubro:d.rubro,referido:d.referido,modo:st.modo,pin:String(d.pin).trim()});};
+  }
+  paso1();
+}
+var REG_PAGAR=false;
+function modalMiClave(){
+  openModal('<h2 id="modal-title">Tu contraseña</h2><p class="muted" style="margin:0">Para entrar en la PC de tu tienda con <b>Usuario y contraseña</b>. Tu usuario es <b>'+esc(CFG.usuario||"")+'</b>.</p><form id="f-mc" class="form-grid">'+
+    '<label class="full" for="mc-1">Nueva contraseña<input type="password" id="mc-1" autocomplete="new-password" placeholder="Mínimo 4 letras o números"></label>'+
+    '<label class="full" for="mc-2">Repítela<input type="password" id="mc-2" autocomplete="new-password"></label><div class="full" id="mc-msg"></div>'+
+    '<div class="actions full"><button class="btn primary" type="submit" id="mc-ok">Guardar contraseña</button><button class="btn" type="button" id="mc-x">Cancelar</button></div></form>');
+  $("mc-x").onclick=function(){closeModal();modalAjustes();};
+  $("f-mc").onsubmit=function(e){e.preventDefault();var a=$("mc-1").value.trim(),b=$("mc-2").value.trim();
+    if(a.length<4){$("mc-msg").innerHTML='<div class="alertbox bad">Usa al menos 4 letras o números.</div>';return;}
+    if(a!==b){$("mc-msg").innerHTML='<div class="alertbox bad">Las dos contraseñas no son iguales.</div>';return;}
+    var bt=$("mc-ok");bt.disabled=true;bt.textContent="Guardando…";
+    postCli({accion:"miClave",pin:a}).then(function(j){if(!j||!j.ok)throw new Error((j&&j.error)||"No se pudo guardar.");closeModal();toast("Contraseña guardada. En la PC entra con "+(CFG.usuario||"tu usuario")+" y esa contraseña.");}).catch(function(err){bt.disabled=false;bt.textContent="Guardar contraseña";$("mc-msg").innerHTML='<div class="alertbox bad">'+esc((err&&err.message)||"No se pudo guardar. Revisa tu internet.")+'</div>';});};
 }
 function modalPendiente(j){
   var txt="Hola, registré mi negocio "+(j.negocio||"")+" en Cuadra y quiero activarlo.";
@@ -4036,7 +4144,7 @@ function guiaDeModal(){
 function guiasVistas(){return leerLS("cuadra-guias",{})||{};}
 function guiaMarcar(k){var g=guiasVistas();g[k]=1;escribirLS("cuadra-guias",g);}
 function guiasActivas(){return leerLS("cuadra-guias-off",0)!==1;}
-function guiaPermitida(){return !(CFG.rol==="admin")&&!CFG.ver&&!($("carga")&&$("carga").classList.contains("open"));}
+function guiaPermitida(){return !(CFG.rol==="admin")&&!modoEjemplo()&&!CFG.ver&&!($("carga")&&$("carga").classList.contains("open"));}
 var guiaObs=null,guiaT=0;
 function guiaRevisar(){clearTimeout(guiaT);guiaT=setTimeout(function(){
   var k=guiaDeModal(),m=$("modal");if(!k||!GUIAS[k]||CFG.rol==="admin")return;
@@ -4150,6 +4258,39 @@ function modalPreguntas(){
   if(DIRECTORIO_URL&&!(PLAT_CFG&&PLAT_CFG.faq))platConfig().then(function(){if($("pf-l"))pintar();}).catch(function(){});
 }
 
+
+// ======================= 4.4: botón atrás del celular/navegador y versión para PC =======================
+var VSTACK=[],NAV_ATRAS=false,ultimoAtras=0,guardaSinGesto=false;
+function vistaActiva(){var v=document.querySelector("section.view.active");return v?v.id.replace(/^v-/,""):"";}
+document.querySelector("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-view]");if(!b||NAV_ATRAS)return;var a=vistaActiva();if(a&&a!==b.dataset.view){VSTACK.push(a);if(VSTACK.length>30)VSTACK.shift();}},true);
+function guardaAtras(gesto){try{if(!(history.state&&history.state.cuadra)||(gesto&&guardaSinGesto)){history.pushState({cuadra:Date.now()},"");guardaSinGesto=!gesto;}}catch(e){}}
+function atrasDentro(){
+  if($("guia")||$("guia-b")){guiaCerrar();return true;}
+  if($("carga")&&$("carga").classList.contains("open"))return true;
+  if($("modal-back").classList.contains("open")){closeModal();return true;}
+  if($("cart-back").classList.contains("open")&&!document.body.classList.contains("pc-venta")){cerrarCarrito();return true;}
+  if($("scan-back")&&$("scan-back").classList.contains("open")){var c=$("scan-close")||$("scan-cancel");if(c)c.click();else $("scan-back").classList.remove("open");return true;}
+  while(VSTACK.length){var v=VSTACK.pop(),b=document.querySelector('nav button[data-view="'+v+'"]');if(b&&!b.hidden&&v!==vistaActiva()){NAV_ATRAS=true;b.click();NAV_ATRAS=false;return true;}}
+  return false;
+}
+window.addEventListener("popstate",function(){
+  if(atrasDentro()){guardaAtras(false);return;}
+  if(Date.now()-ultimoAtras<2500){history.back();return;}
+  ultimoAtras=Date.now();toast("Toca atrás otra vez para salir de Cuadra");guardaAtras(false);
+});
+["pointerdown","keydown"].forEach(function(t){document.addEventListener(t,function(){guardaAtras(true);},true);});
+guardaAtras(false);
+// PC: la venta queda siempre a la derecha, como en una caja registradora
+function esPC(){return window.matchMedia("(min-width:900px)").matches;}
+function pintarPC(){var q=$("buscar-venta");if(q&&esPC()&&!q.dataset.pc){q.dataset.pc=1;q.placeholder="Escanea o busca un producto (tecla /)";}var on=esPC()&&vistaActiva()==="vender"&&!(typeof modoDueno==="function"&&modoDueno())&&!$("bienv");document.body.classList.toggle("pc-venta",on);document.body.classList.toggle("pc",esPC());}
+(function(){var vv=$("v-vender");if(vv&&window.MutationObserver)new MutationObserver(pintarPC).observe(vv,{attributes:true,attributeFilter:["class"]});
+  window.addEventListener("resize",pintarPC);if(window.MutationObserver)new MutationObserver(pintarPC).observe(document.body,{childList:true});pintarPC();})();
+document.addEventListener("keydown",function(e){
+  var t=e.target,escribiendo=t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable),abierto=$("modal-back").classList.contains("open");
+  if(e.key==="/"&&!escribiendo&&!abierto){var q=vistaActiva()==="productos"?$("buscar-prod"):$("buscar-venta");if(q){e.preventDefault();if(vistaActiva()!=="vender"&&vistaActiva()!=="productos")irA("vender");(q.offsetParent?q:$("buscar-venta")).focus();}}
+  if(e.key==="F2"&&!abierto){var r=$("btn-registrar");if(document.body.classList.contains("pc-venta")&&r&&!r.disabled){e.preventDefault();r.click();}else if(!$("cobrar-bar").hidden){e.preventDefault();abrirCarrito();}}
+});
+
 // ---------- eventos ----------
 document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("click",function(){
   document.querySelectorAll("nav button").forEach(function(x){x.removeAttribute("aria-current");});b.setAttribute("aria-current","page");
@@ -4225,6 +4366,7 @@ $("btn-copiar").onclick=function(){var t=textoReporte();
   else toast("Mantén presionado el texto para copiarlo.");};
 
 aplicarTema(temaActual());
+if(modoEjemplo()&&esEjemploS())S=seed();
 renderAll();
 $("plan-ban").addEventListener("click",function(e){var b=e.target.closest("[data-plan]");if(!b)return;if(b.dataset.plan==="volver")volverPanel();if(b.dataset.plan==="renovar")modalRenovar();if(b.dataset.plan==="aviso"){escribirLS("cuadra-aviso-"+b.dataset.av,1);renderAll();}});
 document.addEventListener("click",function(e){if(!e.target)return;if(e.target.id==="adm-reint")cargarPanel();if(e.target.id==="fa-panel")setTimeout(modalPanel,50);if(e.target.id==="mi-renovar")modalRenovar();if(e.target.id==="mi-pagos")modalMisPagos();});
